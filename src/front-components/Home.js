@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import logo from '../logo.svg';
+import logo from '../assets/img/logo.svg';
 
 const styles = theme => ({
     "myCustomClass": {
