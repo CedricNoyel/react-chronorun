@@ -1,8 +1,9 @@
 const electron = require('electron');
-// Module to control application life.
 const app = electron.app;
-// Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+const log = require('electron-log');
+const {ipcMain} = require('electron'); // get html events
+const ExcelServices = require('./app-server/js/ExcelServices');
 
 const path = require('path');
 const url = require('url');
@@ -64,3 +65,28 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// CONTROLLER
+ipcMain
+    .on('end-add-participant', (event, arg) => {
+        let currentTimestamp = new Date().getTime();
+        ExcelServices.addStopTime(arg, currentTimestamp);
+    })
+    .on('add-team', (event, arg) => {
+        console.log("TODO add participant to a team");
+    })
+    .on('add-participant', (event, arg) => {
+        ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
+    })
+    .on('start-add-participants', (event, arg) => {
+        let currentTimestamp = new Date().getTime();
+        ExcelServices.addStartTime(arg, currentTimestamp);
+    })
+    .on('start-add-team', (event, arg) => {
+        let currentTimestamp = new Date().getTime();
+        ExcelServices.findTeamParticipants(arg, function (res) {
+            res.forEach(function (participant) {
+                ExcelServices.addStartTime(participant.dossard, currentTimestamp);
+            })
+        });
+    });

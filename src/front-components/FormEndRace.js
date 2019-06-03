@@ -7,28 +7,19 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 
 const suggestions = [
-    { label: 'Afghanistan' },
-    { label: 'Aland Islands' },
-    { label: 'Albania' },
-    { label: 'Algeria' },
-    { label: 'American Samoa' },
-    { label: 'Austria' },
-    { label: 'Azerbaijan' },
-    { label: 'Bahamas' },
-    { label: 'Bahrain' },
-    { label: 'Bangladesh' },
-    { label: 'British Indian Ocean Territory' },
-    { label: 'Brunei Darussalam' },
+    { label: '1111' },
+    { label: '1112' },
+    { label: '1113' }
 ];
 
 function renderInputComponent(inputProps) {
     const { classes, inputRef = () => {}, ref, ...other } = inputProps;
-
     return (
         <TextField
-            fullWidth
             InputProps={{
                 inputRef: node => {
                     ref(node);
@@ -86,6 +77,7 @@ function getSuggestionValue(suggestion) {
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        margin: theme.spacing(3)
     },
     container: {
         position: 'relative',
@@ -104,7 +96,10 @@ const useStyles = makeStyles(theme => ({
         margin: 0,
         padding: 0,
         listStyleType: 'none',
-    }
+    },
+    btnEnd: {
+        marginLeft: theme.spacing(1),
+    },
 }));
 
 function IntegrationAutosuggest() {
@@ -126,6 +121,7 @@ function IntegrationAutosuggest() {
     };
 
     const handleChange = name => (event, { newValue }) => {
+        console.log(newValue);
         setState({
             ...state,
             [name]: newValue,
@@ -142,28 +138,36 @@ function IntegrationAutosuggest() {
     };
 
     return (
-        <div className={classes.root}>
-            <Autosuggest
-                {...autosuggestProps}
-                inputProps={{
-                    classes,
-                    placeholder: 'N° de dossard',
-                    value: state.single,
-                    onChange: handleChange('single'),
-                }}
-                theme={{
-                    container: classes.container,
-                    suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                    suggestionsList: classes.suggestionsList,
-                    suggestion: classes.suggestion,
-                }}
-                renderSuggestionsContainer={options => (
-                    <Paper {...options.containerProps} square>
-                        {options.children}
-                    </Paper>
-                )}
-            />
-        </div>
+        <form noValidate autoComplete="off">
+            <div className={classes.root}>
+                <Box display="flex" justifyContent="center">
+                    <Autosuggest
+                        {...autosuggestProps}
+                        inputProps={{
+                            classes,
+                            placeholder: '1101',
+                            maxLength: 4,
+                            value: state.single,
+                            onChange: handleChange('single'),
+                            width: '50'
+                        }}
+                        theme={{
+                            container: classes.container,
+                            suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                            suggestionsList: classes.suggestionsList,
+                            suggestion: classes.suggestion,
+                        }}
+                        renderSuggestionsContainer={options => (
+                            <Paper {...options.containerProps} square>
+                                {options.children}
+                            </Paper>
+                        )}
+                    />
+                    <Button className={classes.btnEnd} variant="contained" color="primary">Fin</Button>
+                </Box>
+            </div>
+        </form>
+
     );
 }
 

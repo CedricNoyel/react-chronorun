@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import logo from '../assets/img/logo.svg';
+
 
 const styles = theme => ({
     "myCustomClass": {
@@ -64,7 +64,6 @@ class Home extends Component {
                     </label>
                     <p>Pour obtenir le template du fichier, <a href="#" onClick={this.handleClick}>cliquez ici</a>
                     </p>
-                    <Link to="/start">Page start</Link>
                 </div>
             </div>
     );
