@@ -2,7 +2,7 @@ const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 
-const pathCsvStart = 'app_server/excels/start.csv';
+const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
     path : pathCsvStart,
     fieldDelimiter: ';',
@@ -13,7 +13,7 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
-const pathCsvStop = 'app_server/excels/end.csv';
+const pathCsvStop = 'src/app-server/excels/end.csv';
 const csvWriterStop = createCsvWriter({
     path : pathCsvStop,
     fieldDelimiter: ';',
@@ -24,7 +24,7 @@ const csvWriterStop = createCsvWriter({
     ]
 });
 
-const pathCsvParticipants = 'app_server/excels/participants.csv';
+const pathCsvParticipants = 'src/app-server/excels/participants.csv';
 const csvWriterParticipants = createCsvWriter({
     path : pathCsvParticipants,
     fieldDelimiter: ';',
