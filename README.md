@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
 
+>>>>>>> b66db73d93ef40ac31fa143d1103a26fba5b9246
 Developpement
 
  - Install [YARN](https://yarnpkg.com/fr/docs/install#windows-stable)
 
 - Run `yarn` in project directory to get all required packages
 
+<<<<<<< HEAD
+- Run dev app with `yarn run` to see your app
+=======
 - Run dev app with `yarn run dev` to see your app
+>>>>>>> b66db73d93ef40ac31fa143d1103a26fba5b9246
 
 
 ## How to build an Electron app using create-react-app. No webpack configuration or “ejecting” necessary.
