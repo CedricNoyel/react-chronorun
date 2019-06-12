@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import logo from '../assets/img/logo.svg';
 
+const {ipcRenderer} = window.require('electron')
 
 const styles = theme => ({
     "myCustomClass": {
@@ -32,8 +33,13 @@ class Home extends Component {
         this.setState({
             selectedFile: e.target.files[0]
         })
+        ipcRenderer.send('import-participants', e.target.files[0].path);
+        
+        ipcRenderer.on('reply-import-participants', (event, args) => {
+            alert(args);
+        })
     }
-
+ 
     handleClick() {
         alert('TELECHARGER FICHIER TEMPLATE');
     }
