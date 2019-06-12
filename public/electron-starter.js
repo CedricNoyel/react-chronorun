@@ -77,13 +77,15 @@ ipcMain
         ExcelServices.addStartTime(arg, currentTimestamp);
     })
     .on('import-participants', (event, arg) => {
-        // console.log("HEY");
-        console.log("argument : ", arg);
         ExcelServices.convertXlsxToCsv(arg, function(res) {
             if(res){
                 event.sender.send('reply-import-participants', 'Participants importés avec succès');
             }
         });
+    })
+    .on('edit-participant', (event, arg) => {
+        ExcelServices.editNumberParticipantAtTheEnd(66, 10);
+
     })
     .on('start-add-team', (event, arg) => {
         let currentTimestamp = new Date().getTime();

@@ -39,6 +39,13 @@ class Home extends Component {
             alert(args);
         })
     }
+
+
+    onEditParticipants(){
+        var numbers = []; //En 0 on met le numéro que l'on veut modifier, en 1 le numéro que l'on souhaite mettre
+        //TODO : Aller chercher les numéros dans les input une fois qu'ils seront implémentés
+        ipcRenderer.send('edit-participant', numbers);
+    }
  
     handleClick() {
         alert('TELECHARGER FICHIER TEMPLATE');
