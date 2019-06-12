@@ -5,9 +5,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Home from './Home';
 import Start from "./Start";
 import End from "./End";
+import MenuDrawer from './MenuDrawer';
 
 function TabContainer(props) {
     return (
@@ -50,20 +50,17 @@ function NavTabs() {
 
     return (
         <div className={classes.root}>
+            <MenuDrawer/>
             <AppBar position="static">
                 <Tabs variant="fullWidth" value={value} onChange={handleChange}>
-                    <LinkTab label="Excel" href="/drafts" />
-                    <LinkTab label="Départ" href="/trash" />
-                    <LinkTab label="Arrivée" href="/spam" />
+                    <LinkTab label="Départ" />
+                    <LinkTab label="Arrivée"/>
                 </Tabs>
             </AppBar>
             {value === 0 && <TabContainer>
-                <Home/>
-            </TabContainer>}
-            {value === 1 && <TabContainer>
                 <Start/>
             </TabContainer>}
-            {value === 2 && <TabContainer>
+            {value === 1 && <TabContainer>
                 <End/>
             </TabContainer>}
         </div>
