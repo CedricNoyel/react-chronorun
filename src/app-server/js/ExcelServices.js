@@ -3,7 +3,6 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const convert = require('xlsx-converter');
 
-
 const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
     path : pathCsvStart,
