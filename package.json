@@ -24,7 +24,8 @@
     "react-electron-titlebar": "^1.0.7",
     "react-router-dom": "^5.0.0",
     "react-select": "^3.0.3",
-    "typeface-roboto": "0.0.54"
+    "typeface-roboto": "0.0.54",
+    "xlsx-converter": "^0.1.0"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",

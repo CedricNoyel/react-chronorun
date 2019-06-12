@@ -1,8 +1,10 @@
 const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
+const convert = require('xlsx-converter');
 
-const pathCsvStart = 'app_server/excels/start.csv';
+
+const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
     path : pathCsvStart,
     fieldDelimiter: ';',
@@ -13,7 +15,7 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
-const pathCsvStop = 'app_server/excels/end.csv';
+const pathCsvStop = 'src/app-server/excels/end.csv';
 const csvWriterStop = createCsvWriter({
     path : pathCsvStop,
     fieldDelimiter: ';',
@@ -24,7 +26,7 @@ const csvWriterStop = createCsvWriter({
     ]
 });
 
-const pathCsvParticipants = 'app_server/excels/participants.csv';
+const pathCsvParticipants = 'src/app-server/excels/participants.csv';
 const csvWriterParticipants = createCsvWriter({
     path : pathCsvParticipants,
     fieldDelimiter: ';',
@@ -37,7 +39,74 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
+const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
+
+
 class ExcelServices {
+    
+    static refreshCsv(data){
+        const csvWriter = createCsvWriter({
+            path : pathCsvParticipants,
+            fieldDelimiter: ';',
+            append: true,
+            header : [
+                {id: 'dossard', title: 'Dossard'},
+                {id: 'lastname', title: 'Nom'},
+                {id: 'firstname', title: 'Prénom'},
+                {id: 'team', title: 'Equipe'}
+            ]
+        });
+        for(var i = 0; i< data.length; i++){
+            console.log(data[i]["Row"]); //TODO : Trouver un moyen de parser les ROWS
+        }
+    }
+
+    static editNumberParticipantByNumber(numberInit, numberFinal){
+        var data = [];
+        ExcelServices.getParticipants(function(res){
+            for(var i  = 0; i<res.length; i++){
+                // console.log("RES :", res);
+                // console.log("Row numéro : ", i , res[i]);
+                if(res[i].dossard == numberInit){
+                    // console.log("ON REMPLACE", numberInit, "PAR", numberFinal);
+                    var edited = { Row : {dossard:numberFinal, lastname:res[i].lastname, firstname:res[i].firstName, team:res[i].team}}
+                    data.push(edited);
+                } else {
+                    data.push(res[i]);
+                }
+            }
+            // console.log("DATA : " , data);
+            ExcelServices.refreshCsv(data);
+        });
+    }
+
+    //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
+    static convertXlsxToCsv(path, callback){
+        var converted = false;
+        console.log("path : ", path);
+        convert.convert(path).then(result => {
+
+            var index = 2;
+            // console.log("result : ", result);
+            while(result[index.toString()]!=undefined){
+                var numeroDossard = result[index.toString()][0];
+                var nom = result[index.toString()][1];
+                var prenom = result[index.toString()][2];
+                var nomEquipe = result[index.toString()][3];
+
+                // console.log("numero : ", result[index.toString()][0]);
+                // console.log("nom : ", result[index.toString()][1]);
+                // console.log("prenom : ", result[index.toString()][2]);
+                // console.log("equipe : ", result[index.toString()][3]);
+
+                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe);
+                index++;
+            }
+            converted = true;
+            console.log("converted : ", converted);
+            callback(converted);
+        });
+    }
 
     /**
      * Create the different CSV if they do not exist

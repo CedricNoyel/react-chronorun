@@ -44,7 +44,17 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', function(){
+    createWindow();
+    // ExcelServices.createCsv();
+
+    // ExcelServices.getParticipants(function(res){
+    //     console.log("RESULTAT : ", res);
+    // });
+    // ExcelServices.editNumberParticipantByNumber(5, 10);
+
+
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -81,6 +91,15 @@ ipcMain
     .on('start-add-participants', (event, arg) => {
         let currentTimestamp = new Date().getTime();
         ExcelServices.addStartTime(arg, currentTimestamp);
+    })
+    .on('import-participants', (event, arg) => {
+        // console.log("HEY");
+        console.log("argument : ", arg);
+        ExcelServices.convertXlsxToCsv(arg, function(res) {
+            if(res){
+                event.sender.send('reply-import-participants', 'Participants importés avec succès');
+            }
+        });
     })
     .on('start-add-team', (event, arg) => {
         let currentTimestamp = new Date().getTime();
