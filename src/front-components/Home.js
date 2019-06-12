@@ -42,6 +42,7 @@ class Home extends Component {
  
     handleClick() {
         alert('TELECHARGER FICHIER TEMPLATE');
+        ipcRenderer.send('export-csv');
     }
     render() {
         const { classes } = this.props;

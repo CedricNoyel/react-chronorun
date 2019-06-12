@@ -10,7 +10,6 @@ const url = require('url');
 const isDev = require('electron-is-dev');
 
 const ExcelServices = require('../src/app-server/js/ExcelServices');
-
 let mainWindow;
 
 function createWindow() {
@@ -75,6 +74,9 @@ ipcMain
     .on('start-add-participants', (event, arg) => {
         let currentTimestamp = new Date().getTime();
         ExcelServices.addStartTime(arg, currentTimestamp);
+    })
+    .on('export-csv', (event, arg) => {
+        ExcelServices.mergeCsv();
     })
     .on('import-participants', (event, arg) => {
         // console.log("HEY");

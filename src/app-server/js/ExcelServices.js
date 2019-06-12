@@ -14,6 +14,22 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
+const pathCsvResult = "src/app-server/excels/result.csv";
+const csvWriterResult = createCsvWriter({
+    path : pathCsvResult,
+    fieldDelimiter: ";",
+    append: true,
+    header : [
+        {id: 'dossard', title: 'Dossard'},
+        {id: 'lastname', title: 'Nom'},
+        {id: 'firstname', title: 'Prénom'},
+        {id: 'team', title: 'Equipe'},
+        {id: 'timedepart', title: 'Temps de départ'},
+        {id: 'timearrivee', title: 'Temps d\'arrivée '},
+        {id: 'timetotal', title: 'Temps total'}
+    ]
+})
+
 const pathCsvStop = 'src/app-server/excels/end.csv';
 const csvWriterStop = createCsvWriter({
     path : pathCsvStop,
@@ -41,7 +57,46 @@ const csvWriterParticipants = createCsvWriter({
 const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
 
 
+
+
 class ExcelServices {
+
+    static mergeCsv(){
+        var self = this;
+        this.getParticipants(function(dataParticipants) {
+            console.log("dataParticipants : ", dataParticipants);
+            self.getParticipantsStart(function(dataStart){
+                console.log("dataStart : ", dataStart);
+                self.getParticipantsEnd(function(dataEnd){
+                    for(var i = 0; i<dataParticipants.length;i++){
+                        
+                        console.log("On recherche ce dossard : ", dataParticipants[i].dossard);
+                        var infoDepart = dataStart.filter(function(data){
+                            return data.dossard == dataParticipants[i].dossard;
+                        });
+                        console.log("Valeur départ : ", infoDepart[0].time);
+
+                        var infoArrivee = dataEnd.filter(function(data){
+                            return data.dossard == dataParticipants[i].dossard;
+                        });
+
+                        console.log("Valeur arrivée : ", infoArrivee[0].time);
+
+                        var dossardParticipant = dataParticipants[i].dossard;
+                        var lastNameParticipant = dataParticipants[i].lastname;
+                        var firstNameParticipant = dataParticipants[i].firstname;
+                        var teamParticipant = dataParticipants[i].team;
+                        var startTimeParticipant = infoDepart[0].time;
+                        var endTimeParticipant = infoArrivee[0].time;
+                        var timeTotalParticipant = "ntm";
+                        self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, teamParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant);
+                    }
+                })
+            });
+        });
+
+        
+    }
     
     static refreshCsv(data){
         const csvWriter = createCsvWriter({
@@ -135,6 +190,17 @@ class ExcelServices {
                 ExcelServices.addParticipant('dossard', 'lastname', 'firstname', 'team');
             }
         }
+        //Check if result.csv exists, if not create it
+        try {
+            console.log("Passe ici");
+            fs.statSync(pathCsvResult);
+        } catch (error) {
+            console.log("Passe dans error");
+            if(error.code === 'ENOENT') {
+                console.log("Passe dans enoent");
+                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'team', 'temps depart', 'temps arrivée', 'temps total');
+            }
+        }
     }
 
     /**
@@ -143,14 +209,49 @@ class ExcelServices {
      */
     static getParticipants(callback) {
         var participants = [];
-        fs.createReadStream(pathCsvParticipants)
+        var readStream = fs.createReadStream(pathCsvParticipants)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
                 participants.push(row);
+                
             })
             .on('finish', function () {
+                readStream.destroy();
                 callback(participants);
+                
             });
+    }
+    
+    /**
+     * Return the list of the participant at start
+     * @param callback  - function
+     */
+    static getParticipantsStart(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStart)
+        .pipe(csvParser({separator: ';'}))
+        .on('data', (row) => {
+            participants.push(row);
+        })
+        .on('finish', function() {
+            callback(participants);
+        }).unpipe();
+    }
+
+        /**
+     * Return the list of the participant at the end
+     * @param callback  - function
+     */
+    static getParticipantsEnd(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStop)
+        .pipe(csvParser({separator: ';'}))
+        .on('data', (row) => {
+            participants.push(row);
+        })
+        .on('finish', function() {
+            callback(participants);
+        });
     }
 
     /**
@@ -194,6 +295,18 @@ class ExcelServices {
         })
     }
 
+    static findParticipantStart(searchedDossard, callback){
+        this.getParticipantsStart(function (participants){
+            callback(participants.filter(participant => participant.dossard == searchedDossard));
+        });
+    }
+
+    static findParticipantStop(searchedDossard, callback){
+        this.getParticipantsStop(function (participants){
+            callback(participants.filter(participant => participant.dossard == searchedDossard));
+        });
+    }
+
     static addStartTime(dossard, time) {
         let data = [{
             dossard: dossard,
@@ -212,6 +325,20 @@ class ExcelServices {
 
         csvWriterStop
             .writeRecords(data);
+    }
+
+    static addResult(dossard, lastname, firstname, team, timeDepart, timeArrivee, timeTotal){
+        let data = [{
+            dossard: dossard,
+            lastname: lastname,
+            firstname : firstname, 
+            team : team, 
+            timedepart: timeDepart,
+            timearrivee : timeArrivee,
+            timetotal : timeTotal
+        }];
+
+        csvWriterResult.writeRecords(data);
     }
 }
 
