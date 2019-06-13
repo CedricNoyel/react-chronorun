@@ -1,15 +1,16 @@
 const electron = require('electron');
-const {dialog} = require('electron');
 const ipcMain = electron.ipcMain; // get html events
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
-const os = require('os');
 const path = require('path');
 const url = require('url');
+const fs = require('file-system');
 const isDev = require('electron-is-dev');
 
 const ExcelServices = require('../src/app-server/js/ExcelServices');
+
+
 let mainWindow;
 
 function createWindow() {
@@ -17,10 +18,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 728,
-        webPreferences: { nodeIntegration: true },
-        frame: false,
-        titleBarStyle: 'hidden'
+        webPreferences: { nodeIntegration: true }
     });
+    mainWindow.setMenuBarVisibility(false);
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -29,6 +29,7 @@ function createWindow() {
             slashes: true
     });
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : startUrl);
+    mainWindow.maximize();
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -108,8 +109,14 @@ ipcMain
             })
         });
     })
-    .on('download-template', async () => {
-        //let url = 'https://go.microsoft.com/fwlink/?LinkID=521962';
-        //isDev ? url = `file://${path.join(__dirname, '/app-server/excels/template_chrono_run.xlsx')}` : url = `file://${path.join(__dirname, '../build//app-server/excels/template_chrono_run.xlsx')}`;
-        //console.log(await download(mainWindow, url));
+    .on('dl-template-request', (event, arg) => {
+        let source = path.join(__dirname, 'template_chrono_run.xlsx');
+        let destination = path.join(app.getPath('downloads'), 'template_chrono_run.xlsx');
+        console.log(source);
+        console.log(destination);
+        fs.copyFile(source, destination, {
+            done: (err) => {
+                event.sender.send('dl-template-reply');
+            }
+        });
     });
