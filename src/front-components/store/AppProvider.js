@@ -10,10 +10,15 @@ import React, { createContext, Component } from "react"; // on importe createCon
  * d'autres composants par la suite via le `Consumer`
  */
 export const UserContext = createContext({
-    participantEnd: [],
-    setParticipantEnd: () => {},
-    name: "",
-    setName: () => {}
+    listeParticipants: [],
+    inputStartRace: "",
+    setInputStartRace: () => {},
+    inputsFormEnd: {},
+    setInputFormEnd: () => {},
+    histoParticipantEnd: {},
+    addHistoParticipantEnd: () => {},
+    histoParticipantStart: {},
+    addHistoParticipantStart: () => {},
 });
 
 /**
@@ -24,13 +29,44 @@ export const UserContext = createContext({
  */
 class AppProvider extends Component {
     state = {
-        name: "Putain de Code", // une valeur de départ
-        setName: name => this.setState({ name: name }),
-        participantEnd: [],
-        setParticipantEnd: participants => this.setState({ participantEnd: participants }),
-        addParticipantEnd: participantToAdd => this.setState((state, props) => {
-            return {participantEnd: this.state.participantEnd.unshift(participantToAdd)}
-        })
+        listeParticipants: [
+            { dossard: '1', nom: 'NOYEL', prenom: 'Cédric' },
+            { dossard: '2', nom: 'GENEVE', prenom: 'Jordan' },
+            { dossard: '3', nom: 'LE GALLOUDEC', prenom: 'Samy' },
+        ],
+        inputStartRace: "",
+        setInputStartRace: inputValue => this.setState({ inputStartRace: inputValue }),
+        inputsFormEnd: {
+            id: [0,1,2,3,4],
+            values: ["","","","",""]
+        },
+        setInputFormEnd: (idInput, value) => this.setState((state, props) => {
+            const newItems = state.inputsFormEnd;
+            newItems.values[idInput] = value;
+            return { inputsFormEnd: newItems}
+        }),
+        histoParticipantEnd: {
+            id: [],
+            participant: [],
+            time: []
+        },
+        addHistoParticipantEnd: (idParticipant, participant, time) => this.setState((state, props) => {
+            const newItems = state.histoParticipantEnd;
+            newItems.id.unshift(idParticipant);
+            newItems.participant.unshift(participant);
+            newItems.time.unshift(time);
+            return { histoParticipantEnd: newItems}
+        }),
+        histoParticipantStart: {
+            participant: [],
+            time: []
+        },
+        addHistoParticipantStart: (participant, time) => this.setState((state, props) => {
+            const newItems = state.histoParticipantStart;
+            newItems.participant.unshift(participant);
+            newItems.time.unshift(time);
+            return { histoParticipantEnd: newItems}
+        }),
     };
 
     render() {

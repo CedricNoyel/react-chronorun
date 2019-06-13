@@ -3,9 +3,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
-import FormStartParticipant from './FormStartParticipant';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import NoSsr from '@material-ui/core/NoSsr';
 import './App.css';
 import 'typeface-roboto';
+import InputStartParticipants from './InputStartParticipants';
+import TableHistoStart from './TableHistoStart';
+import {withUser} from "./store/AppProvider";
 
 const styles = theme => ({
     root: {
@@ -22,6 +27,29 @@ const styles = theme => ({
 });
 
 class Start extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            inputValue: '',
+        };
+        this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
+        this.onParticipantStart = this.onParticipantStart.bind(this);
+    }
+
+    handleTextFieldChange() {
+        console.log("start.js - > participantStart");
+    }
+
+    onParticipantStart() {
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        this.props.inputStartRace.map( (row, index) => {
+            this.props.addHistoParticipantStart(row.value, time);
+        });
+        this.props.setInputStartRace("");
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -29,12 +57,19 @@ class Start extends Component {
                 <div className={classes.root}>
                     <Grid container justify="center" alignItems="center" direction="row">
                         <Grid item xs={12}>
-                            <Typography variant="h5">Départ des participants</Typography>
                             <Paper className={classes.paper}>
-                                <FormStartParticipant />
+                                <Typography variant="h5">Départ des participants</Typography>
+                                <div className={classes.root}>
+                                    <NoSsr>
+                                        <Box display="flex" flexDirection="row" justifyContent="center">
+                                            <InputStartParticipants onChange={this.handleTextFieldChange}/>
+                                            <Button variant="contained" className={classes.btnLeftSpace} color="primary" onClick={this.onParticipantStart}>
+                                                Go
+                                            </Button>
+                                        </Box>
+                                    </NoSsr>
+                                </div>
 
-                            </Paper>
-                            <Paper className={classes.paper}>
                                 <Typography variant="caption" display="block" gutterBottom>
                                     * Plusieurs participants partants en même temps seront assignés à la même équipe
                                 </Typography>
@@ -42,14 +77,11 @@ class Start extends Component {
                                     * Un participant seul ne sera assigné à aucune équipe
                                 </Typography>
                             </Paper>
-                        </Grid>
-                        {/*
-                        <Grid item xs={10}>
                             <Paper className={classes.paper}>
-                                <FormStartTeam/>
+                                <Typography variant="h5">Historique des départs</Typography>
+                                <TableHistoStart/>
                             </Paper>
                         </Grid>
-                        */}
                     </Grid>
                 </div>
 
@@ -58,5 +90,5 @@ class Start extends Component {
     }
 }
 
-export default withStyles(styles)(Start);
+export default withUser(withStyles(styles)(Start));
 

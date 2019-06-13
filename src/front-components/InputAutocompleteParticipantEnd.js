@@ -7,12 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
-
-const suggestions = [
-    { label: '1111' },
-    { label: '1112' },
-    { label: '1113' }
-];
+import { withUser } from "./store/AppProvider";
 
 function renderInputComponent(inputProps) {
     const { classes, inputRef = () => {}, ref, ...other } = inputProps;
@@ -49,7 +44,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
     );
 }
 
-function getSuggestions(value) {
+function getSuggestions(value, suggestions) {
     const inputValue = deburr(value.trim()).toLowerCase();
     const inputLength = inputValue.length;
     let count = 0;
@@ -71,6 +66,7 @@ function getSuggestions(value) {
 function getSuggestionValue(suggestion) {
     return suggestion.label;
 }
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -101,14 +97,19 @@ function IntegrationAutosuggest(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [state, setState] = React.useState({
-        single: '',
+        single: props.inputsFormEnd.values[props.inputid],
         popper: '',
     });
+
+    const suggestions = props.listeParticipants.map(row => ({
+        value: row.dossard,
+        label: row.dossard,
+    }));
 
     const [stateSuggestions, setSuggestions] = React.useState([]);
 
     const handleSuggestionsFetchRequested = ({ value }) => {
-        setSuggestions(getSuggestions(value));
+        setSuggestions(getSuggestions(value, suggestions));
     };
 
     const handleSuggestionsClearRequested = () => {
@@ -118,13 +119,10 @@ function IntegrationAutosuggest(props) {
     const handleChange = name => (event, { newValue }) => {
         // LIMIT INPUTS TO 4 DIGITS NUMBERS
         if (newValue >= 0 && newValue <= 9999) {
-            props.onChange(newValue);
-            setState({
-                ...state,
-                [name]: newValue,
-            });
+            props.setInputFormEnd(props.inputid, newValue);
         }
     };
+
 
     const autosuggestProps = {
         renderInputComponent,
@@ -142,9 +140,9 @@ function IntegrationAutosuggest(props) {
                     {...autosuggestProps}
                     inputProps={{
                         classes,
-                        placeholder: '1101',
+                        placeholder: 'n° dossard',
                         maxLength: 4,
-                        value: state.single,
+                        value: props.inputsFormEnd.values[props.inputid],
                         onChange: handleChange('single'),
                         width: '50'
                     }}
@@ -166,4 +164,4 @@ function IntegrationAutosuggest(props) {
     );
 }
 
-export default IntegrationAutosuggest;
+export default withUser(IntegrationAutosuggest);

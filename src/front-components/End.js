@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import FormEndRace from './FormEndRace';
 import './App.css';
 import 'typeface-roboto';
-
 import { withUser } from "./store/AppProvider";
 
 const styles = theme => ({
@@ -26,24 +25,6 @@ class Start extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            formEndRaces: Array(5).fill( <FormEndRace onClick={this.formSubmitted.bind(this)}/>),
-        };
-    }
-
-    formSubmitted(inputValue) {
-        console.log("FORM SUBMITTED: " + inputValue);
-        let date = new Date();
-        let time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-        var newArray = this.props.participantEnd.slice();
-        newArray.unshift(this.renderHistoLog(this.props.participantEnd.length +1, inputValue, time));
-        this.props.setParticipantEnd(newArray);
-    }
-
-    renderHistoLog(id, inputValue, timeEnd) {
-        return (
-            <p value={id}>Dossard: {inputValue} - Temps: {timeEnd}</p>
-        );
     }
 
     render() {
@@ -51,24 +32,25 @@ class Start extends Component {
         return (
             <div>
                 <div className={classes.root}>
-                    <h1>Hello {this.props.name}!</h1>
-                    <input type="text" value={this.props.name} onChange={e => this.props.setName(e.target.value)} />
                     <Grid container spacing={3}>
                         <Grid item xs={8}>
                             <Typography variant="h5">Arrivée des participants</Typography>
                             <Paper className={classes.paper}>
-                                { this.state.formEndRaces }
+                                {this.props.inputsFormEnd.id.map(i => {
+                                    return <FormEndRace inputid={i}/>
+                                })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
                         <Typography variant="h5">Historique</Typography>
-                        <Paper className={classes.paper}>
-                            { this.props.participantEnd }
-                        </Paper>
+                            <Paper className={classes.paper}>
+                                { this.props.histoParticipantEnd.participant.map((i, index) => {
+                                    return <p key={"histo-"+index} >Dossard: {this.props.histoParticipantEnd.participant[index]} - Temps: {this.props.histoParticipantEnd.time[index]}</p>
+                                })}
+                            </Paper>
                         </Grid>
                     </Grid>
                 </div>
-
             </div>
         );
     }
