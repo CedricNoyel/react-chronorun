@@ -76,7 +76,18 @@ ipcMain
         ExcelServices.addStartTime(arg, currentTimestamp);
     })
     .on('export-csv', (event, arg) => {
-        ExcelServices.mergeCsv();
+        ExcelServices.mergeCsv(function(res){
+            if(res.length != 0){
+                let keys = Array.from(res.keys());
+                var arg = "Problème d'export avec les participants suivants : ";
+                for(key of keys){
+                    arg = arg + key + " ("+res.get(key)+"), ";
+                }
+                event.sender.send('reply-export-csv-fail', arg);
+            } else {
+                event.sender.send('reply-export-csv-ok', 'Export des résultats effectué avec succès');
+            }
+        });
     })
     .on('import-participants', (event, arg) => {
         // console.log("HEY");

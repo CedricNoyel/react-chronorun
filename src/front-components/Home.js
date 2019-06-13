@@ -39,10 +39,21 @@ class Home extends Component {
             alert(args);
         })
     }
+
+    onExportResult(){
+        ipcRenderer.send('export-csv');
+
+        ipcRenderer.on('reply-export-csv-ok', (event, args) => {
+            alert(args);
+        });
+
+        ipcRenderer.on('reply-export-csv-fail', (event, args) => {
+            alert(args);
+        })
+    }
  
     handleClick() {
         alert('TELECHARGER FICHIER TEMPLATE');
-        ipcRenderer.send('export-csv');
     }
     render() {
         const { classes } = this.props;

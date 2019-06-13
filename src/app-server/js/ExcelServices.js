@@ -61,41 +61,55 @@ const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
 
 class ExcelServices {
 
-    static mergeCsv(){
+    static testSvp(){
+        this.mergeCsv(function(res){
+            console.log("le res est bon? ", res);
+        })
+    }
+
+    static mergeCsv(callback){
+        var mapErrorParticipants = new Map();
         var self = this;
         this.getParticipants(function(dataParticipants) {
-            console.log("dataParticipants : ", dataParticipants);
             self.getParticipantsStart(function(dataStart){
-                console.log("dataStart : ", dataStart);
-                self.getParticipantsEnd(function(dataEnd){
-                    for(var i = 0; i<dataParticipants.length;i++){
-                        
-                        console.log("On recherche ce dossard : ", dataParticipants[i].dossard);
-                        var infoDepart = dataStart.filter(function(data){
+                self.getParticipantsEnd(function(dataEnd){ //On lit le csv des fichiers "participants.csv", "start.csv", "end.csv" et on récupère les données
+                    for(var i = 0; i<dataParticipants.length;i++){ //On boucle sur les données de "participants.csv"
+                        var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
                             return data.dossard == dataParticipants[i].dossard;
                         });
-                        console.log("Valeur départ : ", infoDepart[0].time);
-
-                        var infoArrivee = dataEnd.filter(function(data){
+                        var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
                             return data.dossard == dataParticipants[i].dossard;
                         });
-
-                        console.log("Valeur arrivée : ", infoArrivee[0].time);
-
-                        var dossardParticipant = dataParticipants[i].dossard;
+                        var foundDepart = false;
+                        var foundStop = false;
+                        var dossardParticipant = dataParticipants[i].dossard; //On récupère les info qui nous intéresse
                         var lastNameParticipant = dataParticipants[i].lastname;
                         var firstNameParticipant = dataParticipants[i].firstname;
                         var teamParticipant = dataParticipants[i].team;
-                        var startTimeParticipant = infoDepart[0].time;
-                        var endTimeParticipant = infoArrivee[0].time;
-                        var timeTotalParticipant = "ntm";
-                        self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, teamParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant);
+                        if(infoDepart.length != 0){
+                            var dateDepart = new Date(infoDepart[0].time*1000);
+                            var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                            foundDepart = true;
+                        }
+                        if(infoArrivee.length != 0){ //Gestion du cas ou un participant est parti mais n'est jamais arrivé
+                            var dateArrivee = new Date(infoArrivee[0].time*1000);
+                            var endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                            foundStop = true;
+                        }
+                        if(foundDepart && foundStop){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
+                            var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
+                            var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
+                            self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, teamParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant);
+                        } else { // Si il y a eu un problème, on l'ajoute à un map que l'on retourne dans la callback
+                            if(!mapErrorParticipants.get(dataParticipants[i].dossard)){
+                                mapErrorParticipants.set(dataParticipants[i].dossard, dataParticipants[i].lastname);
+                            }
+                        }
                     }
+                    callback(mapErrorParticipants);
                 })
             });
         });
-
-        
     }
     
     static refreshCsv(data){
