@@ -112,62 +112,41 @@ class ExcelServices {
         });
     }
     
-    static refreshCsv(data){
-        const csvWriter = createCsvWriter({
-            path : pathCsvParticipants,
-            fieldDelimiter: ';',
-            append: true,
-            header : [
-                {id: 'dossard', title: 'Dossard'},
-                {id: 'lastname', title: 'Nom'},
-                {id: 'firstname', title: 'Prénom'},
-                {id: 'team', title: 'Equipe'}
-            ]
-        });
-        for(var i = 0; i< data.length; i++){
-            console.log(data[i]["Row"]); //TODO : Trouver un moyen de parser les ROWS
-        }
-    }
 
-    static editNumberParticipantByNumber(numberInit, numberFinal){
-        var data = [];
-        ExcelServices.getParticipants(function(res){
-            for(var i  = 0; i<res.length; i++){
-                // console.log("RES :", res);
-                // console.log("Row numéro : ", i , res[i]);
-                if(res[i].dossard == numberInit){
-                    // console.log("ON REMPLACE", numberInit, "PAR", numberFinal);
-                    var edited = { Row : {dossard:numberFinal, lastname:res[i].lastname, firstname:res[i].firstName, team:res[i].team}}
-                    data.push(edited);
-                } else {
-                    data.push(res[i]);
-                }
+    static editNumberParticipantAtTheEnd(numberInit, numberFinal){
+        //On essaye de lire le fichier 'end.csv'
+        fs.readFile(pathCsvStop, 'utf8', function(err, data){
+            if(err){ //Si erreur, on l'envoit dans la console
+                return console.log(err);
             }
-            // console.log("DATA : " , data);
-            ExcelServices.refreshCsv(data);
+            ExcelServices.getEndParticipants(function(res){
+                for(var i = 0; i<res.length; i++){ //On boucle sur chaque participant arrivé
+                    if(res[i].dossard == numberInit){ 
+                        var stringToReplace = numberInit+";"+res[i].time; //On créée une string conforme à ce qui est présent dans le fichier "end.csv" et qui correspond à la ligne du participant
+                        var stringReplace = numberFinal+";"+res[i].time; // On créée la string qu'on souhaite mettre à la place de la ligne déjà existante
+                        var regex = new RegExp(stringToReplace); //On créée une regex qui permet de chercher dans le fichier la ligne qu'on cherche
+                        var result = data.replace(regex, stringReplace);
+                        fs.writeFile(pathCsvStop, result, 'utf8', function(err){ //On réécrit le fichier avec la ligne modifiée
+                            if (err) return console.log(err);
+                        });
+                    }
+                }
+            });
         });
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
     static convertXlsxToCsv(path, callback){
-        var converted = false;
-        console.log("path : ", path);
-        convert.convert(path).then(result => {
-
-            var index = 2;
-            // console.log("result : ", result);
-            while(result[index.toString()]!=undefined){
+        var converted = false; 
+        convert.convert(path).then(result => { //On lit le fichier xlsx grâce à xlsx-converter
+            var index = 2; //On lit à partir de la ligne 2 pour éviter les headers
+            while(result[index.toString()]!=undefined){ //On récupère les infos souhaitées
                 var numeroDossard = result[index.toString()][0];
                 var nom = result[index.toString()][1];
                 var prenom = result[index.toString()][2];
                 var nomEquipe = result[index.toString()][3];
 
-                // console.log("numero : ", result[index.toString()][0]);
-                // console.log("nom : ", result[index.toString()][1]);
-                // console.log("prenom : ", result[index.toString()][2]);
-                // console.log("equipe : ", result[index.toString()][3]);
-
-                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe);
+                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe); //On ajoute un le participant au fichier particicpants.csv
                 index++;
             }
             converted = true;
@@ -215,6 +194,23 @@ class ExcelServices {
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'team', 'temps depart', 'temps arrivée', 'temps total');
             }
         }
+    }
+
+    /**
+     * Return the list of the participants at the end
+     * @param callback - functio,
+     */
+
+    static getEndParticipants(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStop)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                participants.push(row);
+            })
+            .on('finish', function () {
+                callback(participants);
+            });
     }
 
     /**
