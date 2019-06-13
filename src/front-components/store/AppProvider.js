@@ -30,12 +30,16 @@ export const UserContext = createContext({
 class AppProvider extends Component {
     state = {
         listeParticipants: [
-            { dossard: '1', nom: 'NOYEL', prenom: 'Cédric' },
-            { dossard: '2', nom: 'GENEVE', prenom: 'Jordan' },
-            { dossard: '3', nom: 'LE GALLOUDEC', prenom: 'Samy' },
+            { dossard: '1', nom: 'NOYEL', prenom: 'Cédric', team: 1 },
+            { dossard: '2', nom: 'GENEVE', prenom: 'Jordan', team: 2 },
+            { dossard: '3', nom: 'LE GALLOUDEC', prenom: 'Samy', team: 2 },
+            { dossard: '4', nom: 'MAURICE', prenom: 'Poisson', team: 2 },
+            { dossard: '5', nom: 'LE MENN', prenom: 'Florian', team: null },
         ],
         inputStartRace: "",
-        setInputStartRace: inputValue => this.setState({ inputStartRace: inputValue }),
+        setInputStartRace: (inputValue) => this.setState((state, props) => {
+            return {inputStartRace: inputValue}
+        }),
         inputsFormEnd: [
             { id: 0, inputValue: ""},
             { id: 1, inputValue: ""},

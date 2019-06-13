@@ -237,6 +237,9 @@ const IntegrationReactSelect = (props, context) => {
     const suggestions = props.listeParticipants.map(row => ({
         value: row.dossard,
         label: row.dossard + " - " + row.nom + " " + row.prenom,
+        nom: row.nom,
+        prenom: row.prenom,
+        team: row.team
     }));
 
     function handleChangeMulti(value) {

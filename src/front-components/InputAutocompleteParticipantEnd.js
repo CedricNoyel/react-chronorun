@@ -115,13 +115,15 @@ function IntegrationAutosuggest(props) {
     };
 
     const handleChange = name => (event, { newValue }) => {
-        setState({
-            ...state,
-            [name]: newValue,
-        });
-        props.setInputFormEnd(props.inputid, newValue);
-        //console.log(props.inputsFormEnd[props.inputid].inputValue)
-        console.log(newValue)
+        if (newValue >= 0 && newValue <= 9999) {
+            setState({
+                ...state,
+                [name]: newValue,
+            });
+            props.setInputFormEnd(props.inputid, newValue);
+        } else {
+            // FORMAT INCORECT
+        }
     };
 
     const autosuggestProps = {
