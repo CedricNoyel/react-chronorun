@@ -36,16 +36,16 @@ class Start extends Component {
                         <Grid item xs={8}>
                             <Typography variant="h5">Arrivée des participants</Typography>
                             <Paper className={classes.paper}>
-                                {this.props.inputsFormEnd.id.map(i => {
-                                    return <FormEndRace inputid={i}/>
+                                {this.props.inputsFormEnd.map((row, index) => {
+                                    return <FormEndRace inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
                         <Typography variant="h5">Historique</Typography>
                             <Paper className={classes.paper}>
-                                { this.props.histoParticipantEnd.participant.map((i, index) => {
-                                    return <p key={"histo-"+index} >Dossard: {this.props.histoParticipantEnd.participant[index]} - Temps: {this.props.histoParticipantEnd.time[index]}</p>
+                                { this.props.histoParticipantEnd.map((row, index) => {
+                                    return <p key={"histo-"+index} >Dossard: {row.participant} - Temps: {row.time}</p>
                                 })}
                             </Paper>
                         </Grid>

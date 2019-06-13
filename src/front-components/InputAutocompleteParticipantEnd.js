@@ -67,7 +67,6 @@ function getSuggestionValue(suggestion) {
     return suggestion.label;
 }
 
-
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
@@ -97,8 +96,7 @@ function IntegrationAutosuggest(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [state, setState] = React.useState({
-        single: props.inputsFormEnd.values[props.inputid],
-        popper: '',
+        single: props.inputsFormEnd[props.inputid].inputValue,
     });
 
     const suggestions = props.listeParticipants.map(row => ({
@@ -117,12 +115,14 @@ function IntegrationAutosuggest(props) {
     };
 
     const handleChange = name => (event, { newValue }) => {
-        // LIMIT INPUTS TO 4 DIGITS NUMBERS
-        if (newValue >= 0 && newValue <= 9999) {
-            props.setInputFormEnd(props.inputid, newValue);
-        }
+        setState({
+            ...state,
+            [name]: newValue,
+        });
+        props.setInputFormEnd(props.inputid, newValue);
+        //console.log(props.inputsFormEnd[props.inputid].inputValue)
+        console.log(newValue)
     };
-
 
     const autosuggestProps = {
         renderInputComponent,
@@ -142,9 +142,9 @@ function IntegrationAutosuggest(props) {
                         classes,
                         placeholder: 'n° dossard',
                         maxLength: 4,
-                        value: props.inputsFormEnd.values[props.inputid],
+                        value: props.inputsFormEnd[props.inputid].inputValue,
+                        width: '50',
                         onChange: handleChange('single'),
-                        width: '50'
                     }}
                     theme={{
                         container: classes.container,

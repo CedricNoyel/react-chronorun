@@ -15,7 +15,7 @@ export const UserContext = createContext({
     setInputStartRace: () => {},
     inputsFormEnd: {},
     setInputFormEnd: () => {},
-    histoParticipantEnd: {},
+    histoParticipantEnd: [],
     addHistoParticipantEnd: () => {},
     histoParticipantStart: {},
     addHistoParticipantStart: () => {},
@@ -36,25 +36,24 @@ class AppProvider extends Component {
         ],
         inputStartRace: "",
         setInputStartRace: inputValue => this.setState({ inputStartRace: inputValue }),
-        inputsFormEnd: {
-            id: [0,1,2,3,4],
-            values: ["","","","",""]
-        },
+        inputsFormEnd: [
+            { id: 0, inputValue: ""},
+            { id: 1, inputValue: ""},
+            { id: 2, inputValue: ""},
+            { id: 3, inputValue: ""},
+            { id: 4, inputValue: ""},
+            { id: 5, inputValue: ""},
+        ],
         setInputFormEnd: (idInput, value) => this.setState((state, props) => {
             const newItems = state.inputsFormEnd;
-            newItems.values[idInput] = value;
+            newItems[idInput].inputValue = value
             return { inputsFormEnd: newItems}
         }),
-        histoParticipantEnd: {
-            id: [],
-            participant: [],
-            time: []
-        },
-        addHistoParticipantEnd: (idParticipant, participant, time) => this.setState((state, props) => {
+        histoParticipantEnd: [],
+        addHistoParticipantEnd: (idParticipant, dossart, temps) => this.setState((state, props) => {
             const newItems = state.histoParticipantEnd;
-            newItems.id.unshift(idParticipant);
-            newItems.participant.unshift(participant);
-            newItems.time.unshift(time);
+            newItems.unshift({id: idParticipant, participant: dossart, time: temps});
+            console.log(newItems)
             return { histoParticipantEnd: newItems}
         }),
         histoParticipantStart: {
@@ -65,7 +64,7 @@ class AppProvider extends Component {
             const newItems = state.histoParticipantStart;
             newItems.participant.unshift(participant);
             newItems.time.unshift(time);
-            return { histoParticipantEnd: newItems}
+            return { histoParticipantStart: newItems}
         }),
     };
 

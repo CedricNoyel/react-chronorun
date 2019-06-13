@@ -21,20 +21,16 @@ const styles = theme => ({
 class FormEndRace extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            inputValue: ""
-        };
-        this.btnEndClicked = this.btnEndClicked.bind(this);
     }
 
     btnEndClicked() {
-        let inputId = this.props.inputid;
-        let inputValue = this.props.inputsFormEnd.values[inputId];
+        let inputid = this.props.inputid;
+        let inputValue = this.props.inputsFormEnd[inputid].inputValue;
         if (inputValue.length != 0) {
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            this.props.addHistoParticipantEnd(inputId, inputValue[inputId], time);
-            this.props.setInputFormEnd(inputId, "");
+            this.props.addHistoParticipantEnd(inputid, inputValue, time);
+            this.props.setInputFormEnd(inputid, "");
         } else {
             console.log("<!> The value you want to add is not good");
         }
@@ -48,7 +44,7 @@ class FormEndRace extends Component {
                     <InputAutocompleteParticipantEnd inputid={inputid} />
                 </Box>
                 <Box>
-                    <Button className={classes.btnEnd} variant="contained" color="primary" onClick={this.btnEndClicked}>Fin</Button>
+                    <Button className={classes.btnEnd} variant="contained" color="primary" onClick={this.btnEndClicked.bind(this)}>Fin</Button>
                 </Box>
             </Box>
         )
