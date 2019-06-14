@@ -103,4 +103,10 @@ ipcMain
                 event.sender.send('dl-template-reply');
             }
         });
+    })
+    .on('import-participants-request', (event, arg) => {
+        ExcelServices.convertXlsxToCsv(arg, (data) => {
+            console.log(data);
+            event.sender.send('import-participants-reply');
+        });
     });

@@ -15,7 +15,12 @@ import Help from '@material-ui/icons/Help';
 import Copyright from '@material-ui/icons/Copyright';
 import Menu from '@material-ui/icons/Menu';
 
-import NewRace, {openNewRace} from './NewRace';
+import DialogNewRace, {openNewRace} from './DialogNewRace';
+import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
+import DialogVisualiseParticipant, {openDialogVisualiseParticipant} from './DialogVisualiseParticipant';
+import DialogExport, {openDialogExport} from './DialogExport';
+import DialogDocumentation, {openDialogDocumentation} from './DialogDocumentation';
+import DialogCredits, {openDialogCredits} from './DialogCredits';
 
 const useStyles = makeStyles(theme => ({
     list: {
@@ -44,12 +49,19 @@ export default function TemporaryDrawer() {
 
     const handleClick = (action) => {
         if(action === 'Nouvelle course') {
-            console.log('Nouvelle course');
             openNewRace();
-        } else if (action === 'Ajout participant') {
-            console.log("Add particpant");
+        } else if(action === 'Ajout participant') {
+            openDialogAddParticipant();
+        }else if(action === 'Visualisation départs / arrivés') {
+            openDialogVisualiseParticipant();
+        }else if(action === 'Export des résultats') {
+            openDialogExport();
+        }else if(action === 'Documentation') {
+            openDialogDocumentation();
+        }else if(action === 'Crédits') {
+            openDialogCredits();
         }
-    }
+    };
 
     const toggleDrawer = (side, open) => event => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -81,7 +93,7 @@ export default function TemporaryDrawer() {
             <Divider />
             <List>
                 {['Export des résultats'].map((text, index) => (
-                    <ListItem button key={text}>
+                    <ListItem button key={text} onClick={() => handleClick(text)}>
                         <ListItemIcon> {listIconsSecondPart[index]} </ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
@@ -90,7 +102,7 @@ export default function TemporaryDrawer() {
             <Divider />
             <List>
                 {['Documentation', 'Crédits'].map((text, index) => (
-                    <ListItem button key={text}>
+                    <ListItem button key={text} onClick={() => handleClick(text)}>
                         <ListItemIcon> {listIconsThirdPart[index]} </ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
@@ -106,7 +118,12 @@ export default function TemporaryDrawer() {
                 {sideList('left')}
             </Drawer>
 
-            <NewRace/>
+            <DialogNewRace/>
+            <DialogAddParticipant/>
+            <DialogVisualiseParticipant/>
+            <DialogExport/>
+            <DialogDocumentation/>
+            <DialogCredits/>
         </div>
     );
 }
