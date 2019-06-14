@@ -14,19 +14,15 @@ const styles = theme => ({
     },
     btnEnd: {
         marginLeft: theme.spacing(3),
-
     },
 });
 
 class FormEndRace extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     btnEndClicked() {
         let inputid = this.props.inputid;
         let inputValue = this.props.inputsFormEnd[inputid].inputValue;
-        if (inputValue.length != 0) {
+        if (inputValue.length !== 0) {
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             this.props.addHistoParticipantEnd(inputid, inputValue, time);
@@ -37,7 +33,7 @@ class FormEndRace extends Component {
     }
 
     render() {
-        const { classes, inputid, inputsFormEnd } = this.props;
+        const { classes, inputid } = this.props;
         return (
             <Box className={classes.root}>
                 <Box>

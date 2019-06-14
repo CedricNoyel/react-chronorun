@@ -9,6 +9,7 @@ import NoSsr from '@material-ui/core/NoSsr';
 import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
+import FormAddParticipant from './FormAddParticipant';
 import TableHistoStart from './TableHistoStart';
 import {withUser} from "./store/AppProvider";
 
@@ -26,7 +27,7 @@ const styles = theme => ({
     },
 });
 
-class Start extends Component {
+class PageStart extends Component {
 
     constructor(props) {
         super(props);
@@ -81,6 +82,7 @@ class Start extends Component {
                                 <Typography variant="h5">Historique des départs</Typography>
                                 <TableHistoStart/>
                             </Paper>
+                            <FormAddParticipant/>
                         </Grid>
                     </Grid>
                 </div>
@@ -90,5 +92,5 @@ class Start extends Component {
     }
 }
 
-export default withUser(withStyles(styles)(Start));
+export default withUser(withStyles(styles)(PageStart));
 

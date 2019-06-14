@@ -7,6 +7,7 @@ import FormEndRace from './FormEndRace';
 import './App.css';
 import 'typeface-roboto';
 import { withUser } from "./store/AppProvider";
+import TableHistoEnd from "./TableHistoEnd";
 
 const styles = theme => ({
     root: {
@@ -15,6 +16,7 @@ const styles = theme => ({
         marginTop: theme.spacing(3),
     },
     paper: {
+        marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
@@ -22,11 +24,6 @@ const styles = theme => ({
 });
 
 class Start extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { classes } = this.props;
         return (
@@ -34,19 +31,17 @@ class Start extends Component {
                 <div className={classes.root}>
                     <Grid container spacing={3}>
                         <Grid item xs={8}>
-                            <Typography variant="h5">Arrivée des participants</Typography>
                             <Paper className={classes.paper}>
+                                <Typography variant="h5">Arrivée des participants</Typography>
                                 {this.props.inputsFormEnd.map((row, index) => {
                                     return <FormEndRace inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
-                        <Typography variant="h5">Historique</Typography>
                             <Paper className={classes.paper}>
-                                { this.props.histoParticipantEnd.map((row, index) => {
-                                    return <p key={"histo-"+index} >Dossard: {row.participant} - Temps: {row.time}</p>
-                                })}
+                                <Typography variant="h5">Historique</Typography>
+                                <TableHistoEnd/>
                             </Paper>
                         </Grid>
                     </Grid>

@@ -14,11 +14,11 @@ const styles = theme => ({
         overflowX: 'auto',
     },
     table: {
-        minWidth: 650,
+        minWidth: 150,
     },
 });
 
-class TableHistoStart extends Component {
+class TableHistoEnd extends Component {
 
     constructor(props) {
         super(props);
@@ -32,20 +32,20 @@ class TableHistoStart extends Component {
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">Dossard</TableCell>
-                        <TableCell align="center">Heure de départ</TableCell>
+                        <TableCell align="center">Heure de d'arrivée</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {this.props.histoParticipantStart.participant.map( (i, index) => (
-                        <TableRow key={index}>
-                            <TableCell align="center">{this.props.histoParticipantStart.participant[index]}</TableCell>
-                            <TableCell align="center">{this.props.histoParticipantStart.time[index]}</TableCell>
+                    { this.props.histoParticipantEnd.map((row, index) => (
+                        <TableRow key={"histo-"+index}>
+                            <TableCell align="center">{row.participant}</TableCell>
+                            <TableCell align="center">{row.time}</TableCell>
                         </TableRow>
-                    ))}
+                        ))}
                 </TableBody>
             </Table>
         );
     }
 }
 
-export default withUser(withStyles(styles)(TableHistoStart));
+export default withUser(withStyles(styles)(TableHistoEnd));

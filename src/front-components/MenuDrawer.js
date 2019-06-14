@@ -26,6 +26,7 @@ const useStyles = makeStyles(theme => ({
     },
     menu: {
         float: 'left',
+        marginTop: theme.spacing(1),
     },
     menuBar: {
         backgroundColor: '#3f51b5',
@@ -42,9 +43,11 @@ export default function TemporaryDrawer() {
     });
 
     const handleClick = (action) => {
-        if(action == 'Nouvelle course') {
+        if(action === 'Nouvelle course') {
             console.log('Nouvelle course');
             openNewRace();
+        } else if (action === 'Ajout participant') {
+            console.log("Add particpant");
         }
     }
 
