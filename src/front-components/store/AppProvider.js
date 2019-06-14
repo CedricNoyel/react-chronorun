@@ -10,6 +10,8 @@ import React, { createContext, Component } from "react"; // on importe createCon
  * d'autres composants par la suite via le `Consumer`
  */
 export const UserContext = createContext({
+    displayPage: "",
+    setDisplayPage: () => {},
     listeParticipants: [],
     addParticipant: () => {},
     inputStartRace: "",
@@ -30,6 +32,10 @@ export const UserContext = createContext({
  */
 class AppProvider extends Component {
     state = {
+        displayPage: 1,
+        setDisplayPage: (page) => this.setState((state, props) => {
+            return { displayPage: page}
+        }),
         listeParticipants: [
             { dossard: '1', nom: 'NOYEL', prenom: 'Cédric', team: 1 },
             { dossard: '2', nom: 'GENEVE', prenom: 'Jordan', team: 2 },

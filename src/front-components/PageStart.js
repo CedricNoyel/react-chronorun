@@ -9,7 +9,6 @@ import NoSsr from '@material-ui/core/NoSsr';
 import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
-import FormAddParticipant from './FormAddParticipant';
 import TableHistoStart from './TableHistoStart';
 import {withUser} from "./store/AppProvider";
 
@@ -82,7 +81,6 @@ class PageStart extends Component {
                                 <Typography variant="h5">Historique des départs</Typography>
                                 <TableHistoStart/>
                             </Paper>
-                            <FormAddParticipant/>
                         </Grid>
                     </Grid>
                 </div>

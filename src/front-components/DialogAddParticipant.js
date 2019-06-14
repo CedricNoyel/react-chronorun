@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
+import FormAddParticipant from "./FormAddParticipant";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
@@ -66,6 +67,10 @@ class DialogAddParticipant extends Component {
         this.setState({open:false});
     };
 
+    onParticipantAdd(){
+        openSnackbar({message: "Participant ajouté avec succès !"}, {type: "success"});
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -74,14 +79,13 @@ class DialogAddParticipant extends Component {
                     onClose={() => this.closeDialog()}
                     aria-labelledby="customized-dialog-title"
                     open={this.state.open}
+                    maxWidth={false}
                 >
                     <DialogTitle id="customized-dialog-title" onClose={() => this.closeDialog()}>
-                        TITLE
+                        Ajouter un participant
                     </DialogTitle>
                     <DialogContent dividers>
-                        <div>
-                            CONTENT OF THE DIALOG GOES HERE
-                        </div>
+                        <FormAddParticipant onSubmit={this.onParticipantAdd.bind(this)}/>
                     </DialogContent>
                 <Notifier />
                 </Dialog>

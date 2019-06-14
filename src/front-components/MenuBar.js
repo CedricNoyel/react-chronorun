@@ -8,6 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import PageStart from "./PageStart";
 import PageEnd from "./PageEnd";
 import MenuDrawer from './MenuDrawer';
+import {withUser} from "./store/AppProvider";
+import PageVisualiseParticipants from "./PageVisualiseParticipants";
+import PageDocumentation from "./PageDocumentation";
 
 function TabContainer(props) {
     return (
@@ -38,33 +41,43 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
     },
+    hidden: {
+        display: 'none',
+    }
 }));
 
-function NavTabs() {
+function NavTabs(props) {
     const classes = useStyles();
-    const [value, setValue] = React.useState(1);
 
     function handleChange(event, newValue) {
-        setValue(newValue);
+        props.setDisplayPage(newValue);
     }
 
     return (
         <div className={classes.root}>
             <AppBar position="static">
-                <Tabs variant="fullWidth" value={value} onChange={handleChange}>
+                <Tabs variant="fullWidth" value={props.displayPage} onChange={handleChange}>
                     <MenuDrawer />
                     <LinkTab label="Départ" />
                     <LinkTab label="Arrivée"/>
+                    <LinkTab className={classes.hidden} label="PageVisualiseParticipants"/>
+                    <LinkTab className={classes.hidden} label="PageDocumentation"/>
                 </Tabs>
             </AppBar>
-            {(value === 0 || value === 1 )&& <TabContainer key="1">
+            {(props.displayPage === 0 || props.displayPage === 1 )&& <TabContainer key="1">
                 <PageStart/>
             </TabContainer>}
-            {value === 2 && <TabContainer key="2">
+            {props.displayPage === 2 && <TabContainer key="2">
                 <PageEnd/>
+            </TabContainer>}
+            {props.displayPage === 3 && <TabContainer key="3">
+                <PageVisualiseParticipants/>
+            </TabContainer>}
+            {props.displayPage === 4 && <TabContainer key="4">
+                <PageDocumentation/>
             </TabContainer>}
         </div>
     );
 }
 
-export default NavTabs;
+export default withUser(NavTabs);
