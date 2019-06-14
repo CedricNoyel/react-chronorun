@@ -9,15 +9,13 @@ import NoSsr from '@material-ui/core/NoSsr';
 import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
-import FormAddParticipant from './FormAddParticipant';
 import TableHistoStart from './TableHistoStart';
 import {withUser} from "./store/AppProvider";
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        margin: theme.spacing(2),
-        marginTop: theme.spacing(3),
+        margin: theme.spacing(0, 2, 2, 2),
     },
     paper: {
         marginTop: theme.spacing(2),
@@ -25,6 +23,9 @@ const styles = theme => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    container: {
+        backgroundColor: '#ecf0f1',
+    }
 });
 
 class PageStart extends Component {
@@ -34,18 +35,16 @@ class PageStart extends Component {
         this.state = {
             inputValue: '',
         };
-        this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
         this.onParticipantStart = this.onParticipantStart.bind(this);
     }
 
-    handleTextFieldChange() {
-        console.log("start.js - > participantStart");
-    }
+
 
     onParticipantStart() {
         var today = new Date();
         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         this.props.inputStartRace.map( (row, index) => {
+            this.props.setFirstInput(true);
             this.props.addHistoParticipantStart(row.value, time);
         });
         this.props.setInputStartRace("");
@@ -54,7 +53,7 @@ class PageStart extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <div>
+            <div className={classes.container}>
                 <div className={classes.root}>
                     <Grid container justify="center" alignItems="center" direction="row">
                         <Grid item xs={12}>
@@ -63,8 +62,8 @@ class PageStart extends Component {
                                 <div className={classes.root}>
                                     <NoSsr>
                                         <Box display="flex" flexDirection="row" justifyContent="center">
-                                            <InputStartParticipants onChange={this.handleTextFieldChange}/>
-                                            <Button variant="contained" className={classes.btnLeftSpace} color="primary" onClick={this.onParticipantStart}>
+                                            <InputStartParticipants />
+                                            <Button variant="contained" color="primary" onClick={this.onParticipantStart}>
                                                 Go
                                             </Button>
                                         </Box>
@@ -82,7 +81,6 @@ class PageStart extends Component {
                                 <Typography variant="h5">Historique des départs</Typography>
                                 <TableHistoStart/>
                             </Paper>
-                            <FormAddParticipant/>
                         </Grid>
                     </Grid>
                 </div>
