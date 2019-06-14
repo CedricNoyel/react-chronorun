@@ -30,7 +30,8 @@ const useStyles = makeStyles(theme => ({
     },
     menu: {
         float: 'left',
-        marginTop: theme.spacing(1),
+        color: '#FFFFFF',
+        height: '100%',
     },
     menuBar: {
         backgroundColor: '#3f51b5',

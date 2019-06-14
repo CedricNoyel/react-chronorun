@@ -12,24 +12,26 @@ import TableHistoEnd from "./TableHistoEnd";
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        margin: theme.spacing(2),
-        marginTop: theme.spacing(3),
+        margin: theme.spacing(0, 2, 2, 2),
     },
     paper: {
-        marginTop: theme.spacing(2),
+        margin: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    container: {
+        backgroundColor: '#ecf0f1',
+    }
 });
 
 class Start extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <div>
+            <div className={classes.container}>
                 <div className={classes.root}>
-                    <Grid container spacing={3}>
+                    <Grid container>
                         <Grid item xs={8}>
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Arrivée des participants</Typography>

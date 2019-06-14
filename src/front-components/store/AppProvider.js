@@ -16,6 +16,8 @@ export const UserContext = createContext({
     addParticipant: () => {},
     inputStartRace: "",
     setInputStartRace: () => {},
+    firstInput: true,
+    setFirstInput: () => {},
     inputsFormEnd: {},
     setInputFormEnd: () => {},
     histoParticipantEnd: [],
@@ -50,8 +52,33 @@ class AppProvider extends Component {
         }),
         inputStartRace: "",
         setInputStartRace: (inputValue) => this.setState((state, props) => {
-            return {inputStartRace: inputValue}
+            if(inputValue !== null) {
+                if (inputValue.length === 1 && this.state.firstInput) {
+                    var teamMembersNormalise = [];
+                    let teamMembers = this.state.listeParticipants.filter(participant => participant.team === inputValue[0].team);
+                    teamMembers.map((row, index) => {
+                        teamMembersNormalise.push(
+                            {
+                                label: row.dossard + ' - ' + row.nom + ' ' + row.prenom,
+                                value: row.dossard,
+                                nom: row.nom,
+                                prenom: row.prenom,
+                                team: row.team
+                            }
+                        );
+                    });
+                    this.state.firstInput = false;
+                }
+            } else {
+                this.state.firstInput = true;
+            }
+            let inputs = teamMembersNormalise === undefined ? inputValue : teamMembersNormalise;
+            return {inputStartRace: inputs}
         }),
+        firstInput: true,
+        setFirstInput: (value) => {
+            this.setState({firstInput: value});
+        },
         inputsFormEnd: [
             { id: 0, inputValue: ""},
             { id: 1, inputValue: ""},
@@ -69,7 +96,6 @@ class AppProvider extends Component {
         addHistoParticipantEnd: (idParticipant, dossart, temps) => this.setState((state, props) => {
             const newItems = state.histoParticipantEnd;
             newItems.unshift({id: idParticipant, participant: dossart, time: temps});
-            console.log(newItems)
             return { histoParticipantEnd: newItems}
         }),
         histoParticipantStart: {
