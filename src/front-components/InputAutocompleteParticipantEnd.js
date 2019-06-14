@@ -94,7 +94,6 @@ const useStyles = makeStyles(theme => ({
 
 function IntegrationAutosuggest(props) {
     const classes = useStyles();
-    const [anchorEl, setAnchorEl] = React.useState(null);
     const [state, setState] = React.useState({
         single: props.inputsFormEnd[props.inputid].inputValue,
     });

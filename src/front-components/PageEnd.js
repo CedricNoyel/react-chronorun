@@ -24,11 +24,6 @@ const styles = theme => ({
 });
 
 class Start extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { classes } = this.props;
         return (
