@@ -38,9 +38,6 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
-const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
-
-
 class ExcelServices {
     
     static refreshCsv(data){
@@ -87,7 +84,7 @@ class ExcelServices {
 
             var index = 2;
             // console.log("result : ", result);
-            while(result[index.toString()]!=undefined){
+            while(result[index.toString()]!== undefined){
                 var numeroDossard = result[index.toString()][0];
                 var nom = result[index.toString()][1];
                 var prenom = result[index.toString()][2];

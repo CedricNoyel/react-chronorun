@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
@@ -37,6 +36,9 @@ const styles = theme => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
+    label: {
+        marginBottom: theme.spacing(2),
+    }
 });
 
 let openNewRaceFn;
@@ -61,16 +63,7 @@ const DialogContent = withStyles(theme => ({
     },
 }))(MuiDialogContent);
 
-const DialogActions = withStyles(theme => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(1),
-    },
-}))(MuiDialogActions);
-
-class NewRace extends Component {
-
-    state
+class DialogNewRace extends Component {
 
     constructor(props) {
         super(props);
@@ -89,12 +82,16 @@ class NewRace extends Component {
 
     openNewRace = () => {
         this.setState({open:true});
-    }
+    };
 
     onUploadParticipants(e) {
         this.setState({
             selectedFile: e.target.files[0]
-        })
+        });
+        ipcRenderer.on('import-participants-reply', () => {
+            openSnackbar({message: 'Les participants ont étés importés avec succès !'}, {type: 'success'})
+        });
+        ipcRenderer.send('import-participants-request', this.state.selectedFile);
     }
 
     handleClick() {
@@ -118,26 +115,28 @@ class NewRace extends Component {
                     open={this.state.open}
                 >
                     <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-                        Modal title
+                        Nouvelle course
                     </DialogTitle>
                     <DialogContent dividers>
-                        <div>
-                            Pour créer une nouvelle course importez la liste des participants :
+                        <div className={classes.container}>
+                            <div className={classes.label}>
+                                Pour créer une nouvelle course importez la liste des participants :
+                            </div>
+                            <input
+                                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                className={classes.hiddenInput}
+                                id="input-file"
+                                type="file"
+                                onChange={this.onUploadParticipants}
+                            />
+                            <label htmlFor="input-file" className={classes.btnImport}>
+                                <Button variant="contained" component="span">
+                                    <CloudUploadIcon className={classes.leftIcon}/>
+                                    Charger le fichier des participants
+                                </Button>
+                            </label>
+                            <p>Pour obtenir le template du fichier, <a href="#" onClick={this.handleClick}>cliquez ici</a></p>
                         </div>
-                        <input
-                            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                            className={classes.hiddenInput}
-                            id="input-file"
-                            type="file"
-                            onChange={this.onUploadParticipants}
-                        />
-                        <label htmlFor="input-file">
-                            <Button variant="contained" component="span">
-                                <CloudUploadIcon className={classes.leftIcon}/>
-                                Charger le fichier des participants
-                            </Button>
-                        </label>
-                        <p>Pour obtenir le template du fichier, <a href="#" onClick={this.handleClick}>cliquez ici</a></p>
                     </DialogContent>
                 <Notifier />
                 </Dialog>
@@ -150,5 +149,5 @@ export function openNewRace() {
     openNewRaceFn();
 }
 
-export default withStyles(styles)(NewRace);
+export default withStyles(styles)(DialogNewRace);
 
