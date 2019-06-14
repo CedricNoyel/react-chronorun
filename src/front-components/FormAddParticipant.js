@@ -50,9 +50,20 @@ class FormAddParticipant extends Component {
         this.setState({ inputTeam: newValue});
     }
     onFormSubmitted() {
-        this.setState(initialState);
-        this.props.addParticipant(this.state.inputParticipant, this.state.inputName, this.state.inputForname, this.state.inputTeam);
-        console.log(this.props.listeParticipants);
+        if (this.state.inputParticipant.length !== 0) {
+            if (this.state.inputName.length !== 0) {
+                if (this.state.inputForname.length !== 0) {
+                    this.setState(initialState);
+                    this.props.addParticipant(this.state.inputParticipant, this.state.inputName, this.state.inputForname, this.state.inputTeam);
+                } else {
+                    console.log("inputForname empty");
+                }
+            } else {
+                console.log("inputName empty");
+            }
+        } else {
+            console.log("inputParticipant empty")
+        }
     }
 
     render() {

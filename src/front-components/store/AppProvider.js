@@ -11,6 +11,7 @@ import React, { createContext, Component } from "react"; // on importe createCon
  */
 export const UserContext = createContext({
     listeParticipants: [],
+    addParticipant: () => {},
     inputStartRace: "",
     setInputStartRace: () => {},
     inputsFormEnd: {},

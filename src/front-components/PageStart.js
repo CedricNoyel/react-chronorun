@@ -27,7 +27,7 @@ const styles = theme => ({
     },
 });
 
-class Start extends Component {
+class PageStart extends Component {
 
     constructor(props) {
         super(props);
@@ -92,5 +92,5 @@ class Start extends Component {
     }
 }
 
-export default withUser(withStyles(styles)(Start));
+export default withUser(withStyles(styles)(PageStart));
 

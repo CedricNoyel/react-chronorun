@@ -42,9 +42,11 @@ export default function TemporaryDrawer() {
     });
 
     const handleClick = (action) => {
-        if(action == 'Nouvelle course') {
+        if(action === 'Nouvelle course') {
             console.log('Nouvelle course');
             openNewRace();
+        } else if (action === 'Ajout participant') {
+            console.log("Add particpant");
         }
     }
 

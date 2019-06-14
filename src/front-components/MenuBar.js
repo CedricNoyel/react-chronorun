@@ -5,8 +5,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Start from "./Start";
-import End from "./End";
+import Start from "./PageStart";
+import End from "./PageEnd";
 import MenuDrawer from './MenuDrawer';
 
 function TabContainer(props) {

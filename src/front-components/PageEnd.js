@@ -7,6 +7,7 @@ import FormEndRace from './FormEndRace';
 import './App.css';
 import 'typeface-roboto';
 import { withUser } from "./store/AppProvider";
+import TableHistoEnd from "./TableHistoEnd";
 
 const styles = theme => ({
     root: {
@@ -35,19 +36,17 @@ class Start extends Component {
                 <div className={classes.root}>
                     <Grid container spacing={3}>
                         <Grid item xs={8}>
-                            <Typography variant="h5">Arrivée des participants</Typography>
                             <Paper className={classes.paper}>
+                                <Typography variant="h5">Arrivée des participants</Typography>
                                 {this.props.inputsFormEnd.map((row, index) => {
                                     return <FormEndRace inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
-                        <Typography variant="h5">Historique</Typography>
                             <Paper className={classes.paper}>
-                                { this.props.histoParticipantEnd.map((row, index) => {
-                                    return <p key={"histo-"+index} >Dossard: {row.participant} - Temps: {row.time}</p>
-                                })}
+                                <Typography variant="h5">Historique</Typography>
+                                <TableHistoEnd/>
                             </Paper>
                         </Grid>
                     </Grid>
