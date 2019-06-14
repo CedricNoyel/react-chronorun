@@ -1,27 +1,16 @@
 import React from 'react';
 import clsx from 'clsx';
 import Select from 'react-select';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import NoSsr from '@material-ui/core/NoSsr';
-import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
-import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import PropTypes from 'prop-types';
-
-const suggestions = [
-    { label: 1233 },
-    { label: 1234 },
-    { label: 2242 },
-].map(suggestion => ({
-    value: suggestion.label,
-    label: suggestion.label,
-}));
+import {withUser} from "./store/AppProvider";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -31,8 +20,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         padding: 0,
         height: 'auto',
-        minWidth: 400,
-        maxWidth: 600,
     },
     valueContainer: {
         display: 'flex',
@@ -72,9 +59,6 @@ const useStyles = makeStyles(theme => ({
     divider: {
         height: theme.spacing(2),
     },
-    btnLeftSpace: {
-        marginLeft: theme.spacing(2),
-    },
 }));
 
 function NoOptionsMessage(props) {
@@ -104,18 +88,26 @@ inputComponent.propTypes = {
 };
 
 function Control(props) {
+    const {
+        children,
+        innerProps,
+        innerRef,
+        selectProps: { classes, TextFieldProps },
+    } = props;
+
     return (
         <TextField
+            fullWidth
             InputProps={{
                 inputComponent,
                 inputProps: {
-                    className: props.selectProps.classes.input,
-                    inputRef: props.innerRef,
-                    children: props.children,
-                    ...props.innerProps,
+                    className: classes.input,
+                    ref: innerRef,
+                    children,
+                    ...innerProps,
                 },
             }}
-            {...props.selectProps.TextFieldProps}
+            {...TextFieldProps}
         />
     );
 }
@@ -238,18 +230,20 @@ const components = {
     ValueContainer,
 };
 
-function IntegrationReactSelect() {
+const IntegrationReactSelect = (props, context) => {
     const classes = useStyles();
     const theme = useTheme();
-    const [single, setSingle] = React.useState(null);
-    const [multi, setMulti] = React.useState(null);
 
-    function handleChangeSingle(value) {
-        setSingle(value);
-    }
+    const suggestions = props.listeParticipants.map(row => ({
+        value: row.dossard,
+        label: row.dossard + " - " + row.nom + " " + row.prenom,
+        nom: row.nom,
+        prenom: row.prenom,
+        team: row.team
+    }));
 
     function handleChangeMulti(value) {
-        setMulti(value);
+        props.setInputStartRace(value);
     }
 
     const selectStyles = {
@@ -265,28 +259,28 @@ function IntegrationReactSelect() {
     return (
         <div className={classes.root}>
             <NoSsr>
-                <Box display="flex" flexDirection="row" justifyContent="center">
-                    <Select
-                        classes={classes}
-                        styles={selectStyles}
-                        TextFieldProps={{
-                            label: 'Participants',
-                            InputLabelProps: {
-                                shrink: true,
-                            },
-                        }}
-                        options={suggestions}
-                        components={components}
-                        value={multi}
-                        onChange={handleChangeMulti}
-                        placeholder="Selectionner le(s) participant(s)"
-                        isMulti
-                    />
-                    <Button variant="contained" className={classes.btnLeftSpace} color="primary">Go</Button>
-                </Box>
+                <div className={classes.divider} />
+                <Select
+                    classes={classes}
+                    styles={selectStyles}
+                    inputId="react-select-multiple"
+                    TextFieldProps={{
+                        label: 'Participants',
+                        InputLabelProps: {
+                            htmlFor: 'react-select-multiple',
+                            shrink: true,
+                        },
+                        placeholder: 'Selectionner les participants',
+                    }}
+                    options={suggestions}
+                    components={components}
+                    value={props.inputStartRace}
+                    onChange={handleChangeMulti}
+                    isMulti
+                />
             </NoSsr>
         </div>
     );
 }
 
-export default IntegrationReactSelect;
+export default withUser(IntegrationReactSelect);

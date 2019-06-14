@@ -5,8 +5,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Start from "./Start";
-import End from "./End";
+import PageStart from "./PageStart";
+import PageEnd from "./PageEnd";
 import MenuDrawer from './MenuDrawer';
 
 function TabContainer(props) {
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 function NavTabs() {
     const classes = useStyles();
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(1);
 
     function handleChange(event, newValue) {
         setValue(newValue);
@@ -50,18 +50,18 @@ function NavTabs() {
 
     return (
         <div className={classes.root}>
-            <MenuDrawer/>
             <AppBar position="static">
                 <Tabs variant="fullWidth" value={value} onChange={handleChange}>
+                    <MenuDrawer />
                     <LinkTab label="Départ" />
                     <LinkTab label="Arrivée"/>
                 </Tabs>
             </AppBar>
-            {value === 0 && <TabContainer>
-                <Start/>
+            {(value === 0 || value === 1 )&& <TabContainer key="1">
+                <PageStart/>
             </TabContainer>}
-            {value === 1 && <TabContainer>
-                <End/>
+            {value === 2 && <TabContainer key="2">
+                <PageEnd/>
             </TabContainer>}
         </div>
     );
