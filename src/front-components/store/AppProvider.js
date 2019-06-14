@@ -36,6 +36,11 @@ class AppProvider extends Component {
             { dossard: '4', nom: 'MAURICE', prenom: 'Poisson', team: 2 },
             { dossard: '5', nom: 'LE MENN', prenom: 'Florian', team: null },
         ],
+        addParticipant: (participant, name, forname, team) => this.setState((state, props) => {
+            const myParticipants = state.listeParticipants;
+            myParticipants.push({ dossard: participant, nom: name, prenom: forname, team: team });
+            return { listeParticipants: myParticipants}
+        }),
         inputStartRace: "",
         setInputStartRace: (inputValue) => this.setState((state, props) => {
             return {inputStartRace: inputValue}
