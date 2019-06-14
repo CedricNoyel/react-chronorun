@@ -14,12 +14,11 @@ import Assignment from '@material-ui/icons/Assignment';
 import Help from '@material-ui/icons/Help';
 import Copyright from '@material-ui/icons/Copyright';
 import Menu from '@material-ui/icons/Menu';
+import {withUser} from "./store/AppProvider";
 
 import DialogNewRace, {openNewRace} from './DialogNewRace';
 import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
-import DialogVisualiseParticipant, {openDialogVisualiseParticipant} from './DialogVisualiseParticipant';
 import DialogExport, {openDialogExport} from './DialogExport';
-import DialogDocumentation, {openDialogDocumentation} from './DialogDocumentation';
 import DialogCredits, {openDialogCredits} from './DialogCredits';
 
 const useStyles = makeStyles(theme => ({
@@ -39,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function TemporaryDrawer() {
+function TemporaryDrawer(props) {
     const classes = useStyles();
     const [state, setState] = React.useState({
         top: false,
@@ -53,13 +52,13 @@ export default function TemporaryDrawer() {
             openNewRace();
         } else if(action === 'Ajout participant') {
             openDialogAddParticipant();
-        }else if(action === 'Visualisation départs / arrivés') {
-            openDialogVisualiseParticipant();
-        }else if(action === 'Export des résultats') {
+        } else if(action === 'Visualisation départs / arrivés') {
+            props.setDisplayPage(3);
+        } else if(action === 'Export des résultats') {
             openDialogExport();
-        }else if(action === 'Documentation') {
-            openDialogDocumentation();
-        }else if(action === 'Crédits') {
+        } else if(action === 'Documentation') {
+            props.setDisplayPage(4);
+        } else if(action === 'Crédits') {
             openDialogCredits();
         }
     };
@@ -121,10 +120,9 @@ export default function TemporaryDrawer() {
 
             <DialogNewRace/>
             <DialogAddParticipant/>
-            <DialogVisualiseParticipant/>
-            <DialogExport/>
-            <DialogDocumentation/>
             <DialogCredits/>
         </div>
     );
 }
+
+export default withUser(TemporaryDrawer);
