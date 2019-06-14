@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -36,7 +36,7 @@ function LinkTab(props) {
     );
 }
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
@@ -44,10 +44,10 @@ const useStyles = makeStyles(theme => ({
     hidden: {
         display: 'none',
     }
-}));
+});
 
 function NavTabs(props) {
-    const classes = useStyles();
+    const { classes } = props;
 
     function handleChange(event, newValue) {
         props.setDisplayPage(newValue);
@@ -80,4 +80,4 @@ function NavTabs(props) {
     );
 }
 
-export default withUser(NavTabs);
+export default withUser(withStyles(styles)(NavTabs));
