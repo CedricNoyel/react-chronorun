@@ -37,7 +37,7 @@ class Start extends Component {
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Arrivée des participants</Typography>
                                 {this.props.inputsFormEnd.map((row, index) => {
-                                    return <FormEndRace inputid={row.id}/>
+                                    return <FormEndRace key={index} inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>

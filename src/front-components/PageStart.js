@@ -10,8 +10,10 @@ import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
 import TableHistoStart from './TableHistoStart';
-import {withUser} from "./store/AppProvider";
 import Clock from './Clock';
+
+import {withUser} from "./store/AppProvider";
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
@@ -40,13 +42,13 @@ class PageStart extends Component {
     }
 
 
-
     onParticipantStart() {
         var today = new Date();
         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         this.props.inputStartRace.map( (row, index) => {
             this.props.setFirstInput(true);
             this.props.addHistoParticipantStart(row.value, time);
+            ipcRenderer.send('start-add-participants', row.value);
         });
         this.props.setInputStartRace("");
     }

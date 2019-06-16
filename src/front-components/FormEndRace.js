@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import InputAutocompleteParticipantEnd from './InputAutocompleteParticipantEnd';
 
+const ipcRenderer = window.require('electron').ipcRenderer;
 import { withUser } from "./store/AppProvider";
 
 const styles = theme => ({
@@ -26,6 +27,7 @@ class FormEndRace extends Component {
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             this.props.addHistoParticipantEnd(inputid, inputValue, time);
+            ipcRenderer.send('end-add-participant', inputValue);
             this.props.setInputFormEnd(inputid, "");
         } else {
             console.log("<!> The value you want to add is not good");

@@ -1,5 +1,6 @@
 // store/AppProviderjs
-import React, { createContext, Component } from "react"; // on importe createContext qui servira à la création d'un ou plusieurs contextes
+import React, { createContext, Component } from "react";
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 /**
  * `createContext` contient 2 propriétés :

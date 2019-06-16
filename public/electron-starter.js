@@ -62,22 +62,29 @@ app.on('activate', function () {
 
 // CONTROLLER
 ipcMain
+    .on('get-liste-participants', (event, arg) => {
+        ExcelServices.getParticipants(function(data){
+            console.log(data);
+        });
+    })
     .on('end-add-participant', (event, arg) => {
         let currentTimestamp = new Date().getTime();
+        console.log(arg);
         ExcelServices.addStopTime(arg, currentTimestamp);
     })
     .on('add-team', (event, arg) => {
         console.log("TODO add participant to a team");
     })
     .on('add-participant', (event, arg) => {
+        console.log(arg);
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
     })
     .on('start-add-participants', (event, arg) => {
         let currentTimestamp = new Date().getTime();
+        console.log(arg);
         ExcelServices.addStartTime(arg, currentTimestamp);
     })
     .on('import-participants', (event, arg) => {
-        // console.log("HEY");
         console.log("argument : ", arg);
         ExcelServices.convertXlsxToCsv(arg, function(res) {
             if(res){

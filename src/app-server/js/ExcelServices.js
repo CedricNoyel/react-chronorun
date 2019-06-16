@@ -74,6 +74,8 @@ class ExcelServices {
             // console.log("DATA : " , data);
             ExcelServices.refreshCsv(data);
         });
+        console.log("excelservices");
+        console.log(data);
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
@@ -139,7 +141,7 @@ class ExcelServices {
      * @param callback - function
      */
     static getParticipants(callback) {
-        var participants = [];
+        const participants = [];
         fs.createReadStream(pathCsvParticipants)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
