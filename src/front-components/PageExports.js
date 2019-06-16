@@ -25,6 +25,7 @@ const styles = theme => ({
     },
     button: {
         margin: theme.spacing(1),
+        marginTop: theme.spacing(3),
     },
     uploadBtn: {
         margin: theme.spacing(1),

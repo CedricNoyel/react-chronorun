@@ -141,7 +141,7 @@ function IntegrationAutosuggest(props) {
                     {...autosuggestProps}
                     inputProps={{
                         classes,
-                        placeholder: 'n° dossard',
+                        placeholder: 'N° dossard',
                         maxLength: 4,
                         value: props.inputsFormEnd[props.inputid].inputValue,
                         width: '50',

@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
-    root: {
-
+    clock: {
+        marginTop: theme.spacing(2),
     },
 });
 
@@ -30,10 +30,11 @@ class Clock extends React.Component {
         });
     }
     render() {
+        const { classes } = this.props;
         return (
-            <p className="App-clock">
+            <Typography className={classes.clock} variant="h4" gutterBottom>
                 {this.state.time}
-            </p>
+            </Typography>
         );
     }
 }
