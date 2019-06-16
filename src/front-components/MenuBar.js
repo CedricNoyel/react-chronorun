@@ -11,6 +11,7 @@ import MenuDrawer from './MenuDrawer';
 import {withUser} from "./store/AppProvider";
 import PageVisualiseParticipants from "./PageVisualiseParticipants";
 import PageDocumentation from "./PageDocumentation";
+import PageExports from "./PageExports";
 
 function TabContainer(props) {
     return (
@@ -62,6 +63,7 @@ function NavTabs(props) {
                     <LinkTab label="Arrivée"/>
                     <LinkTab className={classes.hidden} label="PageVisualiseParticipants"/>
                     <LinkTab className={classes.hidden} label="PageDocumentation"/>
+                    <LinkTab className={classes.hidden} label="PageExports"/>
                 </Tabs>
             </AppBar>
             {(props.displayPage === 0 || props.displayPage === 1 )&& <TabContainer key="1">
@@ -75,6 +77,9 @@ function NavTabs(props) {
             </TabContainer>}
             {props.displayPage === 4 && <TabContainer key="4">
                 <PageDocumentation/>
+            </TabContainer>}
+            {props.displayPage === 5 && <TabContainer key="5">
+                <PageExports/>
             </TabContainer>}
         </div>
     );

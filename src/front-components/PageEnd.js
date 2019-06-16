@@ -8,6 +8,7 @@ import './App.css';
 import 'typeface-roboto';
 import { withUser } from "./store/AppProvider";
 import TableHistoEnd from "./TableHistoEnd";
+import Clock from "./Clock";
 
 const styles = theme => ({
     root: {
@@ -41,6 +42,9 @@ class Start extends Component {
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
+                            <Paper className={classes.paper}>
+                                <Clock/>
+                            </Paper>
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Historique</Typography>
                                 <TableHistoEnd/>

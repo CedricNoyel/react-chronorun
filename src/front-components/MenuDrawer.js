@@ -18,7 +18,6 @@ import {withUser} from "./store/AppProvider";
 
 import DialogNewRace, {openNewRace} from './DialogNewRace';
 import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
-import DialogExport, {openDialogExport} from './DialogExport';
 import DialogCredits, {openDialogCredits} from './DialogCredits';
 
 const styles = theme => ({
@@ -55,7 +54,7 @@ function TemporaryDrawer(props) {
         } else if(action === 'Visualisation départs / arrivés') {
             props.setDisplayPage(3);
         } else if(action === 'Export des résultats') {
-            openDialogExport();
+            props.setDisplayPage(5);
         } else if(action === 'Documentation') {
             props.setDisplayPage(4);
         } else if(action === 'Crédits') {
@@ -119,7 +118,6 @@ function TemporaryDrawer(props) {
             </Drawer>
 
             <DialogNewRace/>
-            <DialogExport/>
             <DialogAddParticipant/>
             <DialogCredits/>
         </div>

@@ -12,10 +12,7 @@ const styles = theme => ({
         width: '100%',
         marginTop: theme.spacing(3),
         overflowX: 'auto',
-    },
-    table: {
-        minWidth: 650,
-    },
+    }
 });
 
 class TableHistoStart extends Component {
@@ -28,7 +25,7 @@ class TableHistoStart extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <Table className={classes.table}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">Dossard</TableCell>
