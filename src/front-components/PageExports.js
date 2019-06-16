@@ -128,7 +128,7 @@ class PageDocumentation extends Component {
                                                 onChange={this.onImportArrivees.bind(this)}
                                             />
                                             <label htmlFor="input-file-2">
-                                                <Button variant="outlined" component="span" disabled={this.state.btnImportArrivees}>
+                                                <Button variant="outlined" className={classes.button} component="span" disabled={this.state.btnImportArrivees}>
                                                     Importer les arrivées
                                                 </Button>
                                             </label>

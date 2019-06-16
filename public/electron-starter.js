@@ -18,7 +18,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 728,
-        webPreferences: { nodeIntegration: true }
+        webPreferences: { nodeIntegration: true },
+        frame: false,
+        titleBarStyle: 'hidden'
     });
     mainWindow.setMenuBarVisibility(false);
 

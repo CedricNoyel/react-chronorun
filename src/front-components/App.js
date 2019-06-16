@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import './App.css';
 import 'typeface-roboto';
-
 import AppProvider from './store/AppProvider';
 import MenuBar from "./MenuBar";
+import Titlebar from 'react-electron-titlebar';
 
 class App extends Component {
     render() {
         return (
             <AppProvider>
                 <div className="App">
-                    <MenuBar/>
+                    <Titlebar text="App Title" backgroundColor="#FF0000"/>
+                        <MenuBar/>
                 </div>
             </AppProvider>
         );
