@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -18,10 +18,9 @@ import {withUser} from "./store/AppProvider";
 
 import DialogNewRace, {openNewRace} from './DialogNewRace';
 import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
-import DialogExport, {openDialogExport} from './DialogExport';
 import DialogCredits, {openDialogCredits} from './DialogCredits';
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     list: {
         width: 250,
     },
@@ -36,10 +35,10 @@ const useStyles = makeStyles(theme => ({
     menuBar: {
         backgroundColor: '#3f51b5',
     }
-}));
+});
 
 function TemporaryDrawer(props) {
-    const classes = useStyles();
+    const { classes } = props;
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -55,7 +54,7 @@ function TemporaryDrawer(props) {
         } else if(action === 'Visualisation départs / arrivés') {
             props.setDisplayPage(3);
         } else if(action === 'Export des résultats') {
-            openDialogExport();
+            props.setDisplayPage(5);
         } else if(action === 'Documentation') {
             props.setDisplayPage(4);
         } else if(action === 'Crédits') {
@@ -125,4 +124,4 @@ function TemporaryDrawer(props) {
     );
 }
 
-export default withUser(TemporaryDrawer);
+export default withUser(withStyles(styles)(TemporaryDrawer));

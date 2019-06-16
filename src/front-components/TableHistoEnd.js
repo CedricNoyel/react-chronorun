@@ -32,7 +32,7 @@ class TableHistoEnd extends Component {
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">Dossard</TableCell>
-                        <TableCell align="center">Heure de d'arrivée</TableCell>
+                        <TableCell align="center">Heure d'arrivée</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

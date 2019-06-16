@@ -11,6 +11,9 @@ const styles = theme => ({
         flexGrow: 1,
         margin: theme.spacing(0, 2, 2, 2),
     },
+    container: {
+        backgroundColor: '#ecf0f1',
+    },
     paper: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
@@ -23,15 +26,17 @@ class PageDocumentation extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.root}>
-                <Grid container spacing={0}>
-                    <Grid item xs={12}>
-                        <Paper fullWidth className={classes.paper}>
-                            <Typography variant="h5">Documentation</Typography>
-                            <p>REMPLIR AVEC PLEINS DE BONNES CHOSES</p>
-                        </Paper>
+            <div className={classes.container}>
+                <div className={classes.root}>
+                    <Grid container spacing={0}>
+                        <Grid item xs={12}>
+                            <Paper fullWidth className={classes.paper}>
+                                <Typography variant="h5">Documentation</Typography>
+                                <p>REMPLIR AVEC PLEINS DE BONNES CHOSES</p>
+                            </Paper>
+                        </Grid>
                     </Grid>
-                </Grid>
+                </div>
             </div>
         );
     }

@@ -7,13 +7,13 @@ import MenuBar from "./MenuBar";
 
 class App extends Component {
     render() {
-    return (
-        <AppProvider>
-            <div className="App">
-                <MenuBar/>
-            </div>
-        </AppProvider>
-    );
+        return (
+            <AppProvider>
+                <div className="App">
+                    <MenuBar/>
+                </div>
+            </AppProvider>
+        );
   }
 }
 

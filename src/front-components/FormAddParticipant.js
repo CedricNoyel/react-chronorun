@@ -79,6 +79,7 @@ class FormAddParticipant extends Component {
                     value={this.state.inputParticipant}
                     onChange={this.onInputParticipantChange.bind(this)}
                 />
+                <br/>
                 <TextField
                     id="standard-with-placeholder"
                     label="Nom"

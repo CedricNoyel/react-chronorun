@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -11,6 +11,7 @@ import MenuDrawer from './MenuDrawer';
 import {withUser} from "./store/AppProvider";
 import PageVisualiseParticipants from "./PageVisualiseParticipants";
 import PageDocumentation from "./PageDocumentation";
+import PageExports from "./PageExports";
 
 function TabContainer(props) {
     return (
@@ -36,7 +37,7 @@ function LinkTab(props) {
     );
 }
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
@@ -44,10 +45,10 @@ const useStyles = makeStyles(theme => ({
     hidden: {
         display: 'none',
     }
-}));
+});
 
 function NavTabs(props) {
-    const classes = useStyles();
+    const { classes } = props;
 
     function handleChange(event, newValue) {
         props.setDisplayPage(newValue);
@@ -62,6 +63,7 @@ function NavTabs(props) {
                     <LinkTab label="Arrivée"/>
                     <LinkTab className={classes.hidden} label="PageVisualiseParticipants"/>
                     <LinkTab className={classes.hidden} label="PageDocumentation"/>
+                    <LinkTab className={classes.hidden} label="PageExports"/>
                 </Tabs>
             </AppBar>
             {(props.displayPage === 0 || props.displayPage === 1 )&& <TabContainer key="1">
@@ -76,8 +78,11 @@ function NavTabs(props) {
             {props.displayPage === 4 && <TabContainer key="4">
                 <PageDocumentation/>
             </TabContainer>}
+            {props.displayPage === 5 && <TabContainer key="5">
+                <PageExports/>
+            </TabContainer>}
         </div>
     );
 }
 
-export default withUser(NavTabs);
+export default withUser(withStyles(styles)(NavTabs));
