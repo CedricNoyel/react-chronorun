@@ -43,12 +43,11 @@ class PageStart extends Component {
 
 
     onParticipantStart() {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let timestamp = new Date().getTime();
         this.props.inputStartRace.map( (row, index) => {
             this.props.setFirstInput(true);
-            this.props.addHistoParticipantStart(row.value, time);
-            ipcRenderer.send('start-add-participants', row.value);
+            this.props.addHistoParticipantStart(row.value, timestamp);
+            ipcRenderer.send('start-add-participants', row.value, timestamp);
         });
         this.props.setInputStartRace("");
     }

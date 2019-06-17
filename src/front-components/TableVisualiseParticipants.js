@@ -5,10 +5,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { ThemeProvider } from '@material-ui/styles';
 import { green } from '@material-ui/core/colors';
 import {withUser} from "./store/AppProvider";
+import Edit from '@material-ui/icons/Edit';
 
 const styles = theme => ({
     table: {
@@ -106,6 +108,14 @@ class TableVisualiseParticipants extends Component {
         this.filterTable(newValue);
     }
 
+    displayTimestamp(time){
+        if (isNaN(time)){
+            return "-";
+        }
+        let date = new Date(time);
+        return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -128,7 +138,6 @@ class TableVisualiseParticipants extends Component {
                             <TableCell align="center">Prénom</TableCell>
                             <TableCell align="center">Heure de départ</TableCell>
                             <TableCell align="center">Heure d'arrivée</TableCell>
-                            <TableCell align="center">Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -137,9 +146,8 @@ class TableVisualiseParticipants extends Component {
                                 <TableCell align="center">{row.dossard}</TableCell>
                                 <TableCell align="center">{row.lastname}</TableCell>
                                 <TableCell align="center">{row.firstname}</TableCell>
-                                <TableCell align="center">{row.startTime}</TableCell>
-                                <TableCell align="center">{row.endTime}</TableCell>
-                                <TableCell align="center">Editer</TableCell>
+                                <TableCell align="center">{this.displayTimestamp(row.startTime)}</TableCell>
+                                <TableCell align="center">{this.displayTimestamp(row.endTime)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
