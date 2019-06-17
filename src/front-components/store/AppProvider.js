@@ -23,8 +23,10 @@ export const UserContext = createContext({
     setInputFormEnd: () => {},
     histoParticipantEnd: [],
     addHistoParticipantEnd: () => {},
+    setHistoParticipantEnd: () => {},
     histoParticipantStart: [],
     addHistoParticipantStart: () => {},
+    setHistoParticipantStart: () => {},
 });
 
 /**
@@ -97,11 +99,17 @@ class AppProvider extends Component {
             newItems.unshift({id: idParticipant, participant: dossart, time: temps});
             return { histoParticipantEnd: newItems}
         }),
+        setHistoParticipantEnd: (liste) => this.setState((state, props) => {
+            return { histoParticipantEnd: liste };
+        }),
         histoParticipantStart: [],
         addHistoParticipantStart: (dossard, time) => this.setState((state, props) => {
             const newItems = state.histoParticipantStart;
             newItems.unshift({participant: dossard, time: time});
             return { histoParticipantStart: newItems}
+        }),
+        setHistoParticipantStart: (liste) => this.setState((state, props) => {
+            return { histoParticipantStart: liste };
         }),
     };
 
