@@ -6,6 +6,7 @@ import MenuBar from "./MenuBar";
 import Titlebar from 'react-electron-titlebar';
 
 class App extends Component {
+
     render() {
         return (
             <AppProvider>

@@ -5,10 +5,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {withUser} from "./store/AppProvider";
 import TextField from '@material-ui/core/TextField';
 import { ThemeProvider } from '@material-ui/styles';
 import { green } from '@material-ui/core/colors';
+import {withUser} from "./store/AppProvider";
 
 const styles = theme => ({
     table: {
@@ -32,27 +32,78 @@ class TableVisualiseParticipants extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            inputSearch: "",
-            tableVisu: this.getTableContent(),
+            inputFilter: '',
+            table: this.initTableJson(),
+            tableVisu: this.initTableJson(),
         };
+        this.initTableJson = this.initTableJson.bind(this);
+        this.filterTable = this.filterTable.bind(this);
     }
 
-    getTableContent() {
-        let newTable = [];
+    filterTable(filterValue){
+        let table = this.state.table;
+        let newTable;
+        if (filterValue.length === 0) {
+            this.setState({ tableVisu: table });
+        } else {
+            if (isNaN(filterValue)) {
+                newTable = table.find(row => row.lastname === filterValue || row.firstname === filterValue);
+            } else {
+                newTable = table.find(row => row.dossard === filterValue);
+            }
+
+            if (newTable === undefined){
+                this.setState({ tableVisu: [] });
+            } else {
+                console.log(newTable)
+                this.setState({ tableVisu: [newTable] });
+            }
+        }
+    }
+
+    initTableJson() {
+        let listeDossards = [];
+        let listeParticipants = this.props.listeParticipants
         let histoStart = this.props.histoParticipantStart;
         let histoEnd = this.props.histoParticipantEnd;
+        let newTable = [];
 
-        if (histoStart.participant !== null) {
-            histoStart.participant.forEach(function(elem, index) {
-                newTable.push({type: "Départ", dossard: histoStart.participant[index], time: histoStart.time[index]});
+        histoStart.forEach(function(row) {
+            listeDossards.push(row.participant);
+        });
+        histoEnd.forEach(function(row) {
+            if (!listeDossards.includes(row.participant)) listeDossards.push(row.participant)
+        });
+
+        listeDossards.forEach(function(dossard) {
+            let participantEnd, participantStart, participant;
+            participant = listeParticipants.find(row => row.dossard === dossard);
+            participantStart = histoStart.find(row => row.participant === dossard);
+            participantEnd = histoEnd.find(row => row.participant === dossard);
+
+            let nom, prenom, startTime, endTime = '-';
+            if (participant !== undefined) {
+                nom = participant.nom;
+                prenom = participant.prenom;
+            }
+            if (participantStart !== undefined) startTime = participantStart.time;
+            if (participantEnd !== undefined) endTime = participantEnd.time;
+
+            newTable.push({
+                dossard: dossard,
+                lastname: nom,
+                firstname: prenom,
+                startTime: startTime,
+                endTime: endTime,
             });
-        }
-        if (histoEnd.participant !== null) {
-            histoEnd.forEach(function(elem, index) {
-                newTable.push({type: "Arrivée", dossard: elem.participant, time: elem.time});
-            });
-        }
+        });
         return newTable;
+    }
+
+    handleInputChange(e){
+        let newValue = e.target.value;
+        this.setState({inputFilter: newValue});
+        this.filterTable(newValue);
     }
 
     render() {
@@ -65,7 +116,8 @@ class TableVisualiseParticipants extends Component {
                         label="Recherche"
                         variant="outlined"
                         id="mui-theme-provider-outlined-input"
-                        value={this.state.inputSearch}
+                        value={this.state.inputFilter}
+                        onChange={this.handleInputChange.bind(this)}
                     />
                 </ThemeProvider>
                 <Table className={classes.table} size="small">
@@ -76,6 +128,7 @@ class TableVisualiseParticipants extends Component {
                             <TableCell align="center">Prénom</TableCell>
                             <TableCell align="center">Heure de départ</TableCell>
                             <TableCell align="center">Heure d'arrivée</TableCell>
+                            <TableCell align="center">Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -84,8 +137,9 @@ class TableVisualiseParticipants extends Component {
                                 <TableCell align="center">{row.dossard}</TableCell>
                                 <TableCell align="center">{row.lastname}</TableCell>
                                 <TableCell align="center">{row.firstname}</TableCell>
-                                <TableCell align="center">{row.timeStart}</TableCell>
-                                <TableCell align="center">{row.timeEnd}</TableCell>
+                                <TableCell align="center">{row.startTime}</TableCell>
+                                <TableCell align="center">{row.endTime}</TableCell>
+                                <TableCell align="center">Editer</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
