@@ -7,6 +7,8 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
+import TextField from "@material-ui/core/TextField";
+import Button from '@material-ui/core/Button';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
@@ -45,7 +47,7 @@ const DialogContent = withStyles(theme => ({
     },
 }))(MuiDialogContent);
 
-class DialogVisualiseParticipant extends Component {
+class DialogEditParticipant extends Component {
 
     constructor(props) {
         super(props);
@@ -76,23 +78,35 @@ class DialogVisualiseParticipant extends Component {
                     open={this.state.open}
                 >
                     <DialogTitle id="customized-dialog-title" onClose={() => this.closeDialog()}>
-                        TITLE
+                        Modifier le participant
                     </DialogTitle>
                     <DialogContent dividers>
                         <div>
-                            CONTENT OF THE DIALOG GOES HERE
+                            <TextField
+                                id="standard-bare"
+                                className={classes.textField}
+                                defaultValue={this.props.dossard}
+                                margin="normal"
+                                inputProps={{ 'aria-label': 'bare' }}
+                            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}>
+                                Modifier
+                            </Button>
                         </div>
                     </DialogContent>
-                <Notifier />
+                    <Notifier />
                 </Dialog>
             </div>
         );
     }
 }
 
-export function openDialogVisualiseParticipant() {
+export function openEditParticipant() {
     openDialogFn();
 }
 
-export default withStyles(styles)(DialogVisualiseParticipant);
+export default withStyles(styles)(DialogEditParticipant);
 

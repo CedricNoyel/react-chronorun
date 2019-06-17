@@ -1,5 +1,5 @@
 // store/AppProviderjs
-import React, { createContext, Component } from "react"; // on importe createContext qui servira à la création d'un ou plusieurs contextes
+import React, { createContext, Component } from "react";
 
 /**
  * `createContext` contient 2 propriétés :
@@ -13,6 +13,7 @@ export const UserContext = createContext({
     displayPage: "",
     setDisplayPage: () => {},
     listeParticipants: [],
+    setListeParticipants: () => {},
     addParticipant: () => {},
     inputStartRace: "",
     setInputStartRace: () => {},
@@ -22,7 +23,7 @@ export const UserContext = createContext({
     setInputFormEnd: () => {},
     histoParticipantEnd: [],
     addHistoParticipantEnd: () => {},
-    histoParticipantStart: {},
+    histoParticipantStart: [],
     addHistoParticipantStart: () => {},
 });
 
@@ -38,24 +39,22 @@ class AppProvider extends Component {
         setDisplayPage: (page) => this.setState((state, props) => {
             return { displayPage: page}
         }),
-        listeParticipants: [
-            { dossard: '1', nom: 'NOYEL', prenom: 'Cédric', team: 1 },
-            { dossard: '2', nom: 'GENEVE', prenom: 'Jordan', team: 2 },
-            { dossard: '3', nom: 'LE GALLOUDEC', prenom: 'Samy', team: 2 },
-            { dossard: '4', nom: 'MAURICE', prenom: 'Poisson', team: 2 },
-            { dossard: '5', nom: 'LE MENN', prenom: 'Florian', team: null },
-        ],
-        addParticipant: (participant, name, forname, team) => this.setState((state, props) => {
+        listeParticipants: [],
+        setListeParticipants: (liste) => this.setState((state, props) => {
+            return { listeParticipants: liste };
+        }),
+        addParticipant: (participant, name, firstname, team) => this.setState((state, props) => {
             const myParticipants = state.listeParticipants;
-            myParticipants.push({ dossard: participant, nom: name, prenom: forname, team: team });
+            myParticipants.push({ dossard: participant, nom: name, prenom: firstname, team: team });
             return { listeParticipants: myParticipants}
         }),
         inputStartRace: "",
         setInputStartRace: (inputValue) => this.setState((state, props) => {
             if(inputValue !== null) {
-                if (inputValue.length === 1 && this.state.firstInput) {
+                if (inputValue.length === 1 && this.state.firstInput && inputValue[0].team !== '') {
                     var teamMembersNormalise = [];
                     let teamMembers = this.state.listeParticipants.filter(participant => participant.team === inputValue[0].team);
+                    console.log(teamMembers)
                     teamMembers.map((row, index) => {
                         teamMembersNormalise.push(
                             {
@@ -98,14 +97,10 @@ class AppProvider extends Component {
             newItems.unshift({id: idParticipant, participant: dossart, time: temps});
             return { histoParticipantEnd: newItems}
         }),
-        histoParticipantStart: {
-            participant: [],
-            time: []
-        },
-        addHistoParticipantStart: (participant, time) => this.setState((state, props) => {
+        histoParticipantStart: [],
+        addHistoParticipantStart: (dossard, time) => this.setState((state, props) => {
             const newItems = state.histoParticipantStart;
-            newItems.participant.unshift(participant);
-            newItems.time.unshift(time);
+            newItems.unshift({participant: dossard, time: time});
             return { histoParticipantStart: newItems}
         }),
     };

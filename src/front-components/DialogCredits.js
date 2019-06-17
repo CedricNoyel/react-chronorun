@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import Notifier, {openSnackbar} from './Notifier';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-
-const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
@@ -67,7 +64,6 @@ class DialogCredits extends Component {
     };
 
     render() {
-        const { classes } = this.props;
         return (
             <div>
                 <Dialog
@@ -76,14 +72,13 @@ class DialogCredits extends Component {
                     open={this.state.open}
                 >
                     <DialogTitle id="customized-dialog-title" onClose={() => this.closeDialog()}>
-                        TITLE
+                        Crédits
                     </DialogTitle>
                     <DialogContent dividers>
                         <div>
-                            CONTENT OF THE DIALOG GOES HERE
+                            <p>Développeurs: Cédric N, Jordan G, Samy LG</p>
                         </div>
                     </DialogContent>
-                <Notifier />
                 </Dialog>
             </div>
         );

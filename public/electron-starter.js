@@ -18,7 +18,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 728,
-        webPreferences: { nodeIntegration: true }
+        webPreferences: { nodeIntegration: true },
+        frame: false,
+        titleBarStyle: 'hidden'
     });
     mainWindow.setMenuBarVisibility(false);
 
@@ -62,22 +64,26 @@ app.on('activate', function () {
 
 // CONTROLLER
 ipcMain
-    .on('end-add-participant', (event, arg) => {
-        let currentTimestamp = new Date().getTime();
-        ExcelServices.addStopTime(arg, currentTimestamp);
+    .on('request-liste-participants', (event, arg) => {
+        ExcelServices.getParticipants(function(data){
+            console.log('request-liste-participants');
+            event.sender.send('reply-liste-participants', data);
+        });
+    })
+    .on('end-add-participant', (event, arg1, arg2) => {
+        ExcelServices.addStopTime(arg1, arg2);
     })
     .on('add-team', (event, arg) => {
         console.log("TODO add participant to a team");
     })
     .on('add-participant', (event, arg) => {
+        console.log(arg);
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
     })
-    .on('start-add-participants', (event, arg) => {
-        let currentTimestamp = new Date().getTime();
-        ExcelServices.addStartTime(arg, currentTimestamp);
+    .on('start-add-participants', (event, dossard, timestamp) => {
+        ExcelServices.addStartTime(dossard, timestamp);
     })
     .on('import-participants', (event, arg) => {
-        // console.log("HEY");
         console.log("argument : ", arg);
         ExcelServices.convertXlsxToCsv(arg, function(res) {
             if(res){

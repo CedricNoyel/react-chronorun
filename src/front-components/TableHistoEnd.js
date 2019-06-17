@@ -5,7 +5,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
+import Edit from '@material-ui/icons/Edit';
 import {withUser} from "./store/AppProvider";
+import DialogEditParticipant, {openEditParticipant} from './DialogEditParticipant';
 
 const styles = theme => ({
     root: {
@@ -22,7 +25,15 @@ class TableHistoEnd extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            inputEditHisto: "",
+            displayInputEdit: 'hidden',
+        };
+    }
+
+    onEditRow(row, index) {
+        console.log("index: " + index, "row: " + row);
+        openEditParticipant();
     }
 
     render() {
@@ -32,17 +43,24 @@ class TableHistoEnd extends Component {
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">Dossard</TableCell>
-                        <TableCell align="center">Heure de d'arrivée</TableCell>
+                        <TableCell align="center">Heure d'arrivée</TableCell>
+                        <TableCell align="center">Editer</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     { this.props.histoParticipantEnd.map((row, index) => (
-                        <TableRow key={"histo-"+index}>
+                        <TableRow key={row.timestamp}>
                             <TableCell align="center">{row.participant}</TableCell>
-                            <TableCell align="center">{row.time}</TableCell>
+                            <TableCell align="center">{new Date(row.time).getHours() + ":" + new Date(row.time).getMinutes() + ":" + new Date(row.time).getSeconds()}</TableCell>
+                            <TableCell align="center">
+                                <Button key={row.timestamp} onClick={this.onEditRow.bind(this, row, index)}>
+                                    <Edit/>
+                                </Button>
+                            </TableCell>
                         </TableRow>
                         ))}
                 </TableBody>
+                <DialogEditParticipant/>
             </Table>
         );
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -11,6 +11,8 @@ import MenuDrawer from './MenuDrawer';
 import {withUser} from "./store/AppProvider";
 import PageVisualiseParticipants from "./PageVisualiseParticipants";
 import PageDocumentation from "./PageDocumentation";
+import PageExports from "./PageExports";
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 function TabContainer(props) {
     return (
@@ -36,7 +38,7 @@ function LinkTab(props) {
     );
 }
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
@@ -44,40 +46,63 @@ const useStyles = makeStyles(theme => ({
     hidden: {
         display: 'none',
     }
-}));
+});
 
-function NavTabs(props) {
-    const classes = useStyles();
-
-    function handleChange(event, newValue) {
-        props.setDisplayPage(newValue);
+class NavTabs extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            listeparticipant: this.getParticipants(),
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.getParticipants = this.getParticipants.bind(this);
+    }
+    getParticipants() {
+        ipcRenderer.send('request-liste-participants');
+        ipcRenderer.on('reply-liste-participants', (event, arg) => {
+            let liste = JSON.stringify(arg);
+            liste = liste.replace(/\"lastname\":/g, "\"nom\":");
+            liste = liste.replace(/\"firstname\":/g, "\"prenom\":");
+            this.props.setListeParticipants(JSON.parse(liste));
+        });
     }
 
-    return (
-        <div className={classes.root}>
-            <AppBar position="static">
-                <Tabs variant="fullWidth" value={props.displayPage} onChange={handleChange}>
-                    <MenuDrawer />
-                    <LinkTab label="Départ" />
-                    <LinkTab label="Arrivée"/>
-                    <LinkTab className={classes.hidden} label="PageVisualiseParticipants"/>
-                    <LinkTab className={classes.hidden} label="PageDocumentation"/>
-                </Tabs>
-            </AppBar>
-            {(props.displayPage === 0 || props.displayPage === 1 )&& <TabContainer key="1">
-                <PageStart/>
-            </TabContainer>}
-            {props.displayPage === 2 && <TabContainer key="2">
-                <PageEnd/>
-            </TabContainer>}
-            {props.displayPage === 3 && <TabContainer key="3">
-                <PageVisualiseParticipants/>
-            </TabContainer>}
-            {props.displayPage === 4 && <TabContainer key="4">
-                <PageDocumentation/>
-            </TabContainer>}
-        </div>
-    );
+    handleChange(event, newValue) {
+        this.props.setDisplayPage(newValue);
+    }
+
+    render() {
+        const { classes } = this.props;
+        return (
+            <div className={classes.root}>
+                <AppBar position="static">
+                    <Tabs variant="fullWidth" value={this.props.displayPage} onChange={this.handleChange}>
+                        <MenuDrawer />
+                        <LinkTab label="Départ" />
+                        <LinkTab label="Arrivée"/>
+                        <LinkTab className={classes.hidden} label="PageVisualiseParticipants"/>
+                        <LinkTab className={classes.hidden} label="PageDocumentation"/>
+                        <LinkTab className={classes.hidden} label="PageExports"/>
+                    </Tabs>
+                </AppBar>
+                {(this.props.displayPage === 0 || this.props.displayPage === 1 )&& <TabContainer key="1">
+                    <PageStart/>
+                </TabContainer>}
+                {this.props.displayPage === 2 && <TabContainer key="2">
+                    <PageEnd/>
+                </TabContainer>}
+                {this.props.displayPage === 3 && <TabContainer key="3">
+                    <PageVisualiseParticipants/>
+                </TabContainer>}
+                {this.props.displayPage === 4 && <TabContainer key="4">
+                    <PageDocumentation/>
+                </TabContainer>}
+                {this.props.displayPage === 5 && <TabContainer key="5">
+                    <PageExports/>
+                </TabContainer>}
+            </div>
+        );
+    }
 }
 
-export default withUser(NavTabs);
+export default withUser(withStyles(styles)(NavTabs));

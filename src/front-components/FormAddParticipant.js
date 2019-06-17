@@ -4,6 +4,8 @@ import {withStyles} from "@material-ui/core";
 import { withUser } from "./store/AppProvider";
 import Button from '@material-ui/core/Button';
 
+const ipcRenderer = window.require('electron').ipcRenderer;
+
 const styles = theme => ({
     container: {
         margin: theme.spacing(3),
@@ -55,6 +57,13 @@ class FormAddParticipant extends Component {
                 if (this.state.inputForname.length !== 0) {
                     this.setState(initialState);
                     this.props.addParticipant(this.state.inputParticipant, this.state.inputName, this.state.inputForname, this.state.inputTeam);
+                    ipcRenderer.send('add-participant', {
+                        dossard: this.state.inputParticipant,
+                        lastname: this.state.inputName,
+                        firstname: this.state.inputForname,
+                        team: this.state.inputTeam,
+                        time: new Date().getTime(),
+                    });
                     this.props.onSubmit();
                 } else {
                     console.log("inputForname empty");
@@ -73,12 +82,13 @@ class FormAddParticipant extends Component {
             <form className={classes.container} noValidate autoComplete="off" fullWidth>
                 <TextField
                     id="standard-with-placeholder"
-                    label="N° Dossart"
+                    label="N° Dossard"
                     className={classes.textField}
                     margin="normal"
                     value={this.state.inputParticipant}
                     onChange={this.onInputParticipantChange.bind(this)}
                 />
+                <br/>
                 <TextField
                     id="standard-with-placeholder"
                     label="Nom"

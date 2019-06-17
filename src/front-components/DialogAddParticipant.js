@@ -9,8 +9,6 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import FormAddParticipant from "./FormAddParticipant";
 
-const ipcRenderer = window.require('electron').ipcRenderer;
-
 const styles = theme => ({
     root: {
         margin: 0,
@@ -72,7 +70,6 @@ class DialogAddParticipant extends Component {
     }
 
     render() {
-        const { classes } = this.props;
         return (
             <div>
                 <Dialog

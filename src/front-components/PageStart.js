@@ -10,7 +10,10 @@ import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
 import TableHistoStart from './TableHistoStart';
+import Clock from './Clock';
+
 import {withUser} from "./store/AppProvider";
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
@@ -18,7 +21,7 @@ const styles = theme => ({
         margin: theme.spacing(0, 2, 2, 2),
     },
     paper: {
-        marginTop: theme.spacing(2),
+        margin: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
@@ -39,13 +42,12 @@ class PageStart extends Component {
     }
 
 
-
     onParticipantStart() {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let timestamp = new Date().getTime();
         this.props.inputStartRace.map( (row, index) => {
             this.props.setFirstInput(true);
-            this.props.addHistoParticipantStart(row.value, time);
+            this.props.addHistoParticipantStart(row.value, timestamp);
+            ipcRenderer.send('start-add-participants', row.value, timestamp);
         });
         this.props.setInputStartRace("");
     }
@@ -55,8 +57,8 @@ class PageStart extends Component {
         return (
             <div className={classes.container}>
                 <div className={classes.root}>
-                    <Grid container justify="center" alignItems="center" direction="row">
-                        <Grid item xs={12}>
+                    <Grid container>
+                        <Grid item xs={8}>
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Départ des participants</Typography>
                                 <div className={classes.root}>
@@ -77,6 +79,12 @@ class PageStart extends Component {
                                     * Un participant seul ne sera assigné à aucune équipe
                                 </Typography>
                             </Paper>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Paper className={classes.paper}>
+                                <Clock/>
+                            </Paper>
+
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Historique des départs</Typography>
                                 <TableHistoStart/>
@@ -84,7 +92,6 @@ class PageStart extends Component {
                         </Grid>
                     </Grid>
                 </div>
-
             </div>
     );
     }

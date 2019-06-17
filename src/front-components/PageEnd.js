@@ -8,6 +8,7 @@ import './App.css';
 import 'typeface-roboto';
 import { withUser } from "./store/AppProvider";
 import TableHistoEnd from "./TableHistoEnd";
+import Clock from "./Clock";
 
 const styles = theme => ({
     root: {
@@ -36,11 +37,14 @@ class Start extends Component {
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Arrivée des participants</Typography>
                                 {this.props.inputsFormEnd.map((row, index) => {
-                                    return <FormEndRace inputid={row.id}/>
+                                    return <FormEndRace key={index} inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
+                            <Paper className={classes.paper}>
+                                <Clock/>
+                            </Paper>
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Historique</Typography>
                                 <TableHistoEnd/>
