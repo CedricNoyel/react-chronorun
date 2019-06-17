@@ -18,7 +18,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 728,
-        webPreferences: { nodeIntegration: true }
+        webPreferences: { nodeIntegration: true },
+        frame: false,
+        titleBarStyle: 'hidden'
     });
     mainWindow.setMenuBarVisibility(false);
 
@@ -62,9 +64,10 @@ app.on('activate', function () {
 
 // CONTROLLER
 ipcMain
-    .on('get-liste-participants', (event, arg) => {
+    .on('request-liste-participants', (event, arg) => {
         ExcelServices.getParticipants(function(data){
-            console.log(data);
+            console.log('request-liste-participants');
+            event.sender.send('reply-liste-participants', data);
         });
     })
     .on('end-add-participant', (event, arg) => {

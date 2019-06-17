@@ -63,7 +63,6 @@ class FormAddParticipant extends Component {
                         firstname: this.state.inputForname,
                         team: this.state.inputTeam
                     });
-                    ipcRenderer.send('get-liste-participants', {});
                     this.props.onSubmit();
                 } else {
                     console.log("inputForname empty");

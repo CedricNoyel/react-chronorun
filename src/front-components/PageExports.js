@@ -50,7 +50,7 @@ class PageDocumentation extends Component {
     }
 
     isHistoParticipantStartEmpty(){
-        if (this.props.histoParticipantStart.participant.length !== 0) {
+        if (this.props.histoParticipantStart.length !== 0) {
             return false;
         }
         return true;
@@ -64,7 +64,7 @@ class PageDocumentation extends Component {
     }
 
     isFinalExportDisabled(){
-        if (this.props.histoParticipantEnd.length !== 0 && this.props.histoParticipantStart.participant.length !== 0) {
+        if (this.props.histoParticipantEnd.length !== 0 && this.props.histoParticipantStart.length !== 0) {
             return false;
         }
         return true;
@@ -128,7 +128,7 @@ class PageDocumentation extends Component {
                                                 onChange={this.onImportArrivees.bind(this)}
                                             />
                                             <label htmlFor="input-file-2">
-                                                <Button variant="outlined" component="span" disabled={this.state.btnImportArrivees}>
+                                                <Button variant="outlined" className={classes.button} component="span" disabled={this.state.btnImportArrivees}>
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
