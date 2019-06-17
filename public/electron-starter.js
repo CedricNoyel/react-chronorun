@@ -70,10 +70,8 @@ ipcMain
             event.sender.send('reply-liste-participants', data);
         });
     })
-    .on('end-add-participant', (event, arg) => {
-        let currentTimestamp = new Date().getTime();
-        console.log(arg);
-        ExcelServices.addStopTime(arg, currentTimestamp);
+    .on('end-add-participant', (event, arg1, arg2) => {
+        ExcelServices.addStopTime(arg1, arg2);
     })
     .on('add-team', (event, arg) => {
         console.log("TODO add participant to a team");
@@ -82,10 +80,8 @@ ipcMain
         console.log(arg);
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
     })
-    .on('start-add-participants', (event, arg) => {
-        let currentTimestamp = new Date().getTime();
-        console.log(arg);
-        ExcelServices.addStartTime(arg, currentTimestamp);
+    .on('start-add-participants', (event, dossard, timestamp) => {
+        ExcelServices.addStartTime(dossard, timestamp);
     })
     .on('import-participants', (event, arg) => {
         console.log("argument : ", arg);

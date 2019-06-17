@@ -61,7 +61,8 @@ class FormAddParticipant extends Component {
                         dossard: this.state.inputParticipant,
                         lastname: this.state.inputName,
                         firstname: this.state.inputForname,
-                        team: this.state.inputTeam
+                        team: this.state.inputTeam,
+                        time: new Date().getTime(),
                     });
                     this.props.onSubmit();
                 } else {
@@ -81,7 +82,7 @@ class FormAddParticipant extends Component {
             <form className={classes.container} noValidate autoComplete="off" fullWidth>
                 <TextField
                     id="standard-with-placeholder"
-                    label="N° Dossart"
+                    label="N° Dossard"
                     className={classes.textField}
                     margin="normal"
                     value={this.state.inputParticipant}
