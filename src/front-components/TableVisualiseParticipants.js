@@ -47,16 +47,16 @@ class TableVisualiseParticipants extends Component {
             this.setState({ tableVisu: table });
         } else {
             if (isNaN(filterValue)) {
-                newTable = table.find(row => row.lastname === filterValue || row.firstname === filterValue);
+                newTable = table.filter(row => (row.lastname || row.firstname) && (row.lastname.startsWith(filterValue) || row.firstname.startsWith(filterValue)));
             } else {
-                newTable = table.find(row => row.dossard === filterValue);
+                newTable = table.filter(row => row.dossard.startsWith(filterValue));
             }
 
             if (newTable === undefined){
                 this.setState({ tableVisu: [] });
             } else {
-                console.log(newTable)
-                this.setState({ tableVisu: [newTable] });
+                console.log(newTable);
+                this.setState({ tableVisu: newTable });
             }
         }
     }

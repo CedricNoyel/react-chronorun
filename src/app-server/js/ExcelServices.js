@@ -15,7 +15,7 @@ const csvWriterStart = createCsvWriter({
 });
 
 const pathCsvEnd = 'src/app-server/excels/end.csv';
-const csvWriterStop = createCsvWriter({
+const csvWriterEnd = createCsvWriter({
     path : pathCsvEnd,
     fieldDelimiter: ';',
     append: true,
@@ -146,19 +146,19 @@ class ExcelServices {
 
     static editNumberParticipantAtTheEnd(timestamp, numberFinal){
         //On essaye de lire le fichier 'end.csv'
-        fs.readFile(pathCsvStop, 'utf8', function(err, data){
+        fs.readFile(pathCsvEnd, 'utf8', function(err, data){
             if(err){ //Si erreur, on l'envoit dans la console
                 return console.log(err);
             }
             ExcelServices.getEndParticipants(function(res){
                 var participant = res.filter(function(data){
-                    return data.time == timestamp;
+                    return data.time === timestamp;
                 });
                 var stringToReplace = participant[0].dossard+";"+participant[0].time; //String que l'on souhaite remplacer
                 var stringReplace = numberFinal+";"+participant[0].time; //String que l'on va mettre à la place
                 var regex = new RegExp(stringToReplace);
                 var result = data.replace(regex, stringReplace);
-                fs.writeFile(pathCsvStop, result, 'utf8', function(err){
+                fs.writeFile(pathCsvEnd, result, 'utf8', function(err){
                     if (err) return console.log(err);
                 });
             });
@@ -246,7 +246,7 @@ class ExcelServices {
 
     static getEndParticipants(callback){
         var participants = [];
-        fs.createReadStream(pathCsvStop)
+        fs.createReadStream(pathCsvEnd)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
                 participants.push(row);
@@ -297,7 +297,7 @@ class ExcelServices {
      */
     static getParticipantsEnd(callback){
         var participants = [];
-        fs.createReadStream(pathCsvStop)
+        fs.createReadStream(pathCsvEnd)
         .pipe(csvParser({separator: ';'}))
         .on('data', (row) => {
             participants.push(row);
@@ -422,7 +422,7 @@ class ExcelServices {
             time: time
         }];
 
-        csvWriterStop
+        csvWriterEnd
             .writeRecords(data);
     }
 
