@@ -20,7 +20,8 @@ function createWindow() {
         height: 728,
         webPreferences: { nodeIntegration: true },
         frame: false,
-        titleBarStyle: 'hidden'
+        titleBarStyle: 'hidden',
+        icon: __dirname + '/stopwatch.ico'
     });
     mainWindow.setMenuBarVisibility(false);
 
