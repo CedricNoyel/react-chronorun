@@ -63,23 +63,23 @@ class TableVisualiseParticipants extends Component {
 
     initTableJson() {
         let listeDossards = [];
-        let listeParticipants = this.props.listeParticipants
+        let listeParticipants = this.props.listeParticipants;
         let histoStart = this.props.histoParticipantStart;
         let histoEnd = this.props.histoParticipantEnd;
         let newTable = [];
 
         histoStart.forEach(function(row) {
-            listeDossards.push(row.participant);
+            listeDossards.push(row.dossard);
         });
         histoEnd.forEach(function(row) {
-            if (!listeDossards.includes(row.participant)) listeDossards.push(row.participant)
+            if (!listeDossards.includes(row.dossard)) listeDossards.push(row.dossard)
         });
 
         listeDossards.forEach(function(dossard) {
             let participantEnd, participantStart, participant;
             participant = listeParticipants.find(row => row.dossard === dossard);
-            participantStart = histoStart.find(row => row.participant === dossard);
-            participantEnd = histoEnd.find(row => row.participant === dossard);
+            participantStart = histoStart.find(row => row.dossard === dossard);
+            participantEnd = histoEnd.find(row => row.dossard === dossard);
 
             let nom, prenom, startTime, endTime = '-';
             if (participant !== undefined) {

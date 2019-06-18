@@ -114,10 +114,10 @@ class PageDocumentation extends Component {
                                 <Grid item xs={6}>
                                     <Paper className={classes.paper}>
                                         <Typography variant="h5">Exporter les temps de départ</Typography>
-                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts}>
+                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts} onClick={this.exportStartResults}>
                                             Telecharger les départs
                                         </Button>
-                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees}>
+                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees} onClick={this.exportEndResults}>
                                             Telecharger les arrivées
                                         </Button>
                                     </Paper>

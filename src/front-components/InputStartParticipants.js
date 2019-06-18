@@ -246,7 +246,7 @@ const IntegrationReactSelect = (props, context) => {
 
     function handleChangeMulti(value) {
         props.setInputStartRace(value);
-        if(value !== null && props.histoParticipantStart.filter(row => row.participant === value[0].value).length !== 0) {
+        if(value !== null && props.histoParticipantStart.filter(row => row.dossard === value[0].value).length !== 0) {
             openSnackbar({message: 'Attention le participant ' + value[0].nom + " " + value[0].prenom + ' est déjà parti !'}, {type: 'warning'});
         }
     }
