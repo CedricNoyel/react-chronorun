@@ -89,7 +89,7 @@ class DialogEditParticipantEnd extends Component {
         let index = histoEnd.indexOf(participant);
         histoEnd[index].participant = this.state.dossard;
         this.props.setHistoParticipantEnd(histoEnd);
-        ipcRenderer.send('end-edit-participant', histoEnd[index].participant);
+        ipcRenderer.send('end-edit-participant', histoEnd[index].participant, histoEnd[index].time);
         this.closeDialog()
     }
 
