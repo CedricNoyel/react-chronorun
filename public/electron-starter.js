@@ -105,7 +105,7 @@ ipcMain
         });
     })
     .on('edit-participant', (event, arg) => {
-        ExcelServices.editNumberParticipantAtTheEnd(66, 10);
+        ExcelServices.editNumberParticipantAtTheEnd(args[0], args[1]);
 
     })
     .on('start-add-team', (event, arg) => {

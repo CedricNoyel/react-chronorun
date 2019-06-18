@@ -9,6 +9,7 @@ import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
 import {exportResult} from "./Home";
+import {onEditParticipants} from "./Home";
 
 const styles = theme => ({
     root: {

@@ -103,16 +103,17 @@ class ExcelServices {
                             var lastNameParticipant = dataParticipants[i].lastname;
                             var firstNameParticipant = dataParticipants[i].firstname;
                             var teamParticipant = dataParticipants[i].team;
-
+                            var startTimeParticipant = null;
+                            var endTimeParticipant = null;
                             if(infoDepart.length != 0){
                                 var dateDepart = new Date(infoDepart[0].time*1000);
-                                var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
                                 foundDepart = true;
                             }
 
                             if(infoArrivee.length != 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
-                                var endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
                                 foundStop = true;
                             }
                             var tempsTeam = null;
@@ -160,28 +161,25 @@ class ExcelServices {
     }
     
 
-    static editNumberParticipantAtTheEnd(numberInit, numberFinal){
+    static editNumberParticipantAtTheEnd(timestamp, numberFinal){
         //On essaye de lire le fichier 'end.csv'
         fs.readFile(pathCsvStop, 'utf8', function(err, data){
             if(err){ //Si erreur, on l'envoit dans la console
                 return console.log(err);
             }
             ExcelServices.getEndParticipants(function(res){
-                for(var i = 0; i<res.length; i++){ //On boucle sur chaque participant arrivé
-                    if(res[i].dossard == numberInit){ 
-                        var stringToReplace = numberInit+";"+res[i].time; //On créée une string conforme à ce qui est présent dans le fichier "end.csv" et qui correspond à la ligne du participant
-                        var stringReplace = numberFinal+";"+res[i].time; // On créée la string qu'on souhaite mettre à la place de la ligne déjà existante
-                        var regex = new RegExp(stringToReplace); //On créée une regex qui permet de chercher dans le fichier la ligne qu'on cherche
-                        var result = data.replace(regex, stringReplace);
-                        fs.writeFile(pathCsvStop, result, 'utf8', function(err){ //On réécrit le fichier avec la ligne modifiée
-                            if (err) return console.log(err);
-                        });
-                    }
-                }
+                var participant = res.filter(function(data){
+                    return data.time == timestamp;
+                });
+                var stringToReplace = participant[0].dossard+";"+participant[0].time; //String que l'on souhaite remplacer
+                var stringReplace = numberFinal+";"+participant[0].time; //String que l'on va mettre à la place
+                var regex = new RegExp(stringToReplace);
+                var result = data.replace(regex, stringReplace);
+                fs.writeFile(pathCsvStop, result, 'utf8', function(err){
+                    if (err) return console.log(err);
+                });
             });
         });
-        console.log("excelservices");
-        console.log(data);
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant

@@ -86,6 +86,12 @@ class Home extends Component {
 
 export default withStyles(styles)(Home);
 
+export function onEditParticipants(){
+    var numbers = [1559070011559, 20]; //En 0 on met le numéro que l'on veut modifier, en 1 le numéro que l'on souhaite mettre
+    //TODO : Aller chercher les numéros dans les input une fois qu'ils seront implémentés
+    ipcRenderer.send('edit-participant', numbers);
+}
+
 export function exportResult(){
     ipcRenderer.send('export-csv');
 
