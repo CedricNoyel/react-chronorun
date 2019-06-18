@@ -93,11 +93,19 @@ class DialogEditParticipantEnd extends Component {
         this.closeDialog()
     }
 
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.onClickEdit();
+        }
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div>
                 <Dialog
+                    onKeyDown={this.handleKeyDown}
                     onClose={() => this.closeDialog()}
                     aria-labelledby="customized-dialog-title"
                     open={this.state.open}
