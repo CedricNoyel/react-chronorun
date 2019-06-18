@@ -20,7 +20,8 @@ function createWindow() {
         height: 728,
         webPreferences: { nodeIntegration: true },
         frame: false,
-        titleBarStyle: 'hidden'
+        titleBarStyle: 'hidden',
+        icon: __dirname + '/stopwatch.ico'
     });
     mainWindow.setMenuBarVisibility(false);
 
@@ -66,7 +67,6 @@ app.on('activate', function () {
 ipcMain
     .on('request-liste-participants', (event, arg) => {
         ExcelServices.getParticipants(function(data){
-            console.log('request-liste-participants');
             event.sender.send('reply-liste-participants', data);
         });
     })
@@ -77,11 +77,14 @@ ipcMain
         console.log("TODO add participant to a team");
     })
     .on('add-participant', (event, arg) => {
-        console.log(arg);
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
     })
     .on('start-add-participants', (event, dossard, timestamp) => {
         ExcelServices.addStartTime(dossard, timestamp);
+    })
+    .on('end-edit-participant', (event, participant, timestamp) => {
+        console.log("TODO: LINK WITH EXCEL FUNCTION");
+        console.log(participant, timestamp);
     })
     .on('import-participants', (event, arg) => {
         console.log("argument : ", arg);
