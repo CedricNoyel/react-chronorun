@@ -14,26 +14,9 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
-const pathCsvResult = "src/app-server/excels/result.csv";
-const csvWriterResult = createCsvWriter({
-    path : pathCsvResult,
-    fieldDelimiter: ";",
-    append: true,
-    header : [
-        {id: 'dossard', title: 'Dossard'},
-        {id: 'lastname', title: 'Nom'},
-        {id: 'firstname', title: 'Prénom'},
-        {id: 'timedepart', title: 'Temps de départ'},
-        {id: 'timearrivee', title: 'Temps d\'arrivée '},
-        {id: 'timetotal', title: 'Temps total'},
-        {id: 'team', title: 'Equipe'},
-        {id: 'timeteam', title: 'Temps équipe'}
-    ]
-})
-
-const pathCsvStop = 'src/app-server/excels/end.csv';
+const pathCsvEnd = 'src/app-server/excels/end.csv';
 const csvWriterStop = createCsvWriter({
-    path : pathCsvStop,
+    path : pathCsvEnd,
     fieldDelimiter: ';',
     append: true,
     header : [
@@ -197,9 +180,23 @@ class ExcelServices {
                 index++;
             }
             converted = true;
-            console.log("converted : ", converted);
             callback(converted);
         });
+    }
+
+    /**
+     * Delete the CSV files (start, end, participants)
+     */
+    static deleteCsv() {
+        if(fs.existsSync(pathCsvStart)) {
+            fs.unlinkSync(pathCsvStart);
+        }
+        if(fs.existsSync(pathCsvEnd)) {
+            fs.unlinkSync(pathCsvEnd);
+        }
+        if(fs.existsSync(pathCsvParticipants)) {
+            fs.unlinkSync(pathCsvParticipants);
+        }
     }
 
     /**
@@ -216,7 +213,7 @@ class ExcelServices {
         }
         //Check if start.csv exist, if not create it
         try {
-            fs.statSync(pathCsvStop);
+            fs.statSync(pathCsvEnd);
         } catch (error) {
             if(error.code === 'ENOENT') {
                 ExcelServices.addStopTime('dossard', 'time');
@@ -320,6 +317,40 @@ class ExcelServices {
         .on('finish', function() {
             callback(particicpants);
         });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getStartResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvStart)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getEndResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvEnd)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
     }
 
     /**

@@ -19,7 +19,7 @@ class TableHistoStart extends Component {
                 <TableBody>
                     {this.props.histoParticipantStart.map( (row, index) => (
                         <TableRow key={index}>
-                            <TableCell align="center">{row.participant}</TableCell>
+                            <TableCell align="center">{row.dossard}</TableCell>
                             <TableCell align="center">{new Date(row.time).getHours() + ":" + new Date(row.time).getMinutes() + ":" + new Date(row.time).getSeconds()}</TableCell>
                         </TableRow>
                     ))}

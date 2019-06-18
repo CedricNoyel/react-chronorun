@@ -9,12 +9,17 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
+import Check from '@material-ui/icons/Check';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     leftIcon: {
         margin: 10,
+    },
+    validateIcon: {
+        margin: 10,
+        padding: 15,
     },
     hiddenInput: {
         display: 'none',
@@ -68,11 +73,13 @@ class DialogNewRace extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedFile: null,
-            open: false
+            open: false,
+            import: true,
+            filePath: null,
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.importParticipants = this.importParticipants.bind(this);
         this.onUploadParticipants = this.onUploadParticipants.bind(this);
     }
 
@@ -85,13 +92,20 @@ class DialogNewRace extends Component {
     };
 
     onUploadParticipants(e) {
-        this.setState({
-            selectedFile: e.target.files[0]
-        });
+        let filePath = e.target.files[0].path;
+        this.setState({filePath:filePath});
+
+        if(filePath !== null && filePath.length > 0) {
+            this.setState({import: false});
+        }
+    }
+
+    importParticipants() {
         ipcRenderer.on('import-participants-reply', () => {
-            openSnackbar({message: 'Les participants ont étés importés avec succès !'}, {type: 'success'})
+            openSnackbar({message: 'Les participants ont étés importés avec succès !'}, {type: 'success'});
+            this.setState({import: true});
         });
-        ipcRenderer.send('import-participants-request', this.state.selectedFile);
+        ipcRenderer.send('import-participants-request', this.state.filePath);
     }
 
     handleClick() {
@@ -102,7 +116,7 @@ class DialogNewRace extends Component {
     }
 
     handleClose() {
-        this.setState({open:false});
+        this.setState({open:false, import:true});
     }
 
     render() {
@@ -129,12 +143,15 @@ class DialogNewRace extends Component {
                                 type="file"
                                 onChange={this.onUploadParticipants}
                             />
-                            <label htmlFor="input-file" className={classes.btnImport}>
+                            <label htmlFor="input-file">
                                 <Button variant="contained" component="span">
                                     <CloudUploadIcon className={classes.leftIcon}/>
                                     Charger le fichier des participants
                                 </Button>
                             </label>
+                            <Button variant="contained" component="span" className={classes.validateIcon} disabled={this.state.import} onClick={this.importParticipants}>
+                                <Check/>
+                            </Button>
                             <p>Pour obtenir le template du fichier, <a href="#" onClick={this.handleClick}>cliquez ici</a></p>
                         </div>
                     </DialogContent>

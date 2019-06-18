@@ -10,6 +10,9 @@ import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
 import {exportResult} from "./Home";
 import {onEditParticipants} from "./Home";
+import Notifier from "./Notifier";
+
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
@@ -49,17 +52,34 @@ class PageDocumentation extends Component {
             fileImportArrivees: "",
             btnExportResultsDisabled: this.isFinalExportDisabled(),
         };
+
+        this.exportStartResults = this.exportStartResults.bind(this);
+        this.exportEndResults = this.exportEndResults.bind(this);
+    }
+
+    exportStartResults() {
+        ipcRenderer.on('dl-start-results-reply', () => {
+            openSnackbar({message: 'Fichier des départs téléchargé ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+        });
+        ipcRenderer.send('dl-start-results-request');
+    }
+
+    exportEndResults() {
+        ipcRenderer.on('dl-end-results-reply', () => {
+            openSnackbar({message: 'Fichier des arrivées téléchargé ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+        });
+        ipcRenderer.send('dl-end-results-request');
     }
 
     isHistoParticipantStartEmpty(){
-        if (this.props.histoParticipantStart.length !== 0) {
+        if(this.props.histoParticipantStart.length !== 0) {
             return false;
         }
         return true;
     }
 
     isHistoParticipantEndEmpty(){
-        if (this.props.histoParticipantEnd.length !== 0) {
+        if(this.props.histoParticipantEnd.length !== 0) {
             return false;
         }
         return true;
@@ -96,10 +116,10 @@ class PageDocumentation extends Component {
                                 <Grid item xs={6}>
                                     <Paper className={classes.paper}>
                                         <Typography variant="h5">Exporter les temps de départ</Typography>
-                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts}>
+                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts} onClick={this.exportStartResults}>
                                             Telecharger les départs
                                         </Button>
-                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees}>
+                                        <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees} onClick={this.exportEndResults}>
                                             Telecharger les arrivées
                                         </Button>
                                     </Paper>
@@ -143,6 +163,7 @@ class PageDocumentation extends Component {
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Notifier/>
                 </div>
             </div>
         );

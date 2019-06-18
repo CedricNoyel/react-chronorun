@@ -41,7 +41,6 @@ class PageStart extends Component {
         this.onParticipantStart = this.onParticipantStart.bind(this);
     }
 
-
     onParticipantStart() {
         let timestamp = new Date().getTime();
         this.props.inputStartRace.map( (row, index) => {

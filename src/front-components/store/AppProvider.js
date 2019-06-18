@@ -52,11 +52,9 @@ class AppProvider extends Component {
         }),
         inputStartRace: "",
         setInputStartRace: (inputValue) => this.setState((state, props) => {
-            if(inputValue !== null) {
-                if (inputValue.length === 1 && this.state.firstInput && inputValue[0].team !== '') {
+            if(inputValue !== null && inputValue.length === 1 && this.state.firstInput && inputValue[0].team !== '') {
                     var teamMembersNormalise = [];
                     let teamMembers = this.state.listeParticipants.filter(participant => participant.team === inputValue[0].team);
-                    console.log(teamMembers)
                     teamMembers.map((row, index) => {
                         teamMembersNormalise.push(
                             {
@@ -69,7 +67,6 @@ class AppProvider extends Component {
                         );
                     });
                     this.state.firstInput = false;
-                }
             } else {
                 this.state.firstInput = true;
             }
@@ -90,22 +87,28 @@ class AppProvider extends Component {
         ],
         setInputFormEnd: (idInput, value) => this.setState((state, props) => {
             const newItems = state.inputsFormEnd;
-            newItems[idInput].inputValue = value
+            newItems[idInput].inputValue = value;
             return { inputsFormEnd: newItems}
         }),
         histoParticipantEnd: [],
-        addHistoParticipantEnd: (idParticipant, dossart, temps) => this.setState((state, props) => {
+        setListeHistoEnd: (liste) => this.setState((state, props) => {
+            return { histoParticipantEnd: liste };
+        }),
+        addHistoParticipantEnd: (dossart, temps) => this.setState((state, props) => {
             const newItems = state.histoParticipantEnd;
-            newItems.unshift({id: idParticipant, participant: dossart, time: temps});
+            newItems.unshift({dossard: dossart, time: temps});
             return { histoParticipantEnd: newItems}
         }),
         setHistoParticipantEnd: (liste) => this.setState((state, props) => {
             return { histoParticipantEnd: liste };
         }),
         histoParticipantStart: [],
+        setListeHistoStart: (liste) => this.setState((state, props) => {
+            return { histoParticipantStart: liste };
+        }),
         addHistoParticipantStart: (dossard, time) => this.setState((state, props) => {
             const newItems = state.histoParticipantStart;
-            newItems.unshift({participant: dossard, time: time});
+            newItems.unshift({dossard: dossard, time: time});
             return { histoParticipantStart: newItems}
         }),
         setHistoParticipantStart: (liste) => this.setState((state, props) => {

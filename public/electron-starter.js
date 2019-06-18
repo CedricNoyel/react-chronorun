@@ -70,11 +70,18 @@ ipcMain
             event.sender.send('reply-liste-participants', data);
         });
     })
+    .on('start-results-request', (event, arg) => {
+        ExcelServices.getStartResult(function(data){
+            event.sender.send('start-results-reply', data);
+        });
+    })
+    .on('end-results-request', (event, arg) => {
+        ExcelServices.getEndResult(function(data){
+            event.sender.send('end-results-reply', data);
+        });
+    })
     .on('end-add-participant', (event, arg1, arg2) => {
         ExcelServices.addStopTime(arg1, arg2);
-    })
-    .on('add-team', (event, arg) => {
-        console.log("TODO add participant to a team");
     })
     .on('add-participant', (event, arg) => {
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
@@ -129,9 +136,32 @@ ipcMain
             }
         });
     })
+    .on('dl-start-results-request', (event, arg) => {
+        let source = path.join(__dirname, '/../src/app-server/excels/start.csv');
+        let destination = path.join(app.getPath('downloads'), 'resultats_depart_chrono_run.csv');
+        console.log(source);
+        fs.copyFile(source, destination, {
+            done: (err) => {
+                event.sender.send('dl-start-results-reply');
+            }
+        });
+    })
+    .on('dl-end-results-request', (event, arg) => {
+        let source = path.join(__dirname, '/../src/app-server/excels/end.csv');
+        console.log(source);
+        let destination = path.join(app.getPath('downloads'), 'resultats_arrivees_chrono_run.csv');
+        console.log(source);
+        console.log(destination);
+        fs.copyFile(source, destination, {
+            done: (err) => {
+                event.sender.send('dl-end-results-reply');
+            }
+        });
+    })
     .on('import-participants-request', (event, arg) => {
-        ExcelServices.convertXlsxToCsv(arg, (data) => {
-            console.log(data);
+        ExcelServices.deleteCsv();
+        ExcelServices.createCsv();
+        ExcelServices.convertXlsxToCsv(arg, () => {
             event.sender.send('import-participants-reply');
         });
     });

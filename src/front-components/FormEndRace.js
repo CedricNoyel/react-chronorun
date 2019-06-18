@@ -25,11 +25,9 @@ class FormEndRace extends Component {
         let inputValue = this.props.inputsFormEnd[inputid].inputValue;
         if (inputValue.length !== 0) {
             let timestamp = new Date().getTime();
-            this.props.addHistoParticipantEnd(inputid, inputValue, timestamp);
+            this.props.addHistoParticipantEnd(inputValue, timestamp);
             ipcRenderer.send('end-add-participant', inputValue, timestamp);
             this.props.setInputFormEnd(inputid, "");
-        } else {
-            console.log("<!> The value you want to add is not good");
         }
     }
 
