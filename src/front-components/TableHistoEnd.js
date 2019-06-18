@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import {withUser} from "./store/AppProvider";
-import DialogEditParticipant, {openEditParticipant} from './DialogEditParticipant';
+import DialogEditParticipantEnd, {openEditParticipantEnd} from './DialogEditParticipantEnd';
 
 const styles = theme => ({
     root: {
@@ -25,15 +25,13 @@ class TableHistoEnd extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            inputEditHisto: "",
-            displayInputEdit: 'hidden',
-        };
+        this.state = {},
+        this.onEditRow = this.onEditRow.bind(this);
     }
 
-    onEditRow(row, index) {
-        console.log("index: " + index, "row: " + row);
-        openEditParticipant();
+    onEditRow(dossard, timestamp) {
+        console.log("selected: ", dossard + " " + timestamp);
+        openEditParticipantEnd(dossard, timestamp)
     }
 
     render() {
@@ -49,18 +47,18 @@ class TableHistoEnd extends Component {
                 </TableHead>
                 <TableBody>
                     { this.props.histoParticipantEnd.map((row, index) => (
-                        <TableRow key={row.timestamp}>
+                        <TableRow key={index}>
                             <TableCell align="center">{row.dossard}</TableCell>
                             <TableCell align="center">{new Date(row.time).getHours() + ":" + new Date(row.time).getMinutes() + ":" + new Date(row.time).getSeconds()}</TableCell>
                             <TableCell align="center">
-                                <Button key={row.timestamp} onClick={this.onEditRow.bind(this, row, index)}>
+                                <Button onClick={this.onEditRow.bind(this, row.participant, row.time)}>
                                     <Edit/>
                                 </Button>
                             </TableCell>
                         </TableRow>
                         ))}
                 </TableBody>
-                <DialogEditParticipant/>
+                <DialogEditParticipantEnd/>
             </Table>
         );
     }

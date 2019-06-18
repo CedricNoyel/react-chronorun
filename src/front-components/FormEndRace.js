@@ -31,12 +31,22 @@ class FormEndRace extends Component {
         }
     }
 
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.btnEndClicked();
+        }
+    }
+
     render() {
         const { classes, inputid } = this.props;
         return (
-            <Box className={classes.root}>
+            <Box
+                className={classes.root}
+                onKeyDown={this.handleKeyDown}
+            >
                 <Box>
-                    <InputAutocompleteParticipantEnd inputid={inputid} />
+                    <InputAutocompleteParticipantEnd inputid={inputid}/>
                 </Box>
                 <Box>
                     <Button className={classes.btnEnd} variant="contained" color="primary" onClick={this.btnEndClicked.bind(this)}>Fin</Button>

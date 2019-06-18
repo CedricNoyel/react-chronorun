@@ -38,56 +38,145 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
+const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
+
+
+
+
 class ExcelServices {
+
+
+    static mergeCsv(callback){
+        var mapErrorParticipants = new Map();
+        var self = this;
+        this.createCsv();
+        self.getEquipeFromStart(function(dataEquipe){
+            self.getParticipants(function(dataParticipants){
+                self.getParticipantsEnd(function(dataEnd){
+                    self.getParticipantsStart(function(dataStart){
+                        var mapTempsEquipe = new Map();
+                        var keys = Object.keys(dataEquipe);
+                        for(var i = 0; i<keys.length; i++){
+                            var time = 0;
+                            for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
+                                var tempsArrivee = dataEnd.filter(function(data){
+                                    return data.dossard == dataEquipe[keys[i].toString()][j].dossard;
+                                })
+                                for(var k = 0; k<tempsArrivee.length; k++){
+                                    if(time<tempsArrivee[k].time){
+                                        time = tempsArrivee[k].time;
+                                    }
+                                    if(k==tempsArrivee.length-1){
+                                        mapTempsEquipe.set(keys[i].toString(), time);
+                                    }
+                                }
+                            }
+                        }
+                        for(var i = 0; i<dataParticipants.length; i++){
+                            var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
+                                return data.dossard == dataParticipants[i].dossard;
+                            });
+                            var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
+                                return data.dossard == dataParticipants[i].dossard;
+                            });
     
-    static refreshCsv(data){
-        const csvWriter = createCsvWriter({
-            path : pathCsvParticipants,
-            fieldDelimiter: ';',
-            append: true,
-            header : [
-                {id: 'dossard', title: 'Dossard'},
-                {id: 'lastname', title: 'Nom'},
-                {id: 'firstname', title: 'Prénom'},
-                {id: 'team', title: 'Equipe'}
-            ]
-        });
-        for(var i = 0; i< data.length; i++){
-            console.log(data[i]["Row"]); //TODO : Trouver un moyen de parser les ROWS
-        }
+                            var foundDepart = false;
+                            var foundStop = false;
+                            var dossardParticipant = dataParticipants[i].dossard; //On récupère les info qui nous intéresse
+                            var lastNameParticipant = dataParticipants[i].lastname;
+                            var firstNameParticipant = dataParticipants[i].firstname;
+                            var teamParticipant = dataParticipants[i].team;
+                            var startTimeParticipant = null;
+                            var endTimeParticipant = null;
+                            if(infoDepart.length != 0){
+                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                foundDepart = true;
+                            }
+
+                            if(infoArrivee.length != 0){
+                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                foundStop = true;
+                            }
+                            var tempsTeam = null;
+                            var endTimeTeam = null;
+                            if(foundDepart && foundStop && teamParticipant.length>0){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
+                                var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
+                                var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
+                                if(teamParticipant.length != 0){
+                                    for(var j = 0; j<keys.length; j++){
+                                        if(keys[j].toString() == infoDepart[0].time){
+                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
+                                            endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
+                                        }
+                                    }
+                                }
+                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
+                            } else {
+                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
+                                if(foundDepart && !foundStop){
+                                    if(!mapErrorParticipants.get(dataParticipants[i].dossard)){
+                                        mapErrorParticipants.set(dataParticipants[i].dossard, dataParticipants[i].lastname);
+                                    }
+                                }
+                            }
+
+                        }
+                        callback(mapErrorParticipants);
+                    })
+                })
+            })
+        });    
     }
 
-    static editNumberParticipantByNumber(numberInit, numberFinal){
-        var data = [];
-        ExcelServices.getParticipants(function(res){
-            for(var i  = 0; i<res.length; i++){
-                // console.log("RES :", res);
-                // console.log("Row numéro : ", i , res[i]);
-                if(res[i].dossard == numberInit){
-                    // console.log("ON REMPLACE", numberInit, "PAR", numberFinal);
-                    var edited = { Row : {dossard:numberFinal, lastname:res[i].lastname, firstname:res[i].firstName, team:res[i].team}}
-                    data.push(edited);
-                } else {
-                    data.push(res[i]);
-                }
+    static getEquipeFromStart(callback){
+        var self = this;
+
+        self.getParticipantsStart(function(dataStart){
+            var result = dataStart.reduce(function (r, a){
+                r[a.time] = r[a.time] || [];
+                r[a.time].push(a);
+                return r;
+            }, Object.create(null));
+            callback(result);
+        })
+    }
+    
+
+    static editNumberParticipantAtTheEnd(timestamp, numberFinal){
+        //On essaye de lire le fichier 'end.csv'
+        fs.readFile(pathCsvStop, 'utf8', function(err, data){
+            if(err){ //Si erreur, on l'envoit dans la console
+                return console.log(err);
             }
-            // console.log("DATA : " , data);
-            ExcelServices.refreshCsv(data);
+            ExcelServices.getEndParticipants(function(res){
+                var participant = res.filter(function(data){
+                    return data.time == timestamp;
+                });
+                var stringToReplace = participant[0].dossard+";"+participant[0].time; //String que l'on souhaite remplacer
+                var stringReplace = numberFinal+";"+participant[0].time; //String que l'on va mettre à la place
+                var regex = new RegExp(stringToReplace);
+                var result = data.replace(regex, stringReplace);
+                fs.writeFile(pathCsvStop, result, 'utf8', function(err){
+                    if (err) return console.log(err);
+                });
+            });
         });
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
     static convertXlsxToCsv(path, callback){
-        var converted = false;
-        convert.convert(path).then(result => {
-
-            var index = 2;
-            while(result[index.toString()]!== undefined){
+        var converted = false; 
+        convert.convert(path).then(result => { //On lit le fichier xlsx grâce à xlsx-converter
+            var index = 2; //On lit à partir de la ligne 2 pour éviter les headers
+            while(result[index.toString()]!=undefined){ //On récupère les infos souhaitées
                 var numeroDossard = result[index.toString()][0];
                 var nom = result[index.toString()][1];
                 var prenom = result[index.toString()][2];
                 var nomEquipe = result[index.toString()][3];
-                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe);
+
+                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe); //On ajoute un le participant au fichier particicpants.csv
                 index++;
             }
             converted = true;
@@ -138,15 +227,26 @@ class ExcelServices {
                 ExcelServices.addParticipant('dossard', 'lastname', 'firstname', 'team');
             }
         }
+        //Check if result.csv exists, if not create it
+        try {
+            console.log("Passe ici");
+            fs.statSync(pathCsvResult);
+        } catch (error) {
+            console.log("Passe dans error");
+            if(error.code === 'ENOENT') {
+                console.log("Passe dans enoent");
+                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
+            }
+        }
     }
-
     /**
-     *  Return the list of the participants
-     * @param callback - function
+     * Return the list of the participants at the end
+     * @param callback - functio,
      */
-    static getParticipants(callback) {
-        const participants = [];
-        fs.createReadStream(pathCsvParticipants)
+
+    static getEndParticipants(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStop)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
                 participants.push(row);
@@ -154,6 +254,69 @@ class ExcelServices {
             .on('finish', function () {
                 callback(participants);
             });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getParticipants(callback) {
+        var participants = [];
+        var readStream = fs.createReadStream(pathCsvParticipants)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                participants.push(row);
+                
+            })
+            .on('finish', function () {
+                readStream.destroy();
+                callback(participants);
+                
+            });
+    }
+    
+    /**
+     * Return the list of the participant at start
+     * @param callback  - function
+     */
+    static getParticipantsStart(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStart)
+        .pipe(csvParser({separator: ';'}))
+        .on('data', (row) => {
+            participants.push(row);
+        })
+        .on('finish', function() {
+            callback(participants);
+        }).unpipe();
+    }
+
+        /**
+     * Return the list of the participant at the end
+     * @param callback  - function
+     */
+    static getParticipantsEnd(callback){
+        var participants = [];
+        fs.createReadStream(pathCsvStop)
+        .pipe(csvParser({separator: ';'}))
+        .on('data', (row) => {
+            participants.push(row);
+        })
+        .on('finish', function() {
+            callback(participants);
+        });
+    }
+
+    static getParticipantsResult(callback){
+        var particicpants = [];
+        fs.createReadStream(pathCsvResult)
+        .pipe(csvParser({separator : ';'}))
+        .on('data', (row) => {
+            particicpants.push(row);
+        })
+        .on('finish', function() {
+            callback(particicpants);
+        });
     }
 
     /**
@@ -231,6 +394,18 @@ class ExcelServices {
         })
     }
 
+    static findParticipantStart(searchedDossard, callback){
+        this.getParticipantsStart(function (participants){
+            callback(participants.filter(participant => participant.dossard == searchedDossard));
+        });
+    }
+
+    static findParticipantStop(searchedDossard, callback){
+        this.getParticipantsStop(function (participants){
+            callback(participants.filter(participant => participant.dossard == searchedDossard));
+        });
+    }
+
     static addStartTime(dossard, time) {
         let data = [{
             dossard: dossard,
@@ -250,6 +425,22 @@ class ExcelServices {
         csvWriterStop
             .writeRecords(data);
     }
+
+    static addResult(dossard, lastname, firstname, timeDepart, timeArrivee, timeTotal, team, timeTeam){
+        let data = [{
+            dossard: dossard,
+            lastname: lastname,
+            firstname : firstname, 
+            team : team, 
+            timedepart: timeDepart,
+            timearrivee : timeArrivee,
+            timetotal : timeTotal,
+            timeteam : timeTeam
+        }];
+
+        csvWriterResult.writeRecords(data);
+    }
+
 }
 
 module.exports = ExcelServices;

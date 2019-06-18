@@ -8,6 +8,8 @@ import './App.css';
 import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
+import {exportResult} from "./Home";
+import {onEditParticipants} from "./Home";
 import Notifier from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
@@ -152,7 +154,7 @@ class PageDocumentation extends Component {
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
-                                            <Button variant="outlined" className={classes.button} disabled={this.state.btnExportResultsDisabled}>
+                                            <Button variant="outlined" className={classes.button} onClick={exportResult}>
                                                 Exporter les résultats
                                             </Button>
                                         </div>
