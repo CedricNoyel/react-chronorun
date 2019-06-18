@@ -97,8 +97,7 @@ ipcMain
         });
     })
     .on('end-edit-participant', (event, participant, timestamp) => {
-        console.log("TODO: LINK WITH EXCEL FUNCTION");
-        console.log(participant, timestamp);
+        ExcelServices.editNumberParticipantAtTheEnd(timestamp, participant)
     })
     // .on('edit-participant', (event, arg) => {
     //     ExcelServices.editNumberParticipantAtTheEnd(args[0], args[1]);
