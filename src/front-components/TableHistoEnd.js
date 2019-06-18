@@ -51,7 +51,7 @@ class TableHistoEnd extends Component {
                             <TableCell align="center">{row.dossard}</TableCell>
                             <TableCell align="center">{new Date(row.time).getHours() + ":" + new Date(row.time).getMinutes() + ":" + new Date(row.time).getSeconds()}</TableCell>
                             <TableCell align="center">
-                                <Button onClick={this.onEditRow.bind(this, row.participant, row.time)}>
+                                <Button onClick={this.onEditRow.bind(this, row.dossard, row.time)}>
                                     <Edit/>
                                 </Button>
                             </TableCell>
