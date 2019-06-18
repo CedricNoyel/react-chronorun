@@ -23,10 +23,11 @@ const csvWriterResult = createCsvWriter({
         {id: 'dossard', title: 'Dossard'},
         {id: 'lastname', title: 'Nom'},
         {id: 'firstname', title: 'Prénom'},
-        {id: 'team', title: 'Equipe'},
         {id: 'timedepart', title: 'Temps de départ'},
         {id: 'timearrivee', title: 'Temps d\'arrivée '},
-        {id: 'timetotal', title: 'Temps total'}
+        {id: 'timetotal', title: 'Temps total'},
+        {id: 'team', title: 'Equipe'},
+        {id: 'timeteam', title: 'Temps équipe'}
     ]
 })
 
@@ -61,55 +62,101 @@ const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
 
 class ExcelServices {
 
-    static testSvp(){
-        this.mergeCsv(function(res){
-            console.log("le res est bon? ", res);
-        })
-    }
 
     static mergeCsv(callback){
         var mapErrorParticipants = new Map();
         var self = this;
-        this.getParticipants(function(dataParticipants) {
-            self.getParticipantsStart(function(dataStart){
-                self.getParticipantsEnd(function(dataEnd){ //On lit le csv des fichiers "participants.csv", "start.csv", "end.csv" et on récupère les données
-                    for(var i = 0; i<dataParticipants.length;i++){ //On boucle sur les données de "participants.csv"
-                        var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
-                            return data.dossard == dataParticipants[i].dossard;
-                        });
-                        var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
-                            return data.dossard == dataParticipants[i].dossard;
-                        });
-                        var foundDepart = false;
-                        var foundStop = false;
-                        var dossardParticipant = dataParticipants[i].dossard; //On récupère les info qui nous intéresse
-                        var lastNameParticipant = dataParticipants[i].lastname;
-                        var firstNameParticipant = dataParticipants[i].firstname;
-                        var teamParticipant = dataParticipants[i].team;
-                        if(infoDepart.length != 0){
-                            var dateDepart = new Date(infoDepart[0].time*1000);
-                            var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
-                            foundDepart = true;
-                        }
-                        if(infoArrivee.length != 0){ //Gestion du cas ou un participant est parti mais n'est jamais arrivé
-                            var dateArrivee = new Date(infoArrivee[0].time*1000);
-                            var endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
-                            foundStop = true;
-                        }
-                        if(foundDepart && foundStop){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
-                            var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
-                            var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
-                            self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, teamParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant);
-                        } else { // Si il y a eu un problème, on l'ajoute à un map que l'on retourne dans la callback
-                            if(!mapErrorParticipants.get(dataParticipants[i].dossard)){
-                                mapErrorParticipants.set(dataParticipants[i].dossard, dataParticipants[i].lastname);
+        this.createCsv();
+        self.getEquipeFromStart(function(dataEquipe){
+            self.getParticipants(function(dataParticipants){
+                self.getParticipantsEnd(function(dataEnd){
+                    self.getParticipantsStart(function(dataStart){
+                        var mapTempsEquipe = new Map();
+                        var keys = Object.keys(dataEquipe);
+                        for(var i = 0; i<keys.length; i++){
+                            var time = 0;
+                            for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
+                                var tempsArrivee = dataEnd.filter(function(data){
+                                    return data.dossard == dataEquipe[keys[i].toString()][j].dossard;
+                                })
+                                for(var k = 0; k<tempsArrivee.length; k++){
+                                    if(time<tempsArrivee[k].time){
+                                        time = tempsArrivee[k].time;
+                                    }
+                                    if(k==tempsArrivee.length-1){
+                                        mapTempsEquipe.set(keys[i].toString(), time);
+                                    }
+                                }
                             }
                         }
-                    }
-                    callback(mapErrorParticipants);
+                        for(var i = 0; i<dataParticipants.length; i++){
+                            var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
+                                return data.dossard == dataParticipants[i].dossard;
+                            });
+                            var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
+                                return data.dossard == dataParticipants[i].dossard;
+                            });
+    
+                            var foundDepart = false;
+                            var foundStop = false;
+                            var dossardParticipant = dataParticipants[i].dossard; //On récupère les info qui nous intéresse
+                            var lastNameParticipant = dataParticipants[i].lastname;
+                            var firstNameParticipant = dataParticipants[i].firstname;
+                            var teamParticipant = dataParticipants[i].team;
+
+                            if(infoDepart.length != 0){
+                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                foundDepart = true;
+                            }
+
+                            if(infoArrivee.length != 0){
+                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                foundStop = true;
+                            }
+                            var tempsTeam = null;
+                            var endTimeTeam = null;
+                            if(foundDepart && foundStop && teamParticipant.length>0){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
+                                var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
+                                var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
+                                if(teamParticipant.length != 0){
+                                    for(var j = 0; j<keys.length; j++){
+                                        if(keys[j].toString() == infoDepart[0].time){
+                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
+                                            endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
+                                        }
+                                    }
+                                }
+                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
+                            } else {
+                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
+                                if(foundDepart && !foundStop){
+                                    if(!mapErrorParticipants.get(dataParticipants[i].dossard)){
+                                        mapErrorParticipants.set(dataParticipants[i].dossard, dataParticipants[i].lastname);
+                                    }
+                                }
+                            }
+
+                        }
+                        callback(mapErrorParticipants);
+                    })
                 })
-            });
-        });
+            })
+        });    
+    }
+
+    static getEquipeFromStart(callback){
+        var self = this;
+
+        self.getParticipantsStart(function(dataStart){
+            var result = dataStart.reduce(function (r, a){
+                r[a.time] = r[a.time] || [];
+                r[a.time].push(a);
+                return r;
+            }, Object.create(null));
+            callback(result);
+        })
     }
     
 
@@ -191,11 +238,10 @@ class ExcelServices {
             console.log("Passe dans error");
             if(error.code === 'ENOENT') {
                 console.log("Passe dans enoent");
-                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'team', 'temps depart', 'temps arrivée', 'temps total');
+                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
             }
         }
     }
-
     /**
      * Return the list of the participants at the end
      * @param callback - functio,
@@ -261,6 +307,18 @@ class ExcelServices {
         })
         .on('finish', function() {
             callback(participants);
+        });
+    }
+
+    static getParticipantsResult(callback){
+        var particicpants = [];
+        fs.createReadStream(pathCsvResult)
+        .pipe(csvParser({separator : ';'}))
+        .on('data', (row) => {
+            particicpants.push(row);
+        })
+        .on('finish', function() {
+            callback(particicpants);
         });
     }
 
@@ -337,7 +395,7 @@ class ExcelServices {
             .writeRecords(data);
     }
 
-    static addResult(dossard, lastname, firstname, team, timeDepart, timeArrivee, timeTotal){
+    static addResult(dossard, lastname, firstname, timeDepart, timeArrivee, timeTotal, team, timeTeam){
         let data = [{
             dossard: dossard,
             lastname: lastname,
@@ -345,11 +403,13 @@ class ExcelServices {
             team : team, 
             timedepart: timeDepart,
             timearrivee : timeArrivee,
-            timetotal : timeTotal
+            timetotal : timeTotal,
+            timeteam : timeTeam
         }];
 
         csvWriterResult.writeRecords(data);
     }
+
 }
 
 module.exports = ExcelServices;

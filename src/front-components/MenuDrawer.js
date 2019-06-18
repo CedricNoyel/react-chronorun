@@ -14,6 +14,7 @@ import Assignment from '@material-ui/icons/Assignment';
 import Help from '@material-ui/icons/Help';
 import Copyright from '@material-ui/icons/Copyright';
 import Menu from '@material-ui/icons/Menu';
+import {exportResult} from './Home';
 
 import NewRace, {openNewRace} from './NewRace';
 
@@ -45,6 +46,8 @@ export default function TemporaryDrawer() {
         if(action == 'Nouvelle course') {
             console.log('Nouvelle course');
             openNewRace();
+        } else if(action == 'Export des résultats'){
+            exportResult();
         }
     }
 
@@ -78,7 +81,7 @@ export default function TemporaryDrawer() {
             <Divider />
             <List>
                 {['Export des résultats'].map((text, index) => (
-                    <ListItem button key={text}>
+                    <ListItem button key={text} onClick={() => handleClick(text)}>
                         <ListItemIcon> {listIconsSecondPart[index]} </ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>

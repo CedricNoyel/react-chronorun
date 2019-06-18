@@ -78,7 +78,7 @@ ipcMain
     })
     .on('export-csv', (event, arg) => {
         ExcelServices.mergeCsv(function(res){
-            if(res.length != 0){
+            if(res.size != 0){
                 let keys = Array.from(res.keys());
                 var arg = "Problème d'export avec les participants suivants : ";
                 for(key of keys){

@@ -40,17 +40,7 @@ class Home extends Component {
         })
     }
 
-    onExportResult(){
-        ipcRenderer.send('export-csv');
-
-        ipcRenderer.on('reply-export-csv-ok', (event, args) => {
-            alert(args);
-        });
-
-        ipcRenderer.on('reply-export-csv-fail', (event, args) => {
-            alert(args);
-        })
-    }
+    
 
     onEditParticipants(){
         var numbers = []; //En 0 on met le numéro que l'on veut modifier, en 1 le numéro que l'on souhaite mettre
@@ -96,3 +86,14 @@ class Home extends Component {
 
 export default withStyles(styles)(Home);
 
+export function exportResult(){
+    ipcRenderer.send('export-csv');
+
+    ipcRenderer.on('reply-export-csv-ok', (event, args) => {
+        alert(args);
+    });
+
+    ipcRenderer.on('reply-export-csv-fail', (event, args) => {
+        alert(args);
+    })
+}
