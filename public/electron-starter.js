@@ -84,6 +84,10 @@ ipcMain
     .on('start-add-participants', (event, dossard, timestamp) => {
         ExcelServices.addStartTime(dossard, timestamp);
     })
+    .on('end-edit-participant', (event, participant) => {
+        console.log("TODO: LINK WITH EXCEL FUNCTION");
+        console.log(participant);
+    })
     .on('import-participants', (event, arg) => {
         console.log("argument : ", arg);
         ExcelServices.convertXlsxToCsv(arg, function(res) {
