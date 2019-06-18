@@ -11,6 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 import PropTypes from 'prop-types';
 import {withUser} from "./store/AppProvider";
+import Notifier, {openSnackbar} from './Notifier';
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -244,6 +246,9 @@ const IntegrationReactSelect = (props, context) => {
 
     function handleChangeMulti(value) {
         props.setInputStartRace(value);
+        if(value !== null && props.histoParticipantStart.filter(row => row.participant === value[0].value).length !== 0) {
+            openSnackbar({message: 'Attention le participant ' + value[0].nom + " " + value[0].prenom + ' est déjà parti !'}, {type: 'warning'});
+        }
     }
 
     const selectStyles = {
@@ -278,6 +283,7 @@ const IntegrationReactSelect = (props, context) => {
                     onChange={handleChangeMulti}
                     isMulti
                 />
+            <Notifier/>
             </NoSsr>
         </div>
     );

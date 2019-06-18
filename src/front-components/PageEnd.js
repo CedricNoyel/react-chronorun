@@ -7,46 +7,47 @@ import FormEndRace from './FormEndRace';
 import './App.css';
 import 'typeface-roboto';
 import { withUser } from "./store/AppProvider";
+import TableHistoEnd from "./TableHistoEnd";
+import Clock from "./Clock";
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        margin: theme.spacing(2),
-        marginTop: theme.spacing(3),
+        margin: theme.spacing(0, 2, 2, 2),
     },
     paper: {
+        margin: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    container: {
+        backgroundColor: '#ecf0f1',
+    }
 });
 
 class Start extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { classes } = this.props;
         return (
-            <div>
+            <div className={classes.container}>
                 <div className={classes.root}>
-                    <Grid container spacing={3}>
+                    <Grid container>
                         <Grid item xs={8}>
-                            <Typography variant="h5">Arrivée des participants</Typography>
                             <Paper className={classes.paper}>
+                                <Typography variant="h5">Arrivée des participants</Typography>
                                 {this.props.inputsFormEnd.map((row, index) => {
-                                    return <FormEndRace inputid={row.id}/>
+                                    return <FormEndRace key={index} inputid={row.id}/>
                                 })}
                             </Paper>
                         </Grid>
                         <Grid item xs={4}>
-                        <Typography variant="h5">Historique</Typography>
                             <Paper className={classes.paper}>
-                                { this.props.histoParticipantEnd.map((row, index) => {
-                                    return <p key={"histo-"+index} >Dossard: {row.participant} - Temps: {row.time}</p>
-                                })}
+                                <Clock/>
+                            </Paper>
+                            <Paper className={classes.paper}>
+                                <Typography variant="h5">Historique</Typography>
+                                <TableHistoEnd/>
                             </Paper>
                         </Grid>
                     </Grid>

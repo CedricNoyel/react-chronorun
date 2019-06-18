@@ -180,6 +180,8 @@ class ExcelServices {
                 }
             });
         });
+        console.log("excelservices");
+        console.log(data);
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant

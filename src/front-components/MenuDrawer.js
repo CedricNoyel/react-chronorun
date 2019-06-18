@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -15,10 +15,13 @@ import Help from '@material-ui/icons/Help';
 import Copyright from '@material-ui/icons/Copyright';
 import Menu from '@material-ui/icons/Menu';
 import {exportResult} from './Home';
+import {withUser} from "./store/AppProvider";
 
-import NewRace, {openNewRace} from './NewRace';
+import DialogNewRace, {openNewRace} from './DialogNewRace';
+import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
+import DialogCredits, {openDialogCredits} from './DialogCredits';
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     list: {
         width: 250,
     },
@@ -27,14 +30,16 @@ const useStyles = makeStyles(theme => ({
     },
     menu: {
         float: 'left',
+        color: '#FFFFFF',
+        height: '100%',
     },
     menuBar: {
         backgroundColor: '#3f51b5',
     }
-}));
+});
 
-export default function TemporaryDrawer() {
-    const classes = useStyles();
+function TemporaryDrawer(props) {
+    const { classes } = props;
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -43,13 +48,20 @@ export default function TemporaryDrawer() {
     });
 
     const handleClick = (action) => {
-        if(action == 'Nouvelle course') {
-            console.log('Nouvelle course');
+        if(action === 'Nouvelle course') {
             openNewRace();
-        } else if(action == 'Export des résultats'){
-            exportResult();
+        } else if(action === 'Ajout participant') {
+            openDialogAddParticipant();
+        } else if(action === 'Visualisation départs / arrivés') {
+            props.setDisplayPage(3);
+        } else if(action === 'Export des résultats') {
+            props.setDisplayPage(5);
+        } else if(action === 'Documentation') {
+            props.setDisplayPage(4);
+        } else if(action === 'Crédits') {
+            openDialogCredits();
         }
-    }
+    };
 
     const toggleDrawer = (side, open) => event => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -90,7 +102,7 @@ export default function TemporaryDrawer() {
             <Divider />
             <List>
                 {['Documentation', 'Crédits'].map((text, index) => (
-                    <ListItem button key={text}>
+                    <ListItem button key={text} onClick={() => handleClick(text)}>
                         <ListItemIcon> {listIconsThirdPart[index]} </ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
@@ -106,7 +118,11 @@ export default function TemporaryDrawer() {
                 {sideList('left')}
             </Drawer>
 
-            <NewRace/>
+            <DialogNewRace/>
+            <DialogAddParticipant/>
+            <DialogCredits/>
         </div>
     );
 }
+
+export default withUser(withStyles(styles)(TemporaryDrawer));

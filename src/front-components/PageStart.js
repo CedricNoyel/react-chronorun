@@ -10,42 +10,44 @@ import './App.css';
 import 'typeface-roboto';
 import InputStartParticipants from './InputStartParticipants';
 import TableHistoStart from './TableHistoStart';
+import Clock from './Clock';
+
 import {withUser} from "./store/AppProvider";
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        margin: theme.spacing(2),
-        marginTop: theme.spacing(3),
+        margin: theme.spacing(0, 2, 2, 2),
     },
     paper: {
-        marginTop: theme.spacing(2),
+        margin: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    container: {
+        backgroundColor: '#ecf0f1',
+    }
 });
 
-class Start extends Component {
+class PageStart extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             inputValue: '',
         };
-        this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
         this.onParticipantStart = this.onParticipantStart.bind(this);
     }
 
-    handleTextFieldChange() {
-        console.log("start.js - > participantStart");
-    }
 
     onParticipantStart() {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let timestamp = new Date().getTime();
         this.props.inputStartRace.map( (row, index) => {
-            this.props.addHistoParticipantStart(row.value, time);
+            this.props.setFirstInput(true);
+            this.props.addHistoParticipantStart(row.value, timestamp);
+            ipcRenderer.send('start-add-participants', row.value, timestamp);
         });
         this.props.setInputStartRace("");
     }
@@ -53,17 +55,17 @@ class Start extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <div>
+            <div className={classes.container}>
                 <div className={classes.root}>
-                    <Grid container justify="center" alignItems="center" direction="row">
-                        <Grid item xs={12}>
+                    <Grid container>
+                        <Grid item xs={8}>
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Départ des participants</Typography>
                                 <div className={classes.root}>
                                     <NoSsr>
                                         <Box display="flex" flexDirection="row" justifyContent="center">
-                                            <InputStartParticipants onChange={this.handleTextFieldChange}/>
-                                            <Button variant="contained" className={classes.btnLeftSpace} color="primary" onClick={this.onParticipantStart}>
+                                            <InputStartParticipants />
+                                            <Button variant="contained" color="primary" onClick={this.onParticipantStart}>
                                                 Go
                                             </Button>
                                         </Box>
@@ -77,6 +79,12 @@ class Start extends Component {
                                     * Un participant seul ne sera assigné à aucune équipe
                                 </Typography>
                             </Paper>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Paper className={classes.paper}>
+                                <Clock/>
+                            </Paper>
+
                             <Paper className={classes.paper}>
                                 <Typography variant="h5">Historique des départs</Typography>
                                 <TableHistoStart/>
@@ -84,11 +92,10 @@ class Start extends Component {
                         </Grid>
                     </Grid>
                 </div>
-
             </div>
     );
     }
 }
 
-export default withUser(withStyles(styles)(Start));
+export default withUser(withStyles(styles)(PageStart));
 
