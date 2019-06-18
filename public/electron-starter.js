@@ -20,7 +20,8 @@ function createWindow() {
         height: 728,
         webPreferences: { nodeIntegration: true },
         frame: false,
-        titleBarStyle: 'hidden'
+        titleBarStyle: 'hidden',
+        icon: __dirname + '/stopwatch.ico'
     });
     mainWindow.setMenuBarVisibility(false);
 
@@ -66,7 +67,6 @@ app.on('activate', function () {
 ipcMain
     .on('request-liste-participants', (event, arg) => {
         ExcelServices.getParticipants(function(data){
-            console.log('request-liste-participants');
             event.sender.send('reply-liste-participants', data);
         });
     })
@@ -77,7 +77,6 @@ ipcMain
         console.log("TODO add participant to a team");
     })
     .on('add-participant', (event, arg) => {
-        console.log(arg);
         ExcelServices.addParticipant(arg.dossard, arg.lastname, arg.firstname, arg.team);
     })
     .on('start-add-participants', (event, dossard, timestamp) => {
@@ -97,16 +96,20 @@ ipcMain
             }
         });
     })
+    .on('end-edit-participant', (event, participant, timestamp) => {
+        console.log("TODO: LINK WITH EXCEL FUNCTION");
+        console.log(participant, timestamp);
+    })
+    // .on('edit-participant', (event, arg) => {
+    //     ExcelServices.editNumberParticipantAtTheEnd(args[0], args[1]);
+
+    // })
     .on('import-participants', (event, arg) => {
         ExcelServices.convertXlsxToCsv(arg, function(res) {
             if(res){
                 event.sender.send('reply-import-participants', 'Participants importés avec succès');
             }
         });
-    })
-    .on('edit-participant', (event, arg) => {
-        ExcelServices.editNumberParticipantAtTheEnd(args[0], args[1]);
-
     })
     .on('start-add-team', (event, arg) => {
         let currentTimestamp = new Date().getTime();

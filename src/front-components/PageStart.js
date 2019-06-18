@@ -64,7 +64,7 @@ class PageStart extends Component {
                                 <div className={classes.root}>
                                     <NoSsr>
                                         <Box display="flex" flexDirection="row" justifyContent="center">
-                                            <InputStartParticipants />
+                                            <InputStartParticipants/>
                                             <Button variant="contained" color="primary" onClick={this.onParticipantStart}>
                                                 Go
                                             </Button>

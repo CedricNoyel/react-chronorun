@@ -89,7 +89,15 @@ class DialogEditParticipantEnd extends Component {
         let index = histoEnd.indexOf(participant);
         histoEnd[index].participant = this.state.dossard;
         this.props.setHistoParticipantEnd(histoEnd);
-        ipcRenderer.send('end-edit-participant', histoEnd[index].participant);
+        ipcRenderer.send('end-edit-participant', histoEnd[index].participant, histoEnd[index].time);
+        this.closeDialog()
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.onClickEdit();
+        }
     }
 
     render() {
@@ -97,6 +105,7 @@ class DialogEditParticipantEnd extends Component {
         return (
             <div>
                 <Dialog
+                    onKeyDown={this.handleKeyDown}
                     onClose={() => this.closeDialog()}
                     aria-labelledby="customized-dialog-title"
                     open={this.state.open}
