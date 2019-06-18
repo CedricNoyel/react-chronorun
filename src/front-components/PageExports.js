@@ -8,6 +8,9 @@ import './App.css';
 import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
+import Notifier from "./Notifier";
+
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const styles = theme => ({
     root: {
@@ -47,17 +50,34 @@ class PageDocumentation extends Component {
             fileImportArrivees: "",
             btnExportResultsDisabled: this.isFinalExportDisabled(),
         };
+
+        this.exportStartResults = this.exportStartResults.bind(this);
+        this.exportEndResults = this.exportEndResults.bind(this);
+    }
+
+    exportStartResults() {
+        ipcRenderer.on('dl-start-results-reply', () => {
+            openSnackbar({message: 'Fichier des départs téléchargé ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+        });
+        ipcRenderer.send('dl-start-results-request');
+    }
+
+    exportEndResults() {
+        ipcRenderer.on('dl-end-results-reply', () => {
+            openSnackbar({message: 'Fichier des arrivées téléchargé ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+        });
+        ipcRenderer.send('dl-end-results-request');
     }
 
     isHistoParticipantStartEmpty(){
-        if (this.props.histoParticipantStart.length !== 0) {
+        if(this.props.histoParticipantStart.length !== 0) {
             return false;
         }
         return true;
     }
 
     isHistoParticipantEndEmpty(){
-        if (this.props.histoParticipantEnd.length !== 0) {
+        if(this.props.histoParticipantEnd.length !== 0) {
             return false;
         }
         return true;
@@ -141,6 +161,7 @@ class PageDocumentation extends Component {
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Notifier/>
                 </div>
             </div>
         );

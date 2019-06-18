@@ -14,9 +14,9 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
-const pathCsvStop = 'src/app-server/excels/end.csv';
+const pathCsvEnd = 'src/app-server/excels/end.csv';
 const csvWriterStop = createCsvWriter({
-    path : pathCsvStop,
+    path : pathCsvEnd,
     fieldDelimiter: ';',
     append: true,
     header : [
@@ -74,36 +74,40 @@ class ExcelServices {
             // console.log("DATA : " , data);
             ExcelServices.refreshCsv(data);
         });
-        console.log("excelservices");
-        console.log(data);
     }
 
     //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
     static convertXlsxToCsv(path, callback){
         var converted = false;
-        console.log("path : ", path);
         convert.convert(path).then(result => {
 
             var index = 2;
-            // console.log("result : ", result);
             while(result[index.toString()]!== undefined){
                 var numeroDossard = result[index.toString()][0];
                 var nom = result[index.toString()][1];
                 var prenom = result[index.toString()][2];
                 var nomEquipe = result[index.toString()][3];
-
-                // console.log("numero : ", result[index.toString()][0]);
-                // console.log("nom : ", result[index.toString()][1]);
-                // console.log("prenom : ", result[index.toString()][2]);
-                // console.log("equipe : ", result[index.toString()][3]);
-
                 ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe);
                 index++;
             }
             converted = true;
-            console.log("converted : ", converted);
             callback(converted);
         });
+    }
+
+    /**
+     * Delete the CSV files (start, end, participants)
+     */
+    static deleteCsv() {
+        if(fs.existsSync(pathCsvStart)) {
+            fs.unlinkSync(pathCsvStart);
+        }
+        if(fs.existsSync(pathCsvEnd)) {
+            fs.unlinkSync(pathCsvEnd);
+        }
+        if(fs.existsSync(pathCsvParticipants)) {
+            fs.unlinkSync(pathCsvParticipants);
+        }
     }
 
     /**
@@ -120,7 +124,7 @@ class ExcelServices {
         }
         //Check if start.csv exist, if not create it
         try {
-            fs.statSync(pathCsvStop);
+            fs.statSync(pathCsvEnd);
         } catch (error) {
             if(error.code === 'ENOENT') {
                 ExcelServices.addStopTime('dossard', 'time');
@@ -149,6 +153,40 @@ class ExcelServices {
             })
             .on('finish', function () {
                 callback(participants);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getStartResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvStart)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getEndResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvEnd)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
             });
     }
 

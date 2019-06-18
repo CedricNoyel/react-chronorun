@@ -53,10 +53,15 @@ class NavTabs extends React.Component {
         super(props);
         this.state = {
             listeparticipant: this.getParticipants(),
+            listHistoStart: this.getHistoStart(),
+            listHistoEnd: this.getHistoEnd(),
         };
         this.handleChange = this.handleChange.bind(this);
         this.getParticipants = this.getParticipants.bind(this);
+        this.getHistoStart = this.getHistoStart.bind(this);
+        this.getHistoEnd = this.getHistoEnd.bind(this);
     }
+
     getParticipants() {
         ipcRenderer.send('request-liste-participants');
         ipcRenderer.on('reply-liste-participants', (event, arg) => {
@@ -64,6 +69,20 @@ class NavTabs extends React.Component {
             liste = liste.replace(/\"lastname\":/g, "\"nom\":");
             liste = liste.replace(/\"firstname\":/g, "\"prenom\":");
             this.props.setListeParticipants(JSON.parse(liste));
+        });
+    }
+
+    getHistoStart() {
+        ipcRenderer.send('start-results-request');
+        ipcRenderer.on('start-results-reply', (event, arg) => {
+            this.props.setListeHistoStart(arg.reverse());
+        });
+    }
+
+    getHistoEnd() {
+        ipcRenderer.send('end-results-request');
+        ipcRenderer.on('end-results-reply', (event, arg) => {
+            this.props.setListeHistoEnd(arg.reverse());
         });
     }
 

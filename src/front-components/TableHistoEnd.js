@@ -50,7 +50,7 @@ class TableHistoEnd extends Component {
                 <TableBody>
                     { this.props.histoParticipantEnd.map((row, index) => (
                         <TableRow key={row.timestamp}>
-                            <TableCell align="center">{row.participant}</TableCell>
+                            <TableCell align="center">{row.dossard}</TableCell>
                             <TableCell align="center">{new Date(row.time).getHours() + ":" + new Date(row.time).getMinutes() + ":" + new Date(row.time).getSeconds()}</TableCell>
                             <TableCell align="center">
                                 <Button key={row.timestamp} onClick={this.onEditRow.bind(this, row, index)}>
