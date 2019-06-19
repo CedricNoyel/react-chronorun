@@ -62,7 +62,6 @@ const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
 
 class ExcelServices {
 
-
     static mergeCsv(callback){
         var mapErrorParticipants = new Map();
         var self = this;
@@ -89,28 +88,31 @@ class ExcelServices {
                                 }
                             }
                         }
-                        for(var i = 0; i<dataParticipants.length; i++){
-                            var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
-                                return data.dossard == dataParticipants[i].dossard;
-                            });
-                            var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
-                                return data.dossard == dataParticipants[i].dossard;
-                            });
-    
-                            var foundDepart = false;
-                            var foundStop = false;
-                            var dossardParticipant = dataParticipants[i].dossard; //On récupère les info qui nous intéresse
-                            var lastNameParticipant = dataParticipants[i].lastname;
-                            var firstNameParticipant = dataParticipants[i].firstname;
-                            var teamParticipant = dataParticipants[i].team;
-                            var startTimeParticipant = null;
-                            var endTimeParticipant = null;
-                            if(infoDepart.length != 0){
-                                var dateDepart = new Date(infoDepart[0].time*1000);
-                                startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
-                                foundDepart = true;
-                            }
 
+                        for(var i = 0; i<dataStart.length; i++){
+                            var infoParticipant = dataParticipants.filter(function(data){
+                                return data.dossard == dataStart[i].dossard;
+                            });
+
+                            var infoArrivee = dataEnd.filter(function(data){
+                                return data.dossard == dataStart[i].dossard;
+                            });
+
+                            var foundStart = true;
+                            var foundStop = false;
+                            var dossardParticipant = dataStart[i].dossard; //On récupère les info qui nous intéresse
+                            var lastNameParticipant = null;
+                            var firstNameParticipant = null;
+                            var teamParticipant = '';
+                            var dateDepart = new Date(dataStart[i].time*1000);
+                            var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                            var endTimeParticipant = null;
+
+                            if(infoParticipant.length != 0){
+                                lastNameParticipant = infoParticipant[0].lastname;
+                                firstNameParticipant = infoParticipant[0].firstname;
+                                teamParticipant = infoParticipant[0].team;
+                            }
                             if(infoArrivee.length != 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
                                 endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
@@ -118,33 +120,50 @@ class ExcelServices {
                             }
                             var tempsTeam = null;
                             var endTimeTeam = null;
-                            if(foundDepart && foundStop && teamParticipant.length>0){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
-                                var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
+                            if(foundStart && foundStop && teamParticipant.length != 0){
+                                var dateTotal = new Date((infoArrivee[0].time-dataStart[i].time)*1000)
                                 var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
-                                        if(keys[j].toString() == infoDepart[0].time){
-                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
+                                        if(keys[j].toString() == dataStart[i].time){
+                                            tempsTeam = new Date(mapTempsEquipe.get(dataStart[i].time)*1000);
                                             endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
                                         }
                                     }
                                 }
                                 self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
+                                dossardParticipant = null;
+                                lastNameParticipant = null;
+                                firstNameParticipant = null;
+                                startTimeParticipant = null;
+                                endTimeParticipant = null;
+                                timeTotalParticipant = null;
+                                teamParticipant = null;
+                                endTimeTeam = null;
+                                dateArrivee = null;
                             } else {
                                 self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
-                                if(foundDepart && !foundStop){
-                                    if(!mapErrorParticipants.get(dataParticipants[i].dossard)){
-                                        mapErrorParticipants.set(dataParticipants[i].dossard, dataParticipants[i].lastname);
+                                if(foundStart && !foundStop){
+                                    if(!mapErrorParticipants.get(dataStart[i].dossard)){
+                                        mapErrorParticipants.set(dataStart[i].dossard, lastNameParticipant);
                                     }
                                 }
+                                dossardParticipant = null;
+                                lastNameParticipant = null;
+                                firstNameParticipant = null;
+                                startTimeParticipant = null;
+                                endTimeParticipant = null;
+                                timeTotalParticipant = null;
+                                teamParticipant = null;
+                                endTimeTeam = null;
+                                dateArrivee = null;
                             }
-
                         }
                         callback(mapErrorParticipants);
-                    })
-                })
-            })
-        });    
+                    });
+                });
+            });
+        });
     }
 
     static getEquipeFromStart(callback){
@@ -246,10 +265,8 @@ class ExcelServices {
         }
         //Check if result.csv exists, if not create it
         try {
-            console.log("Passe ici");
             fs.statSync(pathCsvResult);
         } catch (error) {
-            console.log("Passe dans error");
             if(error.code === 'ENOENT') {
                 console.log("Passe dans enoent");
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');

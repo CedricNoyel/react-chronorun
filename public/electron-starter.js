@@ -95,7 +95,11 @@ ipcMain
                 let keys = Array.from(res.keys());
                 var arg = "Problème d'export avec les participants suivants : ";
                 for(key of keys){
-                    arg = arg + key + " ("+res.get(key)+"), ";
+                    if(res.get(key)!=null){
+                        arg = arg + key + " ("+res.get(key)+"), ";
+                    } else {
+                        arg = arg + key+", ";
+                    }
                 }
                 event.sender.send('reply-export-csv-fail', arg);
             } else {
