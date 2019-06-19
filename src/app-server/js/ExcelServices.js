@@ -2,6 +2,7 @@ const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const convert = require('xlsx-converter');
+const timediff = require('timediff');
 
 const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
@@ -61,6 +62,13 @@ const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
 
 
 class ExcelServices {
+
+    static checkTime(i){
+        if(i<10){
+            i = "0"+i;
+        }
+        return i;
+    }
 
     static mergeCsv(callback){
         var mapErrorParticipants = new Map();
@@ -128,26 +136,42 @@ class ExcelServices {
 
                             if(infoDepart.length != 0){
                                 var dateDepart = new Date(infoDepart[0].time*1000);
-                                startTimeParticipant = dateDepart.getHours()+":"+dateDepart.getMinutes()+":"+dateDepart.getSeconds()+":";
+                                var h = self.checkTime(dateDepart.getHours());
+                                var m = self.checkTime(dateDepart.getMinutes());
+                                var s = self.checkTime(dateDepart.getSeconds());
+                                var startTimeParticipant = h+":"+m+":"+s;
                                 foundStart = true;
                             }
 
                             if(infoArrivee.length != 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
-                                endTimeParticipant = dateArrivee.getHours()+":"+dateArrivee.getMinutes()+":"+dateArrivee.getSeconds()+":";
+                                var h = self.checkTime(dateArrivee.getHours());
+                                var m = self.checkTime(dateArrivee.getMinutes());
+                                var s = self.checkTime(dateArrivee.getSeconds());
+                                var endTimeParticipant = h+":"+m+":"+s;
                                 foundStop = true;
                             }
 
                             var tempsTeam = null;
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
-                                var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
-                                var timeTotalParticipant = dateTotal.getHours()+":"+dateTotal.getMinutes()+":"+dateTotal.getSeconds()+":";
+                                
+                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var dateTotal = timediff(dateDepart, dateArrivee);
+                                var h = self.checkTime(dateTotal.hours);
+                                var m = self.checkTime(dateTotal.minutes);
+                                var s = self.checkTime(dateTotal.seconds);
+                                var timeTotalParticipant = h+":"+m+":"+s;
+                                
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
                                             tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
-                                            endTimeTeam = tempsTeam.getHours()+":"+tempsTeam.getMinutes()+":"+tempsTeam.getSeconds()+":";
+                                            var h = self.checkTime(tempsTeam.getHours());
+                                            var m = self.checkTime(tempsTeam.getMinutes());
+                                            var s = self.checkTime(tempsTeam.getSeconds());
+                                            endTimeTeam = h+":"+m+":"+s;
                                         }
                                     }
                                 }
