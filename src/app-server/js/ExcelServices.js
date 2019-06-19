@@ -25,6 +25,23 @@ const csvWriterEnd = createCsvWriter({
     ]
 });
 
+const pathCsvResult = "src/app-server/excels/result.csv";
+const csvWriterResult = createCsvWriter({
+    path : pathCsvResult,
+    fieldDelimiter: ";",
+    append: true,
+    header : [
+        {id: 'dossard', title: 'Dossard'},
+        {id: 'lastname', title: 'Nom'},
+        {id: 'firstname', title: 'Prénom'},
+        {id: 'timedepart', title: 'Temps de départ'},
+        {id: 'timearrivee', title: 'Temps d\'arrivée '},
+        {id: 'timetotal', title: 'Temps total'},
+        {id: 'team', title: 'Equipe'},
+        {id: 'timeteam', title: 'Temps équipe'}
+    ]
+})
+
 const pathCsvParticipants = 'src/app-server/excels/participants.csv';
 const csvWriterParticipants = createCsvWriter({
     path : pathCsvParticipants,
