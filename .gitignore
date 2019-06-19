@@ -16,4 +16,4 @@ npm-debug.log
 
 .idea
 
-./src/app-server/excels/
+src/app-server/excels/
