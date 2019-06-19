@@ -70,6 +70,16 @@ class ExcelServices {
             self.getParticipants(function(dataParticipants){
                 self.getParticipantsEnd(function(dataEnd){
                     self.getParticipantsStart(function(dataStart){
+                        var dossards = new Set();
+                        for(var i = 0; i<dataParticipants.length; i++){
+                            dossards.add(dataParticipants[i].dossard);
+                        }
+                        for(var i = 0; i<dataStart.length; i++){
+                            dossards.add(dataStart[i].dossard);
+                        }
+                        for(var i = 0; i<dataEnd.length; i++){
+                            dossards.add(dataEnd[i].dossard);
+                        }
                         var mapTempsEquipe = new Map();
                         var keys = Object.keys(dataEquipe);
                         for(var i = 0; i<keys.length; i++){
@@ -88,24 +98,26 @@ class ExcelServices {
                                 }
                             }
                         }
-
-                        for(var i = 0; i<dataStart.length; i++){
+                        dossards.forEach(function(dossard){
                             var infoParticipant = dataParticipants.filter(function(data){
-                                return data.dossard == dataStart[i].dossard;
+                                return data.dossard == dossard;
                             });
 
                             var infoArrivee = dataEnd.filter(function(data){
-                                return data.dossard == dataStart[i].dossard;
+                                return data.dossard == dossard;
                             });
 
-                            var foundStart = true;
+                            var infoDepart = dataStart.filter(function(data){
+                                return data.dossard == dossard;
+                            });
+
+                            var foundStart = false;
                             var foundStop = false;
-                            var dossardParticipant = dataStart[i].dossard; //On récupère les info qui nous intéresse
+                            var dossardParticipant = dossard; //On récupère les info qui nous intéresse
                             var lastNameParticipant = null;
                             var firstNameParticipant = null;
                             var teamParticipant = '';
-                            var dateDepart = new Date(dataStart[i].time*1000);
-                            var startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                            var startTimeParticipant = null;
                             var endTimeParticipant = null;
 
                             if(infoParticipant.length != 0){
@@ -113,20 +125,28 @@ class ExcelServices {
                                 firstNameParticipant = infoParticipant[0].firstname;
                                 teamParticipant = infoParticipant[0].team;
                             }
+
+                            if(infoDepart.length != 0){
+                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                foundStart = true;
+                            }
+
                             if(infoArrivee.length != 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
-                                endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateArrivee.getSeconds()+"sec";
                                 foundStop = true;
                             }
+
                             var tempsTeam = null;
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
-                                var dateTotal = new Date((infoArrivee[0].time-dataStart[i].time)*1000)
+                                var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
                                 var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
-                                        if(keys[j].toString() == dataStart[i].time){
-                                            tempsTeam = new Date(mapTempsEquipe.get(dataStart[i].time)*1000);
+                                        if(keys[j].toString() == infoDepart[0].time){
+                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
                                             endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
                                         }
                                     }
@@ -144,8 +164,8 @@ class ExcelServices {
                             } else {
                                 self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
                                 if(foundStart && !foundStop){
-                                    if(!mapErrorParticipants.get(dataStart[i].dossard)){
-                                        mapErrorParticipants.set(dataStart[i].dossard, lastNameParticipant);
+                                    if(!mapErrorParticipants.get(dossard)){
+                                        mapErrorParticipants.set(dossard, lastNameParticipant);
                                     }
                                 }
                                 dossardParticipant = null;
@@ -158,7 +178,7 @@ class ExcelServices {
                                 endTimeTeam = null;
                                 dateArrivee = null;
                             }
-                        }
+                        });
                         callback(mapErrorParticipants);
                     });
                 });
@@ -263,12 +283,12 @@ class ExcelServices {
                 ExcelServices.addParticipant('dossard', 'lastname', 'firstname', 'team');
             }
         }
-        //Check if result.csv exists, if not create it
+        //Deletes result.csv exists, if not create it
         try {
-            fs.statSync(pathCsvResult);
+            fs.unlinkSync(pathCsvResult)
+            ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
         } catch (error) {
             if(error.code === 'ENOENT') {
-                console.log("Passe dans enoent");
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
             }
         }
