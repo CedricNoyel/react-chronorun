@@ -128,13 +128,13 @@ class ExcelServices {
 
                             if(infoDepart.length != 0){
                                 var dateDepart = new Date(infoDepart[0].time*1000);
-                                startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
+                                startTimeParticipant = dateDepart.getHours()+":"+dateDepart.getMinutes()+":"+dateDepart.getSeconds()+":";
                                 foundStart = true;
                             }
 
                             if(infoArrivee.length != 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
-                                endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateArrivee.getSeconds()+"sec";
+                                endTimeParticipant = dateArrivee.getHours()+":"+dateArrivee.getMinutes()+":"+dateArrivee.getSeconds()+":";
                                 foundStop = true;
                             }
 
@@ -142,12 +142,12 @@ class ExcelServices {
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
                                 var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
-                                var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
+                                var timeTotalParticipant = dateTotal.getHours()+":"+dateTotal.getMinutes()+":"+dateTotal.getSeconds()+":";
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
                                             tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
-                                            endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
+                                            endTimeTeam = tempsTeam.getHours()+":"+tempsTeam.getMinutes()+":"+tempsTeam.getSeconds()+":";
                                         }
                                     }
                                 }
