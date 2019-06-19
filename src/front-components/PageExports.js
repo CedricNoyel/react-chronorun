@@ -94,12 +94,10 @@ class PageDocumentation extends Component {
 
     onImportDeparts(e) {
         this.setState({fileImportDeparts: e.target.files[0]});
-        console.log(e.target.files[0]);
     }
 
     onImportArrivees(e) {
         this.setState({fileImportArrivees: e.target.files[0]});
-        console.log(e.target.files[0]);
     }
     render() {
         const { classes } = this.props;

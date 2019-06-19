@@ -128,8 +128,6 @@ ipcMain
     .on('dl-template-request', (event, arg) => {
         let source = path.join(__dirname, 'template_chrono_run.xlsx');
         let destination = path.join(app.getPath('downloads'), 'template_chrono_run.xlsx');
-        console.log(source);
-        console.log(destination);
         fs.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-template-reply');
@@ -139,7 +137,6 @@ ipcMain
     .on('dl-start-results-request', (event, arg) => {
         let source = path.join(__dirname, '/../src/app-server/excels/start.csv');
         let destination = path.join(app.getPath('downloads'), 'resultats_depart_chrono_run.csv');
-        console.log(source);
         fs.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-start-results-reply');
@@ -148,10 +145,7 @@ ipcMain
     })
     .on('dl-end-results-request', (event, arg) => {
         let source = path.join(__dirname, '/../src/app-server/excels/end.csv');
-        console.log(source);
         let destination = path.join(app.getPath('downloads'), 'resultats_arrivees_chrono_run.csv');
-        console.log(source);
-        console.log(destination);
         fs.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-end-results-reply');

@@ -38,11 +38,6 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
-const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
-
-
-
-
 class ExcelServices {
 
 
@@ -60,13 +55,13 @@ class ExcelServices {
                             var time = 0;
                             for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
                                 var tempsArrivee = dataEnd.filter(function(data){
-                                    return data.dossard == dataEquipe[keys[i].toString()][j].dossard;
-                                })
-                                for(var k = 0; k<tempsArrivee.length; k++){
+                                    return data.dossard === dataEquipe[keys[i].toString()][j].dossard;
+                                });
+                                for(var k = 0; k < tempsArrivee.length; k++){
                                     if(time<tempsArrivee[k].time){
                                         time = tempsArrivee[k].time;
                                     }
-                                    if(k==tempsArrivee.length-1){
+                                    if(k === tempsArrivee.length-1){
                                         mapTempsEquipe.set(keys[i].toString(), time);
                                     }
                                 }
@@ -74,10 +69,10 @@ class ExcelServices {
                         }
                         for(var i = 0; i<dataParticipants.length; i++){
                             var infoDepart = dataStart.filter(function(data){ //On cherche les infos associés au numéro de dossard dans le fichier start
-                                return data.dossard == dataParticipants[i].dossard;
+                                return data.dossard === dataParticipants[i].dossard;
                             });
                             var infoArrivee = dataEnd.filter(function(data){ //Idem pour le fichier end
-                                return data.dossard == dataParticipants[i].dossard;
+                                return data.dossard === dataParticipants[i].dossard;
                             });
     
                             var foundDepart = false;
@@ -88,13 +83,13 @@ class ExcelServices {
                             var teamParticipant = dataParticipants[i].team;
                             var startTimeParticipant = null;
                             var endTimeParticipant = null;
-                            if(infoDepart.length != 0){
+                            if(infoDepart.length !== 0){
                                 var dateDepart = new Date(infoDepart[0].time*1000);
                                 startTimeParticipant = dateDepart.getHours()+"h"+dateDepart.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
                                 foundDepart = true;
                             }
 
-                            if(infoArrivee.length != 0){
+                            if(infoArrivee.length !== 0){
                                 var dateArrivee = new Date(infoArrivee[0].time*1000);
                                 endTimeParticipant = dateArrivee.getHours()+"h"+dateArrivee.getMinutes()+"min"+dateDepart.getSeconds()+"sec";
                                 foundStop = true;
@@ -104,9 +99,9 @@ class ExcelServices {
                             if(foundDepart && foundStop && teamParticipant.length>0){ //Si on a les infos au départ et à l'arrivée, on l'ajoute au fichier result
                                 var dateTotal = new Date((infoArrivee[0].time-infoDepart[0].time)*1000)
                                 var timeTotalParticipant = dateTotal.getHours()+"h"+dateTotal.getMinutes()+"min"+dateTotal.getSeconds()+"sec";
-                                if(teamParticipant.length != 0){
-                                    for(var j = 0; j<keys.length; j++){
-                                        if(keys[j].toString() == infoDepart[0].time){
+                                if(teamParticipant.length !== 0){
+                                    for(var j = 0; j < keys.length; j++){
+                                        if(keys[j].toString() === infoDepart[0].time){
                                             tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
                                             endTimeTeam = tempsTeam.getHours()+"h"+tempsTeam.getMinutes()+"min"+tempsTeam.getSeconds()+"sec";
                                         }
@@ -170,7 +165,7 @@ class ExcelServices {
         var converted = false; 
         convert.convert(path).then(result => { //On lit le fichier xlsx grâce à xlsx-converter
             var index = 2; //On lit à partir de la ligne 2 pour éviter les headers
-            while(result[index.toString()]!=undefined){ //On récupère les infos souhaitées
+            while(result[index.toString()] !== undefined){ //On récupère les infos souhaitées
                 var numeroDossard = result[index.toString()][0];
                 var nom = result[index.toString()][1];
                 var prenom = result[index.toString()][2];
@@ -229,12 +224,9 @@ class ExcelServices {
         }
         //Check if result.csv exists, if not create it
         try {
-            console.log("Passe ici");
             fs.statSync(pathCsvResult);
         } catch (error) {
-            console.log("Passe dans error");
             if(error.code === 'ENOENT') {
-                console.log("Passe dans enoent");
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
             }
         }

@@ -30,7 +30,6 @@ class TableHistoEnd extends Component {
     }
 
     onEditRow(dossard, timestamp) {
-        console.log("selected: ", dossard + " " + timestamp);
         openEditParticipantEnd(dossard, timestamp)
     }
 

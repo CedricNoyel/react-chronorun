@@ -55,7 +55,6 @@ class TableVisualiseParticipants extends Component {
             if (newTable === undefined){
                 this.setState({ tableVisu: [] });
             } else {
-                console.log(newTable);
                 this.setState({ tableVisu: newTable });
             }
         }
