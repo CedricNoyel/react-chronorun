@@ -3,15 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifier, {openSnackbar} from './Notifier';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import Check from '@material-ui/icons/Check';
-import DialogConfirmImport, {openDialogConfirmImport} from './DialogConfirmImport';
-import Notifier, {openSnackbar} from "./Notifier";
-import {withUser} from "./store/AppProvider";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
@@ -81,7 +79,7 @@ class DialogNewRace extends Component {
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.openDialogConfirmation = this.openDialogConfirmation.bind(this);
+        this.importParticipants = this.importParticipants.bind(this);
         this.onUploadParticipants = this.onUploadParticipants.bind(this);
     }
 
@@ -102,29 +100,12 @@ class DialogNewRace extends Component {
         }
     }
 
-    importParticipants = (res) => {
-        if(res){
-            ipcRenderer.on('import-participants-reply', (event, res, participants) => {
-                if(res) {
-                    let liste = JSON.stringify(participants);
-                    liste = liste.replace(/\"lastname\":/g, "\"nom\":");
-                    liste = liste.replace(/\"firstname\":/g, "\"prenom\":");
-                    this.props.setListeParticipants(JSON.parse(liste));
-                    this.props.setListeHistoStart([]);
-                    this.props.setListeHistoEnd([]);
-                    openSnackbar({message: 'Les participants ont étés importés avec succès !'}, {type: 'success'});
-                }else {
-                    openSnackbar({message: 'Certains participants n\'ont pas pu être ajouté car le fichier comporte des erreurs'}, {type: 'warning'});
-
-                }
-                this.setState({import: true});
-            });
-            ipcRenderer.send('import-participants-request', this.state.filePath);
-        }
-    };
-
-    openDialogConfirmation() {
-        openDialogConfirmImport();
+    importParticipants() {
+        ipcRenderer.on('import-participants-reply', () => {
+            openSnackbar({message: 'Les participants ont étés importés avec succès !'}, {type: 'success'});
+            this.setState({import: true});
+        });
+        ipcRenderer.send('import-participants-request', this.state.filePath);
     }
 
     handleClick() {
@@ -168,14 +149,13 @@ class DialogNewRace extends Component {
                                     Charger le fichier des participants
                                 </Button>
                             </label>
-                            <Button variant="contained" component="span" className={classes.validateIcon} disabled={this.state.import} onClick={this.openDialogConfirmation}>
+                            <Button variant="contained" component="span" className={classes.validateIcon} disabled={this.state.import} onClick={this.importParticipants}>
                                 <Check/>
                             </Button>
                             <p>Pour obtenir le template du fichier, <a href="#" onClick={this.handleClick}>cliquez ici</a></p>
                         </div>
                     </DialogContent>
-                    <DialogConfirmImport importReturn={this.importParticipants.bind(this)}/>
-                    <Notifier/>
+                <Notifier />
                 </Dialog>
             </div>
     );
@@ -186,5 +166,5 @@ export function openNewRace() {
     openNewRaceFn();
 }
 
-export default withUser(withStyles(styles)(DialogNewRace));
+export default withStyles(styles)(DialogNewRace);
 

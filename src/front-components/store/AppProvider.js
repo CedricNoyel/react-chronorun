@@ -111,6 +111,9 @@ class AppProvider extends Component {
             newItems.unshift({dossard: dossard, time: time});
             return { histoParticipantStart: newItems}
         }),
+        setHistoParticipantStart: (liste) => this.setState((state, props) => {
+            return { histoParticipantStart: liste };
+        }),
     };
 
     render() {
