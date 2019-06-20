@@ -47,7 +47,7 @@ class TableVisualiseParticipants extends Component {
             this.setState({ tableVisu: table });
         } else {
             if (isNaN(filterValue)) {
-                newTable = table.filter(row => (row.lastname || row.firstname) && (row.lastname.startsWith(filterValue) || row.firstname.startsWith(filterValue)));
+                newTable = table.filter(row => (row.lastname || row.firstname) && (row.lastname.toLowerCase().startsWith(filterValue) || row.firstname.toLowerCase().startsWith(filterValue)));
             } else {
                 newTable = table.filter(row => row.dossard.startsWith(filterValue));
             }
@@ -55,7 +55,6 @@ class TableVisualiseParticipants extends Component {
             if (newTable === undefined){
                 this.setState({ tableVisu: [] });
             } else {
-                console.log(newTable);
                 this.setState({ tableVisu: newTable });
             }
         }
