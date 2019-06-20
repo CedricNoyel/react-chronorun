@@ -106,11 +106,9 @@ class TableVisualiseParticipants extends Component {
     }
 
     displayTimestamp(time){
-        if (isNaN(time)){
-            return "-";
-        }
+        if (isNaN(time)) return "-";
         let date = new Date(time);
-        return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+        return ('0' + date.getHours()).substr(-2) + ":" + ('0' + date.getMinutes()).substr(-2) + ":" + ('0' + date.getSeconds()).substr(-2);
     }
 
     render() {
