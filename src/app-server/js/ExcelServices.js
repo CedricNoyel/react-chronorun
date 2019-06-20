@@ -2,10 +2,10 @@ const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const xlsx_converter = require('xlsx-converter');
-const timediff = require('timediff');
 
 const pathCsvResultsStart = 'src/app-server/excels/start_results.csv';
 const pathCsvResultsEnd = 'src/app-server/excels/end_results.csv';
+const pathCsvResultFinal = 'src/app-server/excels/resultats_finaux.xlsx';
 
 const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
@@ -64,8 +64,8 @@ class ExcelServices {
     static exportFinalResults(callback) {
         var self = this;
         this.getParticipants(function (participants) {
-            self.getStartResult(function (startResults) {
-                self.getEndResult(function (endResults) {
+            self.getExportStartResult(function (startResults) {
+                self.getExportEndResult(function (endResults) {
                     let dossardList = [];
                     participants.forEach((values) => {
                         dossardList.push(values.dossard);
@@ -164,6 +164,9 @@ class ExcelServices {
                             });
                         }
                     });
+
+                    let finalResults = results.concat(errors);
+                    callback(finalResults);
                 });
             });
         });
@@ -258,6 +261,9 @@ class ExcelServices {
         if(fs.existsSync(pathCsvResultsEnd)) {
             fs.unlinkSync(pathCsvResultsEnd);
         }
+        if(fs.existsSync(pathCsvResultFinal)) {
+            fs.unlinkSync(pathCsvResultFinal);
+        }
     }
 
     /**
@@ -288,13 +294,13 @@ class ExcelServices {
                 ExcelServices.addParticipant('dossard', 'lastname', 'firstname', 'team');
             }
         }
-        //Deletes result.csv exists, if not create it
-        try {
-            fs.statSync(pathCsvResult);
-        } catch (error) {
-            if(error.code === 'ENOENT') {
-                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
-            }
+    }
+
+    static isExportValid(callback) {
+        if(fs.existsSync(pathCsvResultsStart) && fs.existsSync(pathCsvResultsEnd)) {
+            callback(true);
+        } else {
+            callback(false);
         }
     }
 
@@ -338,9 +344,43 @@ class ExcelServices {
      *  Return the list of the participants
      * @param callback - function
      */
+    static getExportStartResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvResultsStart)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
     static getEndResult(callback) {
         const results = [];
         fs.createReadStream(pathCsvEnd)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getExportEndResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvResultsEnd)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
                 row.time = Number(row.time);

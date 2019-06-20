@@ -22,6 +22,7 @@
     "electron-log": "^3.0.6",
     "electron-packager": "^13.1.1",
     "file-system": "^2.2.2",
+    "json2xls": "^0.1.2",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-autocomplete": "^1.8.1",
@@ -32,7 +33,6 @@
     "react-router-dom": "^5.0.0",
     "react-select": "^3.0.3",
     "request": "^2.88.0",
-    "timediff": "^1.1.1",
     "typeface-roboto": "0.0.54",
     "wait-on": "^3.2.0",
     "xlsx-converter": "^0.1.0"
