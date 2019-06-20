@@ -71,6 +71,16 @@ class PageDocumentation extends Component {
         ipcRenderer.send('dl-end-results-request');
     }
 
+    exportResult() {
+        ipcRenderer.send('request-export-csv');
+        ipcRenderer.on('reply-export-csv', (event, arg) => {
+            if (arg.status === false) {
+                openSnackbar({message: 'Le fichier a bien été exporté '}, {type: 'success'});
+            }
+            openSnackbar({message: 'Fichier des arrivées téléchargé ! Cependant, celui-ci contient des participants avec des données incorrectes'}, {type: 'warning'});
+        });
+    }
+
     isHistoParticipantStartEmpty(){
         if(this.props.histoParticipantStart.length !== 0) {
             return false;
@@ -154,7 +164,7 @@ class PageDocumentation extends Component {
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
-                                            <Button variant="outlined" className={classes.button} onClick={exportResult}>
+                                            <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
                                                 Exporter les résultats
                                             </Button>
                                         </div>
