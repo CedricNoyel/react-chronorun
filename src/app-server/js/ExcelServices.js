@@ -70,7 +70,9 @@ class ExcelServices {
         var that = this;
         that.getTimeAPI(function(res){
             var json = JSON.parse(res);
-            callback(json['unixtime']);
+            var offset = json['utc_offset'].toString();
+            json['utc_offset'] = offset[2];
+            callback(json);
         });
     }
 
@@ -89,14 +91,19 @@ class ExcelServices {
         var mapErrorParticipants = new Map();
         var self = this;
         this.createCsv();
-        this.refreshClock(function(data){
-            console.log("data : ", data);
-        });
         self.getEquipeFromStart(function(dataEquipe){
             self.getParticipants(function(dataParticipants){
                 self.getParticipantsEnd(function(dataEnd){
                     self.getParticipantsStart(function(dataStart){
+                        self.refreshClock(function(dateAPI){
                         var dossards = new Set();
+                        var tempsAPI = new Date((dateAPI['unixtime'] + 3600 * dateAPI['utc_offset'])*1000);
+                        var tempsOrdi = new Date();
+                        tempsOrdi = tempsOrdi.getTime() + 3600000 * dateAPI['utc_offset'];
+                        tempsAPI = tempsAPI.getTime();
+                        
+                        var tempsDiff = parseInt((tempsOrdi - tempsAPI)*(-1));
+
                         for(var i = 0; i<dataParticipants.length; i++){
                             dossards.add(dataParticipants[i].dossard);
                         }
@@ -151,9 +158,9 @@ class ExcelServices {
                                 firstNameParticipant = infoParticipant[0].firstname;
                                 teamParticipant = infoParticipant[0].team;
                             }
-
+                            
                             if(infoDepart.length != 0){
-                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
+                                var dateDepart = new Date(Math.trunc(parseInt(infoDepart[0].time) + tempsDiff));
                                 var h = self.checkTime(dateDepart.getHours());
                                 var m = self.checkTime(dateDepart.getMinutes());
                                 var s = self.checkTime(dateDepart.getSeconds());
@@ -162,7 +169,7 @@ class ExcelServices {
                             }
 
                             if(infoArrivee.length != 0){
-                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
+                                var dateArrivee = new Date(Math.trunc(parseInt(infoArrivee[0].time) + tempsDiff));
                                 var h = self.checkTime(dateArrivee.getHours());
                                 var m = self.checkTime(dateArrivee.getMinutes());
                                 var s = self.checkTime(dateArrivee.getSeconds());
@@ -173,7 +180,6 @@ class ExcelServices {
                             var tempsTeam = null;
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
-                                
                                 var dateDepart = new Date(Math.trunc(infoDepart[0].time));
                                 var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var dateTotal = timediff(dateDepart, dateArrivee);
@@ -181,7 +187,6 @@ class ExcelServices {
                                 var m = self.checkTime(dateTotal.minutes);
                                 var s = self.checkTime(dateTotal.seconds);
                                 var timeTotalParticipant = h+":"+m+":"+s;
-                                
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
@@ -223,6 +228,7 @@ class ExcelServices {
                             }
                         });
                         callback(mapErrorParticipants);
+                        })
                     });
                 });
             });
