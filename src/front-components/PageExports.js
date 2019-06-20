@@ -9,7 +9,6 @@ import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
 import {exportResult} from "./Home";
-import {onEditParticipants} from "./Home";
 import Notifier from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
@@ -72,17 +71,11 @@ class PageDocumentation extends Component {
     }
 
     isHistoParticipantStartEmpty(){
-        if(this.props.histoParticipantStart.length !== 0) {
-            return false;
-        }
-        return true;
+        return this.props.histoParticipantStart.length === 0;
     }
 
     isHistoParticipantEndEmpty(){
-        if(this.props.histoParticipantEnd.length !== 0) {
-            return false;
-        }
-        return true;
+        return this.props.histoParticipantEnd.length === 0;
     }
 
     isFinalExportDisabled(){
@@ -93,13 +86,19 @@ class PageDocumentation extends Component {
     }
 
     onImportDeparts(e) {
-        this.setState({fileImportDeparts: e.target.files[0]});
-        console.log(e.target.files[0]);
+        let filePath = e.target.files[0].path;
+        ipcRenderer.on('import-start-results-reply', () => {
+            openSnackbar({message: 'Fichier des départs importé avec succès !'}, {type: 'success'});
+        });
+        ipcRenderer.send('import-start-results-request', filePath);
     }
 
     onImportArrivees(e) {
-        this.setState({fileImportArrivees: e.target.files[0]});
-        console.log(e.target.files[0]);
+        let filePath = e.target.files[0].path;
+        ipcRenderer.on('import-end-results-reply', () => {
+            openSnackbar({message: 'Fichier des arrivées importé avec succès !'}, {type: 'success'});
+        });
+        ipcRenderer.send('import-end-results-request', filePath);
     }
     render() {
         const { classes } = this.props;

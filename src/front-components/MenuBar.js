@@ -12,6 +12,7 @@ import {withUser} from "./store/AppProvider";
 import PageVisualiseParticipants from "./PageVisualiseParticipants";
 import PageDocumentation from "./PageDocumentation";
 import PageExports from "./PageExports";
+import Notifier from "./Notifier";
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 function TabContainer(props) {
@@ -119,6 +120,7 @@ class NavTabs extends React.Component {
                 {this.props.displayPage === 5 && <TabContainer key="5">
                     <PageExports/>
                 </TabContainer>}
+                <Notifier/>
             </div>
         );
     }

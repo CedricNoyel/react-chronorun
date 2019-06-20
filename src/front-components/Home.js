@@ -29,10 +29,9 @@ class Home extends Component {
         this.onUploadParticipants = this.onUploadParticipants.bind(this);
     }
     onUploadParticipants(e) {
-        console.log(e.target.files[0])
         this.setState({
             selectedFile: e.target.files[0]
-        })
+        });
         ipcRenderer.send('import-participants', e.target.files[0].path);
         
         ipcRenderer.on('reply-import-participants', (event, args) => {
