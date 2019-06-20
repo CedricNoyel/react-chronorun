@@ -89,21 +89,12 @@ ipcMain
     .on('start-add-participants', (event, dossard, timestamp) => {
         ExcelServices.addStartTime(dossard, timestamp);
     })
-    .on('export-csv', (event, arg) => {
+    .on('request-export-csv', (event, arg) => {
         ExcelServices.mergeCsv(function(res){
             if(res.size != 0){
-                let keys = Array.from(res.keys());
-                var arg = "Problème d'export avec les participants suivants : ";
-                for(key of keys){
-                    if(res.get(key)!=null){
-                        arg = arg + key + " ("+res.get(key)+"), ";
-                    } else {
-                        arg = arg + key+", ";
-                    }
-                }
-                event.sender.send('reply-export-csv-fail', arg);
+                event.sender.send('reply-export-csv', {status: false, arg: arg});
             } else {
-                event.sender.send('reply-export-csv-ok', 'Export des résultats effectué avec succès');
+                event.sender.send('reply-export-csv', {status: true, arg: arg});
             }
         });
     })
