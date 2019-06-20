@@ -101,6 +101,7 @@ class ExcelServices {
                         var tempsOrdi = new Date();
                         tempsOrdi = tempsOrdi.getTime() + 3600000 * dateAPI['utc_offset'];
                         tempsAPI = tempsAPI.getTime();
+                        var indexTeam = 0;
                         
                         var tempsDiff = parseInt((tempsOrdi - tempsAPI)*(-1));
 
@@ -179,7 +180,7 @@ class ExcelServices {
 
                             var tempsTeam = null;
                             var endTimeTeam = null;
-                            if(foundStart && foundStop && teamParticipant.length != 0){
+                            if(foundStart && foundStop){
                                 var dateDepart = new Date(Math.trunc(infoDepart[0].time));
                                 var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var dateTotal = timediff(dateDepart, dateArrivee);
@@ -187,7 +188,24 @@ class ExcelServices {
                                 var m = self.checkTime(dateTotal.minutes);
                                 var s = self.checkTime(dateTotal.seconds);
                                 var timeTotalParticipant = h+":"+m+":"+s;
-                                if(teamParticipant.length != 0){
+                                if(mapTempsEquipe.get(infoDepart[0].time)){
+                                    if(teamParticipant.length == 0){
+                                        var infoTeamDepart = dataStart.filter(function(dataTeamStart){
+                                            return dataTeamStart.time == infoDepart[0].time && dataTeamStart.dossard != dossard;
+                                        });
+                                        if(infoTeamDepart.length != 0){
+                                            var participantTeam = dataParticipants.filter(function(data){
+                                                return data.dossard == infoTeamDepart[0].dossard;
+                                            });
+                                            if(participantTeam[0].team.length !=0){
+                                                teamParticipant = participantTeam[0].team;
+                                            } else {
+                                                infoParticipant[0].team = indexTeam;
+                                                teamParticipant = indexTeam;
+                                                indexTeam++;
+                                            }
+                                        }
+                                    }
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
                                             tempsTeam = timediff(Math.trunc(infoDepart[0].time), Math.trunc(mapTempsEquipe.get(infoDepart[0].time)));
