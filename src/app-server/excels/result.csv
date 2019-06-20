@@ -1,11 +1,6 @@
 dossard;lastname;firstname;timedepart;timearrivee;timetotal;team;timeteam
-10;geneve;jordan;14:57:28;;;koala;
-6;noyel;cedric;14:57:28;18:00:03;03:02:35;koala;18:00:03
-4;koko;kuku;09:08:04;18:06:51;0-15:0-1:0-13;fil;18:06:51
-1;;;13:32:38;15:47:12;;;
-2;;;13:32:38;;;;
-3;;;20:00:00;22:53:13;;;
-42;BLABLA;BloBlo;12:50:04;16:00:52;;;
-123456;;;14:57:29;;;;
-7;legalloudec;samy;09:08:04;;;fil;
-11;;;;18:43:39;;;
+10;geneve;jordan;19:37:20;;;koala;
+7;legalloudec;samy;19:26:43;19:39:23;00:12:39;fil;00:12:39
+6;noyel;cedric;;;;koala;
+4;koko;kuku;19:26:43;19:39:22;00:12:38;fil;00:12:39
+42;BLABLA;BloBlo;19:36:49;;;;

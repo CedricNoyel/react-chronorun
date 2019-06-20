@@ -135,7 +135,7 @@ class ExcelServices {
                             }
 
                             if(infoDepart.length != 0){
-                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
                                 var h = self.checkTime(dateDepart.getHours());
                                 var m = self.checkTime(dateDepart.getMinutes());
                                 var s = self.checkTime(dateDepart.getSeconds());
@@ -144,7 +144,7 @@ class ExcelServices {
                             }
 
                             if(infoArrivee.length != 0){
-                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var h = self.checkTime(dateArrivee.getHours());
                                 var m = self.checkTime(dateArrivee.getMinutes());
                                 var s = self.checkTime(dateArrivee.getSeconds());
@@ -156,8 +156,8 @@ class ExcelServices {
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
                                 
-                                var dateDepart = new Date(infoDepart[0].time*1000);
-                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
+                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var dateTotal = timediff(dateDepart, dateArrivee);
                                 var h = self.checkTime(dateTotal.hours);
                                 var m = self.checkTime(dateTotal.minutes);
@@ -167,10 +167,11 @@ class ExcelServices {
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
-                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
-                                            var h = self.checkTime(tempsTeam.getHours());
-                                            var m = self.checkTime(tempsTeam.getMinutes());
-                                            var s = self.checkTime(tempsTeam.getSeconds());
+                                            tempsTeam = timediff(Math.trunc(infoDepart[0].time), Math.trunc(mapTempsEquipe.get(infoDepart[0].time)));
+                                            // tempsTeam = new Date(Math.trunc(mapTempsEquipe.get(infoDepart[0].time) - Math.trunc(infoDepart[0].time)));
+                                            var h = self.checkTime(tempsTeam.hours);
+                                            var m = self.checkTime(tempsTeam.minutes);
+                                            var s = self.checkTime(tempsTeam.seconds);
                                             endTimeTeam = h+":"+m+":"+s;
                                         }
                                     }
