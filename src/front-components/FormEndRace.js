@@ -34,6 +34,7 @@ class FormEndRace extends Component {
         if (this.props.histoParticipantEnd.find( elem => elem.dossard === inputValue) !== undefined) {
             openSnackbar({message: "Le dossard n°" + inputValue + " est déjà arrivé !"}, {type: "warning"});
         }
+
     }
 
     handleKeyDown = (e) => {
