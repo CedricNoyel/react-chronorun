@@ -3,9 +3,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import InputAutocompleteParticipantEnd from './InputAutocompleteParticipantEnd';
+import { withUser } from "./store/AppProvider";
+import Notifier, {openSnackbar} from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
-import { withUser } from "./store/AppProvider";
 
 const styles = theme => ({
     root: {
@@ -29,6 +30,10 @@ class FormEndRace extends Component {
             ipcRenderer.send('end-add-participant', inputValue, timestamp);
             this.props.setInputFormEnd(inputid, "");
         }
+        // CHECK IF PARTICIPAND ALREADY FINISHED AND DISPLAY MSG
+        if (this.props.histoParticipantEnd.find( elem => elem.dossard === inputValue) !== undefined) {
+            openSnackbar({message: "Le dossard n°" + inputValue + " est déjà arrivé !"}, {type: "warning"});
+        }
     }
 
     handleKeyDown = (e) => {
@@ -51,6 +56,7 @@ class FormEndRace extends Component {
                 <Box>
                     <Button className={classes.btnEnd} variant="contained" color="primary" onClick={this.btnEndClicked.bind(this)}>Fin</Button>
                 </Box>
+                <Notifier/>
             </Box>
         )
     };
