@@ -54,8 +54,8 @@ class PageDocumentation extends Component {
                             <Paper fullWidth className={classes.paper}>
                                 <Typography variant="h5">Après la course</Typography>
                                 <Typography variant="body1">
-                                    <b>1. 1 ordinateur :</b> Cliquez sur "EXPORTER LES RESULTATS", le fichier est telechargé dans le répertoire téléchargement de votre ordinateur
-                                    <b>2. 2 ordinateurs :</b> Vous devez importer les données manquantes. Si vous etiez au départ, vous devez importer le fichier d'arrivées et vice-versa.
+                                    <b>1. Un ordinateur :</b> Cliquez sur "EXPORTER LES RESULTATS", le fichier est telechargé dans le répertoire téléchargement de votre ordinateur
+                                    <br /><b>2. Deux ordinateurs :</b> Vous devez importer les données manquantes. Si vous etiez au départ, vous devez importer le fichier d'arrivées et vice-versa.
                                 </Typography>
                             </Paper>
                         </Grid>
