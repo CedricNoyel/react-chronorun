@@ -162,6 +162,12 @@ ipcMain
             }
         });
     })
+    .on('refresh-clock', (event, arg) => {
+        ExcelServices.refreshClock(function(res){
+            console.log("res : ", res);
+            event.sender.send('on-refresh-clock', res);
+        })
+    })
     .on('import-participants-request', (event, arg) => {
         ExcelServices.deleteCsv();
         ExcelServices.createCsv();

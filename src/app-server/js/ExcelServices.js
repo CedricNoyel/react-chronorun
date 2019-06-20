@@ -3,6 +3,7 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const convert = require('xlsx-converter');
 const timediff = require('timediff');
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
@@ -70,10 +71,32 @@ class ExcelServices {
         return i;
     }
 
+    static refreshClock(callback){
+        var that = this;
+        that.getTimeAPI(function(res){
+            var json = JSON.parse(res);
+            callback(json['unixtime']);
+        });
+    }
+
+    static getTimeAPI(callback){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open( "GET", 'http://worldtimeapi.org/api/timezone/Europe/Paris', true ); // false for synchronous request
+        xmlHttp.send( null );
+    }
+
+
     static mergeCsv(callback){
         var mapErrorParticipants = new Map();
         var self = this;
         this.createCsv();
+        this.refreshClock(function(data){
+            console.log("data : ", data);
+        });
         self.getEquipeFromStart(function(dataEquipe){
             self.getParticipants(function(dataParticipants){
                 self.getParticipantsEnd(function(dataEnd){

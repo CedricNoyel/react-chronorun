@@ -57,6 +57,10 @@ class PageDocumentation extends Component {
         this.exportEndResults = this.exportEndResults.bind(this);
     }
 
+    refreshClock(){
+        ipcRenderer.send('refresh-clock');
+    }
+
     exportStartResults() {
         ipcRenderer.on('dl-start-results-reply', () => {
             openSnackbar({message: 'Fichier des départs téléchargé ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
@@ -150,7 +154,7 @@ class PageDocumentation extends Component {
                                                 onChange={this.onImportArrivees.bind(this)}
                                             />
                                             <label htmlFor="input-file-2">
-                                                <Button variant="outlined" className={classes.button} component="span" disabled={this.state.btnImportArrivees}>
+                                                <Button variant="outlined" className={classes.button} component="span" onClick={this.refreshClock}>
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
