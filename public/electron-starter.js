@@ -105,6 +105,15 @@ ipcMain
             } else {
                 event.sender.send('reply-export-csv-ok', 'Export des résultats effectué avec succès');
             }
+
+            let source = path.join(__dirname, '/../src/app-server/excels/result.csv');
+            let destination = path.join(app.getPath('downloads'), 'resultats_finaux_chrono_run.csv');
+            console.log(source);
+            fs.copyFile(source, destination, {
+                done: (err) => {
+                    console.log("Téléchargement terminé : ", err);
+                }
+            });
         });
     })
     .on('end-edit-participant', (event, participant, timestamp) => {
