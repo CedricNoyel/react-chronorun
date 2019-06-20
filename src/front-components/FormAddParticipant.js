@@ -105,14 +105,14 @@ class FormAddParticipant extends Component {
                     value={this.state.inputForname}
                     onChange={this.onInputFornameChange.bind(this)}
                 />
-                <TextField
-                    id="standard-with-placeholder"
-                    label="Equipe"
-                    className={classes.textField}
-                    margin="normal"
-                    value={this.state.inputTeam}
-                    onChange={this.onInputTeamChange.bind(this)}
-                />
+                {/*<TextField*/}
+                    {/*id="standard-with-placeholder"*/}
+                    {/*label="Equipe"*/}
+                    {/*className={classes.textField}*/}
+                    {/*margin="normal"*/}
+                    {/*value={this.state.inputTeam}*/}
+                    {/*onChange={this.onInputTeamChange.bind(this)}*/}
+                {/*/>*/}
                 <Button
                     variant="contained"
                     color="primary"

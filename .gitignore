@@ -15,3 +15,9 @@ build
 npm-debug.log
 
 .idea
+realease-builds
+
+src/front-components/excels
+src/front-components/excels/participants.csv
+src/front-components/excels/start.csv
+src/front-components/excels/end.csv

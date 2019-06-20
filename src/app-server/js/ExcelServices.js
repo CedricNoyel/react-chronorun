@@ -57,11 +57,6 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
-const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
-
-
-
-
 class ExcelServices {
 
     static checkTime(i){
@@ -117,13 +112,13 @@ class ExcelServices {
                             var time = 0;
                             for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
                                 var tempsArrivee = dataEnd.filter(function(data){
-                                    return data.dossard == dataEquipe[keys[i].toString()][j].dossard;
-                                })
-                                for(var k = 0; k<tempsArrivee.length; k++){
+                                    return data.dossard === dataEquipe[keys[i].toString()][j].dossard;
+                                });
+                                for(var k = 0; k < tempsArrivee.length; k++){
                                     if(time<tempsArrivee[k].time){
                                         time = tempsArrivee[k].time;
                                     }
-                                    if(k==tempsArrivee.length-1){
+                                    if(k === tempsArrivee.length-1){
                                         mapTempsEquipe.set(keys[i].toString(), time);
                                     }
                                 }
@@ -158,7 +153,7 @@ class ExcelServices {
                             }
 
                             if(infoDepart.length != 0){
-                                var dateDepart = new Date(infoDepart[0].time*1000);
+                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
                                 var h = self.checkTime(dateDepart.getHours());
                                 var m = self.checkTime(dateDepart.getMinutes());
                                 var s = self.checkTime(dateDepart.getSeconds());
@@ -167,7 +162,7 @@ class ExcelServices {
                             }
 
                             if(infoArrivee.length != 0){
-                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var h = self.checkTime(dateArrivee.getHours());
                                 var m = self.checkTime(dateArrivee.getMinutes());
                                 var s = self.checkTime(dateArrivee.getSeconds());
@@ -179,8 +174,8 @@ class ExcelServices {
                             var endTimeTeam = null;
                             if(foundStart && foundStop && teamParticipant.length != 0){
                                 
-                                var dateDepart = new Date(infoDepart[0].time*1000);
-                                var dateArrivee = new Date(infoArrivee[0].time*1000);
+                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
+                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
                                 var dateTotal = timediff(dateDepart, dateArrivee);
                                 var h = self.checkTime(dateTotal.hours);
                                 var m = self.checkTime(dateTotal.minutes);
@@ -190,10 +185,11 @@ class ExcelServices {
                                 if(teamParticipant.length != 0){
                                     for(var j = 0; j<keys.length; j++){
                                         if(keys[j].toString() == infoDepart[0].time){
-                                            tempsTeam = new Date(mapTempsEquipe.get(infoDepart[0].time)*1000);
-                                            var h = self.checkTime(tempsTeam.getHours());
-                                            var m = self.checkTime(tempsTeam.getMinutes());
-                                            var s = self.checkTime(tempsTeam.getSeconds());
+                                            tempsTeam = timediff(Math.trunc(infoDepart[0].time), Math.trunc(mapTempsEquipe.get(infoDepart[0].time)));
+                                            // tempsTeam = new Date(Math.trunc(mapTempsEquipe.get(infoDepart[0].time) - Math.trunc(infoDepart[0].time)));
+                                            var h = self.checkTime(tempsTeam.hours);
+                                            var m = self.checkTime(tempsTeam.minutes);
+                                            var s = self.checkTime(tempsTeam.seconds);
                                             endTimeTeam = h+":"+m+":"+s;
                                         }
                                     }
@@ -268,21 +264,26 @@ class ExcelServices {
         });
     }
 
-    //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
-    static convertXlsxToCsv(path, callback){
-        var converted = false; 
-        convert.convert(path).then(result => { //On lit le fichier xlsx grâce à xlsx-converter
-            var index = 2; //On lit à partir de la ligne 2 pour éviter les headers
-            while(result[index.toString()]!=undefined){ //On récupère les infos souhaitées
-                var numeroDossard = result[index.toString()][0];
-                var nom = result[index.toString()][1];
-                var prenom = result[index.toString()][2];
-                var nomEquipe = result[index.toString()][3];
-
-                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe); //On ajoute un le participant au fichier particicpants.csv
+    static convertXlsxToCsv(path, callback) {
+        let converted = false;
+        xlsx_converter.convert(path).then(result => {
+            let index = 2;
+            let participants = [];
+            while(result[index] !== undefined) {
+                let row = {
+                    dossard: result[index][0],
+                    lastname: result[index][1],
+                    firstname: result[index][2],
+                    team: result[index][3]
+                };
+                participants.push(row);
                 index++;
             }
-            converted = true;
+            console.log(index);
+            if(participants.length === index - 2) {
+                converted = true;
+            }
+            this.addListParticipant(participants);
             callback(converted);
         });
     }
@@ -332,7 +333,7 @@ class ExcelServices {
         }
         //Deletes result.csv exists, if not create it
         try {
-            fs.unlinkSync(pathCsvResult)
+            fs.unlinkSync(pathCsvResult);
             ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
         } catch (error) {
             if(error.code === 'ENOENT') {
@@ -471,6 +472,10 @@ class ExcelServices {
 
         csvWriterParticipants
             .writeRecords(data);
+    }
+
+    static addListParticipant(list) {
+        csvWriterParticipants.writeRecords(list);
     }
 
     /**
