@@ -8,7 +8,6 @@ import './App.css';
 import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
-import {exportResult} from "./Home";
 import Notifier from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;

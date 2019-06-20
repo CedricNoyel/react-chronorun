@@ -47,6 +47,7 @@ function createWindow() {
 app.on('ready', () => {
     createWindow();
     ExcelServices.createCsv();
+    ExcelServices.exportFinalResults();
 });
 
 // Quit when all windows are closed.
@@ -102,7 +103,7 @@ ipcMain
             let source = path.join(__dirname, '/../src/app-server/excels/result.csv');
             let destination = path.join(app.getPath('downloads'), 'resultats_finaux_chrono_run.csv');
             console.log(source);
-            fs.copyFile(source, destination, {
+            file.copyFile(source, destination, {
                 done: (err) => {
                     console.log("Téléchargement terminé : ", err);
                 }
