@@ -14,7 +14,6 @@ import Assignment from '@material-ui/icons/Assignment';
 import Help from '@material-ui/icons/Help';
 import Copyright from '@material-ui/icons/Copyright';
 import Menu from '@material-ui/icons/Menu';
-import {exportResult} from './Home';
 import {withUser} from "./store/AppProvider";
 
 import DialogNewRace, {openNewRace} from './DialogNewRace';
