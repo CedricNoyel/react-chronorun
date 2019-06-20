@@ -310,7 +310,8 @@ class ExcelServices {
         }
         //Deletes result.csv exists, if not create it
         try {
-            fs.statSync(pathCsvResult);
+            fs.unlinkSync(pathCsvResult);
+            ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
         } catch (error) {
             if(error.code === 'ENOENT') {
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
