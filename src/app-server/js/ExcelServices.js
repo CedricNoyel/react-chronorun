@@ -228,13 +228,13 @@ class ExcelServices {
             }
         }
         //Check if result.csv exists, if not create it
-        // try {
-        //     fs.statSync(pathCsvResult);
-        // } catch (error) {
-        //     if(error.code === 'ENOENT') {
-        //         ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
-        //     }
-        // }
+        try {
+            fs.statSync(pathCsvResult);
+        } catch (error) {
+            if(error.code === 'ENOENT') {
+                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
+            }
+        }
     }
     /**
      * Return the list of the participants at the end
