@@ -96,6 +96,7 @@ function IntegrationAutosuggest(props) {
     const classes = useStyles();
     const [state, setState] = React.useState({
         single: props.inputsFormEnd[props.inputid].inputValue,
+        showSnackbar: false,
     });
 
     const suggestions = props.listeParticipants.map(row => ({

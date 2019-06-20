@@ -9,7 +9,6 @@ import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
 import {exportResult} from "./Home";
-import {onEditParticipants} from "./Home";
 import Notifier from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
@@ -23,6 +22,13 @@ const styles = theme => ({
         backgroundColor: '#ecf0f1',
     },
     paper: {
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    },
+    sidePaper: {
+        height: '250px',
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         textAlign: 'center',
@@ -82,17 +88,11 @@ class PageDocumentation extends Component {
     }
 
     isHistoParticipantStartEmpty(){
-        if(this.props.histoParticipantStart.length !== 0) {
-            return false;
-        }
-        return true;
+        return this.props.histoParticipantStart.length === 0;
     }
 
     isHistoParticipantEndEmpty(){
-        if(this.props.histoParticipantEnd.length !== 0) {
-            return false;
-        }
-        return true;
+        return this.props.histoParticipantEnd.length === 0;
     }
 
     isFinalExportDisabled(){
@@ -103,13 +103,19 @@ class PageDocumentation extends Component {
     }
 
     onImportDeparts(e) {
-        this.setState({fileImportDeparts: e.target.files[0]});
-        console.log(e.target.files[0]);
+        let filePath = e.target.files[0].path;
+        ipcRenderer.on('import-start-results-reply', () => {
+            openSnackbar({message: 'Fichier des départs importé avec succès !'}, {type: 'success'});
+        });
+        ipcRenderer.send('import-start-results-request', filePath);
     }
 
     onImportArrivees(e) {
-        this.setState({fileImportArrivees: e.target.files[0]});
-        console.log(e.target.files[0]);
+        let filePath = e.target.files[0].path;
+        ipcRenderer.on('import-end-results-reply', () => {
+            openSnackbar({message: 'Fichier des arrivées importé avec succès !'}, {type: 'success'});
+        });
+        ipcRenderer.send('import-end-results-request', filePath);
     }
     render() {
         const { classes } = this.props;
@@ -124,19 +130,21 @@ class PageDocumentation extends Component {
 
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
-                                    <Paper className={classes.paper}>
-                                        <Typography variant="h5">Exporter les temps de départ</Typography>
+                                    <Paper className={classes.sidePaper}>
+                                        <Typography variant="h5">Exporter les temps de départ et d'arrivée vers un autre ordinateur</Typography>
                                         <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts} onClick={this.exportStartResults}>
-                                            Telecharger les départs
+                                            Exporter les départs
                                         </Button>
+                                        <br />
                                         <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees} onClick={this.exportEndResults}>
-                                            Telecharger les arrivées
+                                            Exporter les arrivées
                                         </Button>
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Paper className={classes.paper}>
-                                        <Typography variant="h5">Obtenir les résultats de la course</Typography>
+                                    <Paper className={classes.sidePaper}>
+                                        <Typography variant="h5">Importer les données depuis un autre ordinateur</Typography>
+                                        <br />
                                         <div className={classes.uploadBtn}>
                                             <input
                                                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -164,12 +172,17 @@ class PageDocumentation extends Component {
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
-                                            <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
-                                                Exporter les résultats
-                                            </Button>
                                         </div>
                                     </Paper>
                                 </Grid>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h5">Obtenir les résultats de la course</Typography>
+                                    <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
+                                        Télécharger les résultats
+                                    </Button>
+                                </Paper>
                             </Grid>
                         </Grid>
                     </Grid>

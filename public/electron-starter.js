@@ -5,7 +5,8 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
-const fs = require('file-system');
+const file = require('file-system');
+const fs = require('fs');
 const isDev = require('electron-is-dev');
 
 const ExcelServices = require('../src/app-server/js/ExcelServices');
@@ -45,6 +46,7 @@ function createWindow() {
 
 app.on('ready', () => {
     createWindow();
+    ExcelServices.createCsv();
 });
 
 // Quit when all windows are closed.
@@ -132,9 +134,12 @@ ipcMain
     .on('dl-template-request', (event, arg) => {
         let source = path.join(__dirname, 'template_chrono_run.xlsx');
         let destination = path.join(app.getPath('downloads'), 'template_chrono_run.xlsx');
-        console.log(source);
-        console.log(destination);
-        fs.copyFile(source, destination, {
+        let index = 1;
+        while(fs.existsSync(destination)) {
+            destination = path.join(app.getPath('downloads'), 'template_chrono_run('+index+').xlsx');
+            index++;
+        }
+        file.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-template-reply');
             }
@@ -143,8 +148,12 @@ ipcMain
     .on('dl-start-results-request', (event, arg) => {
         let source = path.join(__dirname, '/../src/app-server/excels/start.csv');
         let destination = path.join(app.getPath('downloads'), 'resultats_depart_chrono_run.csv');
-        console.log(source);
-        fs.copyFile(source, destination, {
+        let index = 1;
+        while(fs.existsSync(destination)) {
+            destination = path.join(app.getPath('downloads'), 'resultats_depart_chrono_run('+index+').csv');
+            index++;
+        }
+        file.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-start-results-reply');
             }
@@ -152,20 +161,43 @@ ipcMain
     })
     .on('dl-end-results-request', (event, arg) => {
         let source = path.join(__dirname, '/../src/app-server/excels/end.csv');
-        console.log(source);
         let destination = path.join(app.getPath('downloads'), 'resultats_arrivees_chrono_run.csv');
-        console.log(source);
-        console.log(destination);
-        fs.copyFile(source, destination, {
+        let index = 1;
+        while(fs.existsSync(destination)) {
+            destination = path.join(app.getPath('downloads'), 'resultats_arrivees_chrono_run('+index+').csv');
+            index++;
+        }
+        file.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('dl-end-results-reply');
+            }
+        });
+    })
+    .on('import-start-results-request', (event, filePath) => {
+        let source = filePath;
+        let destination = path.join(__dirname, '/../src/app-server/excels/start_results.csv');
+        file.copyFile(source, destination, {
+            done: (err) => {
+                console.log(err);
+                event.sender.send('import-start-results-reply');
+            }
+        });
+    })
+    .on('import-end-results-request', (event, filePath) => {
+        let source = filePath;
+        let destination = path.join(__dirname, '/../src/app-server/excels/end_results.csv');
+        file.copyFile(source, destination, {
+            done: (err) => {
+                event.sender.send('import-end-results-reply');
             }
         });
     })
     .on('import-participants-request', (event, arg) => {
         ExcelServices.deleteCsv();
         ExcelServices.createCsv();
-        ExcelServices.convertXlsxToCsv(arg, () => {
-            event.sender.send('import-participants-reply');
+        ExcelServices.convertXlsxToCsv(arg, (success) => {
+            ExcelServices.getParticipants(function (participants) {
+                event.sender.send('import-participants-reply', success, participants);
+            });
         });
     });

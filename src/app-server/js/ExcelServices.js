@@ -56,11 +56,6 @@ const csvWriterParticipants = createCsvWriter({
     ]
 });
 
-const pathXlsxParticipants = "src/app-server/excels/template_chrono_run.xlsx";
-
-
-
-
 class ExcelServices {
 
     static checkTime(i){
@@ -94,13 +89,13 @@ class ExcelServices {
                             var time = 0;
                             for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
                                 var tempsArrivee = dataEnd.filter(function(data){
-                                    return data.dossard == dataEquipe[keys[i].toString()][j].dossard;
-                                })
-                                for(var k = 0; k<tempsArrivee.length; k++){
+                                    return data.dossard === dataEquipe[keys[i].toString()][j].dossard;
+                                });
+                                for(var k = 0; k < tempsArrivee.length; k++){
                                     if(time<tempsArrivee[k].time){
                                         time = tempsArrivee[k].time;
                                     }
-                                    if(k==tempsArrivee.length-1){
+                                    if(k === tempsArrivee.length-1){
                                         mapTempsEquipe.set(keys[i].toString(), time);
                                     }
                                 }
@@ -246,21 +241,26 @@ class ExcelServices {
         });
     }
 
-    //Lis le fichier .xlsx, et add une ligne dans participants.csv pour chaque participant
-    static convertXlsxToCsv(path, callback){
-        var converted = false; 
-        convert.convert(path).then(result => { //On lit le fichier xlsx grâce à xlsx-converter
-            var index = 2; //On lit à partir de la ligne 2 pour éviter les headers
-            while(result[index.toString()]!=undefined){ //On récupère les infos souhaitées
-                var numeroDossard = result[index.toString()][0];
-                var nom = result[index.toString()][1];
-                var prenom = result[index.toString()][2];
-                var nomEquipe = result[index.toString()][3];
-
-                ExcelServices.addParticipant(numeroDossard, nom, prenom, nomEquipe); //On ajoute un le participant au fichier particicpants.csv
+    static convertXlsxToCsv(path, callback) {
+        let converted = false;
+        xlsx_converter.convert(path).then(result => {
+            let index = 2;
+            let participants = [];
+            while(result[index] !== undefined) {
+                let row = {
+                    dossard: result[index][0],
+                    lastname: result[index][1],
+                    firstname: result[index][2],
+                    team: result[index][3]
+                };
+                participants.push(row);
                 index++;
             }
-            converted = true;
+            console.log(index);
+            if(participants.length === index - 2) {
+                converted = true;
+            }
+            this.addListParticipant(participants);
             callback(converted);
         });
     }
@@ -310,8 +310,7 @@ class ExcelServices {
         }
         //Deletes result.csv exists, if not create it
         try {
-            fs.unlinkSync(pathCsvResult)
-            ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
+            fs.statSync(pathCsvResult);
         } catch (error) {
             if(error.code === 'ENOENT') {
                 ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
@@ -449,6 +448,10 @@ class ExcelServices {
 
         csvWriterParticipants
             .writeRecords(data);
+    }
+
+    static addListParticipant(list) {
+        csvWriterParticipants.writeRecords(list);
     }
 
     /**
