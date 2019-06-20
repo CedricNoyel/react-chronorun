@@ -23,10 +23,10 @@ export const UserContext = createContext({
     setInputFormEnd: () => {},
     histoParticipantEnd: [],
     addHistoParticipantEnd: () => {},
-    setHistoParticipantEnd: () => {},
+    setListeHistoEnd: () => {},
     histoParticipantStart: [],
     addHistoParticipantStart: () => {},
-    setHistoParticipantStart: () => {},
+    setListeHistoStart: () => {},
 });
 
 /**
@@ -52,7 +52,8 @@ class AppProvider extends Component {
         }),
         inputStartRace: "",
         setInputStartRace: (inputValue) => this.setState((state, props) => {
-            if(inputValue !== null && inputValue.length === 1 && this.state.firstInput && inputValue[0].team !== '') {
+            if(inputValue !== null) {
+                if(inputValue.length === 1 && this.state.firstInput && inputValue[0].team !== '') {
                     var teamMembersNormalise = [];
                     let teamMembers = this.state.listeParticipants.filter(participant => participant.team === inputValue[0].team);
                     teamMembers.map((row, index) => {
@@ -67,6 +68,7 @@ class AppProvider extends Component {
                         );
                     });
                     this.state.firstInput = false;
+                }
             } else {
                 this.state.firstInput = true;
             }
@@ -98,9 +100,6 @@ class AppProvider extends Component {
             const newItems = state.histoParticipantEnd;
             newItems.unshift({dossard: dossart, time: temps});
             return { histoParticipantEnd: newItems}
-        }),
-        setHistoParticipantEnd: (liste) => this.setState((state, props) => {
-            return { histoParticipantEnd: liste };
         }),
         histoParticipantStart: [],
         setListeHistoStart: (liste) => this.setState((state, props) => {

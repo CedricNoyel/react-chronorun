@@ -106,36 +106,41 @@ class ExcelServices {
                             }
 
                             let resultRow = {
-                                dossard: dossard,
-                                lastname: participant[0].lastname,
-                                firstname: participant[0].firstname,
-                                startTime: startTime,
-                                endTime: endTime,
-                                totalTime: totalTime,
-                                teamTime: '',
+                                Dossard: dossard,
+                                Nom: participant[0].lastname,
+                                Prenom: participant[0].firstname,
+                                Temps_depart: startTime,
+                                Temps_fin: endTime,
+                                Temps_total: totalTime,
+                                Temps_equipe: '',
+                                Equipe: '',
                             };
                             results.push(resultRow);
                         } else {
                             start.forEach((values) => {
                                 let resultRow = {
-                                    dossard: dossard,
-                                    lastname: '',
-                                    firstname: '',
-                                    startTime: self.getTimeFromTimestamp(values.time),
-                                    endTime: '',
-                                    totalTime: '',
+                                    Dossard: dossard,
+                                    Nom: '',
+                                    Prenom: '',
+                                    Temps_depart: self.getTimeFromTimestamp(values.time),
+                                    Temps_fin: '',
+                                    Temps_total: '',
+                                    Temps_equipe: '',
+                                    Equipe: '',
                                 };
                                 errors.push(resultRow);
                             });
 
                             end.forEach((values) => {
                                 let resultRow = {
-                                    dossard: dossard,
-                                    lastname: '',
-                                    firstname: '',
-                                    startTime: '',
-                                    endTime: self.getTimeFromTimestamp(values.time),
-                                    totalTime: '',
+                                    Dossard: dossard,
+                                    Nom: '',
+                                    Prenom: '',
+                                    Temps_depart: '',
+                                    Temps_fin: self.getTimeFromTimestamp(values.time),
+                                    Temps_total: '',
+                                    Temps_equipe: '',
+                                    Equipe: '',
                                 };
                                 errors.push(resultRow);
                             });
@@ -143,25 +148,28 @@ class ExcelServices {
                     });
 
                     let teams = results.reduce(function (r, a){
-                        r[a.startTime] = r[a.startTime] || [];
-                        r[a.startTime].push(a);
+                        r[a.Temps_depart] = r[a.Temps_depart] || [];
+                        r[a.Temps_depart].push(a);
                         return r;
                     }, Object.create(null));
 
-                    Object.keys(teams).forEach(key => {
-                        let worstTime = '00:00:00';
-                        if(teams[key].length > 1) {
-                            teams[key].forEach((values) => {
-                                let date = values.totalTime;
-                                if(date > worstTime) {
-                                    worstTime = date;
-                                }
-                            });
+                    Object.keys(teams).forEach((key, teamIndex) => {
+                        if(key.length > 0) {
+                            let worstTime = '00:00:00';
+                            if(teams[key].length > 1) {
+                                teams[key].forEach((values) => {
+                                    let date = values.Temps_total;
+                                    if(date > worstTime) {
+                                        worstTime = date;
+                                    }
+                                });
 
-                            let teamParticipants = results.filter(p => p.startTime === teams[key][0].startTime);
-                            teamParticipants.forEach((participant) => {
-                                participant.teamTime = worstTime;
-                            });
+                                let teamParticipants = results.filter(p => p.Temps_depart === teams[key][0].Temps_depart);
+                                teamParticipants.forEach((participant) => {
+                                    participant.Temps_equipe = worstTime;
+                                    participant.Equipe = teamIndex;
+                                });
+                            }
                         }
                     });
 

@@ -95,7 +95,7 @@ ipcMain
     .on('request-export-csv', (event, arg) => {
         ExcelServices.exportFinalResults(function(results){
             let xls = json2xls(results);
-            fs.writeFile(__dirname + '/../src/app-server/excels/resultats_finaux.xlsx', xls, 'binary');
+            fs.writeFileSync(__dirname + '/../src/app-server/excels/resultats_finaux.xlsx', xls, 'binary');
 
             let source = path.join(__dirname, '/../src/app-server/excels/resultats_finaux.xlsx');
             let destination = path.join(app.getPath('downloads'), 'resultats_finaux.xlsx');
