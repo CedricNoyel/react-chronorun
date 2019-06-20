@@ -77,7 +77,7 @@ class PageDocumentation extends Component {
             if (arg.status === false) {
                 openSnackbar({message: 'Le fichier a bien été exporté '}, {type: 'success'});
             }
-            openSnackbar({message: 'Fichier des arrivées téléchargé ! Cependant celui-ci contient des participants avec des données incorrectes'}, {type: 'warning'});
+            openSnackbar({message: 'Fichier des arrivées téléchargé ! Cependant, celui-ci contient des participants avec des données incorrectes'}, {type: 'warning'});
         });
     }
 
