@@ -56,7 +56,7 @@ function TemporaryDrawer(props) {
             props.setDisplayPage(3);
         } else if(action === 'Export des résultats') {
             props.setDisplayPage(5);
-        } else if(action === 'Documentation') {
+        } else if(action === "Guide d'utilisation") {
             props.setDisplayPage(4);
         } else if(action === 'Crédits') {
             openDialogCredits();
@@ -101,7 +101,7 @@ function TemporaryDrawer(props) {
             </List>
             <Divider />
             <List>
-                {['Documentation', 'Crédits'].map((text, index) => (
+                {["Guide d'utilisation"].map((text, index) => (
                     <ListItem button key={text} onClick={() => handleClick(text)}>
                         <ListItemIcon> {listIconsThirdPart[index]} </ListItemIcon>
                         <ListItemText primary={text} />

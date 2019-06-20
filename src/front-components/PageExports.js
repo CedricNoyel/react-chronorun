@@ -28,6 +28,13 @@ const styles = theme => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    sidePaper: {
+        height: '250px',
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    },
     button: {
         margin: theme.spacing(1),
         marginTop: theme.spacing(3),
@@ -124,19 +131,21 @@ class PageDocumentation extends Component {
 
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
-                                    <Paper className={classes.paper}>
-                                        <Typography variant="h5">Exporter les temps de départ</Typography>
+                                    <Paper className={classes.sidePaper}>
+                                        <Typography variant="h5">Exporter les temps de départ et d'arrivée vers un autre ordinateur</Typography>
                                         <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadDeparts} onClick={this.exportStartResults}>
-                                            Telecharger les départs
+                                            Exporter les départs
                                         </Button>
+                                        <br />
                                         <Button variant="outlined" className={classes.button} disabled={this.state.btnDownloadArrivees} onClick={this.exportEndResults}>
-                                            Telecharger les arrivées
+                                            Exporter les arrivées
                                         </Button>
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Paper className={classes.paper}>
-                                        <Typography variant="h5">Obtenir les résultats de la course</Typography>
+                                    <Paper className={classes.sidePaper}>
+                                        <Typography variant="h5">Importer les données depuis un autre ordinateur</Typography>
+                                        <br />
                                         <div className={classes.uploadBtn}>
                                             <input
                                                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -164,12 +173,17 @@ class PageDocumentation extends Component {
                                                     Importer les arrivées
                                                 </Button>
                                             </label>
-                                            <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
-                                                Exporter les résultats
-                                            </Button>
                                         </div>
                                     </Paper>
                                 </Grid>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h5">Obtenir les résultats de la course</Typography>
+                                    <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
+                                        Télécharger les résultats
+                                    </Button>
+                                </Paper>
                             </Grid>
                         </Grid>
                     </Grid>
