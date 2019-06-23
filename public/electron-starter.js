@@ -38,7 +38,7 @@ function createWindow() {
     mainWindow.maximize();
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -95,21 +95,25 @@ ipcMain
     })
     .on('request-export-csv', (event, arg) => {
         ExcelServices.exportFinalResults(function(results){
-            let xls = json2xls(results);
-            fs.writeFileSync(__dirname + '/../build/excels/resultats_finaux.xlsx', xls, 'binary');
+            if(results === 'INTERNET_ERROR') {
+                event.sender.send('reply-export-csv', 'INTERNET_ERROR');
+            } else {
+                let xls = json2xls(results);
+                fs.writeFileSync(__dirname + '/../build/excels/resultats_finaux.xlsx', xls, 'binary');
 
-            let source = path.join(__dirname, '/../build/excels/resultats_finaux.xlsx');
-            let destination = path.join(app.getPath('downloads'), 'resultats_finaux.xlsx');
-            let index = 1;
-            while(fs.existsSync(destination)) {
-                destination = path.join(app.getPath('downloads'), 'resultats_finaux('+index+').xlsx');
-                index++;
-            }
-            file.copyFile(source, destination, {
-                done: (err) => {
-                    event.sender.send('reply-export-csv', {status: false, arg: arg});
+                let source = path.join(__dirname, '/../build/excels/resultats_finaux.xlsx');
+                let destination = path.join(app.getPath('downloads'), 'resultats_finaux.xlsx');
+                let index = 1;
+                while(fs.existsSync(destination)) {
+                    destination = path.join(app.getPath('downloads'), 'resultats_finaux('+index+').xlsx');
+                    index++;
                 }
-            });
+                file.copyFile(source, destination, {
+                    done: (err) => {
+                        event.sender.send('reply-export-csv', '');
+                    }
+                });
+            }
         });
     })
     .on('end-edit-participant', (event, participant, timestamp) => {

@@ -78,8 +78,12 @@ class PageDocumentation extends Component {
 
     exportResult() {
         ipcRenderer.send('request-export-csv');
-        ipcRenderer.on('reply-export-csv', () => {
-            openSnackbar({message: 'Fichier exporté ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+        ipcRenderer.on('reply-export-csv', (event, err) => {
+            if(err === 'INTERNET_ERROR') {
+                openSnackbar({message: 'Vous devez être connecté à internet pour pouvoir exporter les résultats'}, {type: 'error'});
+            } else {
+                openSnackbar({message: 'Fichier exporté ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
+            }
         });
     }
 

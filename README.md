@@ -1,25 +1,21 @@
+# Comment lancer l'application
+## Pour les utilisateurs
+- Télécharger l'archive github
 
- - Install [YARN](https://yarnpkg.com/fr/docs/install#windows-stable)
+- Se rendre dans le dossier télécharger pour aller dans le dossier `ChroRun` puis `ChronoRun-win32-ia32`
 
-- Run `yarn` in project directory to get all required packages
+- Lancer le .exe
 
-- Run dev app with `yarn run dev` to see your app
+## Pour les développeurs
+### Visualiser l'application
+ - Installer [npm](https://www.npmjs.com/get-npm)
 
+- Utiliser la commande `npm install` dans le dossier github pour obtenir les différents package nécessaires
 
-## How to build an Electron app using create-react-app. No webpack configuration or “ejecting” necessary.
+- Utiliser la commande `electron .` pour visualiser l'application
 
+### Build l'applcation
+- Pour rebuild l'application suite à des changements dans le code utiliser la commande `npm run build` 
+puis pour visualiser l'application `electron .`
 
-
-
-
-Code repo for post on [freeCodeCamp](https://medium.freecodecamp.com/building-an-electron-application-with-create-react-app-97945861647c#.ze6c9qin1).
-
-https://medium.freecodecamp.com/building-an-electron-application-with-create-react-app-97945861647c#.ze6c9qin1
-
-There is another branch, [npm-start](https://github.com/csepulv/electron-with-create-react-app/tree/npm-start)
-It uses `npm-start` instead of `npm run dev`. (change submitted by [vcarl](https://github.com/vcarl)) Details are in this [pull request](https://github.com/csepulv/electron-with-create-react-app/pull/2)
-
-Thanks to [marbemac](https://github.com/marbemac) for submitting a pull request that captures logging output. It can be found in [logging-capture](https://github.com/csepulv/electron-with-create-react-app/tree/logging-capture)
-
-Thanks to [vicentedealencar](https://github.com/vicentedealencar) for an example of using [electron-builder](https://github.com/electron-userland/electron-builder) for packaging. Details are [here](https://github.com/vicentedealencar/electron-with-create-react-app/commit/f1729381d588e65ac140ce5a08cc6277babd9641).
-
+- Pour recréer le .exe utiliser la commande `npm run build` puis `npm run package-win`
