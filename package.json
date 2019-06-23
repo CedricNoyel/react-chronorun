@@ -36,7 +36,8 @@
     "request": "^2.88.0",
     "typeface-roboto": "0.0.54",
     "wait-on": "^3.2.0",
-    "xlsx-converter": "^0.1.0"
+    "xlsx-converter": "^0.1.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

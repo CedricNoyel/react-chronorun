@@ -2,6 +2,7 @@ const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const xlsx_converter = require('xlsx-converter');
+const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 const pathCsvResultsStart = 'build/excels/start_results.csv';
 const pathCsvResultsEnd = 'build/excels/end_results.csv';
@@ -66,6 +67,22 @@ class ExcelServices {
         this.getParticipants(function (participants) {
             self.getExportStartResult(function (startResults) {
                 self.getExportEndResult(function (endResults) {
+
+                    let tempsAPI = new Date((dateAPI['unixtime'] + 3600 * dateAPI['utc_offset'])*1000);
+                    let tempsOrdi = new Date();
+                    tempsOrdi = tempsOrdi.getTime() + 3600000 * dateAPI['utc_offset'];
+                    tempsAPI = tempsAPI.getTime();
+
+                    let tempsDiff = parseInt((tempsOrdi - tempsAPI)*(-1));
+
+                    startResults = startResults.map((values) => {
+                        values.time = values.time -  tempsDiff;
+                    });
+
+                    endResults = endResults.map((values) => {
+                        values.time = values.time - tempsDiff;
+                    });
+
                     let dossardList = [];
                     participants.forEach((values) => {
                         dossardList.push(values.dossard);
@@ -178,6 +195,16 @@ class ExcelServices {
                 });
             });
         });
+    }
+
+    static getTimeAPI(callback){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open( "GET", 'http://worldtimeapi.org/api/timezone/Europe/Paris', true ); // false for synchronous request
+        xmlHttp.send( null );
     }
 
     static getTimeFromTimestamp(timestamp) {
