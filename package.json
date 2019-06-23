@@ -46,6 +46,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "package-win": "electron-packager . ChronoRun --overwrite --platform=win32 --arch=ia32 --out=ChronRun --version-string.ProductName=\"Chrono Run\"\""
+    "package-win": "electron-packager . ChronoRun --overwrite --platform=win32 --arch=ia32 --out=ChronoRun --version-string.ProductName=\"Chrono Run\"\""
   }
 }
