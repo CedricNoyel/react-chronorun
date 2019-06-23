@@ -8,6 +8,7 @@ const url = require('url');
 const file = require('file-system');
 const fs = require('fs');
 const isDev = require('electron-is-dev');
+const json2xls = require('json2xls');
 
 const ExcelServices = require('../src/app-server/js/ExcelServices');
 
@@ -36,7 +37,7 @@ function createWindow() {
     mainWindow.maximize();
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -92,19 +93,20 @@ ipcMain
         ExcelServices.addStartTime(dossard, timestamp);
     })
     .on('request-export-csv', (event, arg) => {
-        ExcelServices.mergeCsv(function(res){
-            if(res.size != 0){
-                event.sender.send('reply-export-csv', {status: false, arg: arg});
-            } else {
-                event.sender.send('reply-export-csv', {status: true, arg: arg});
-            }
+        ExcelServices.exportFinalResults(function(results){
+            let xls = json2xls(results);
+            fs.writeFileSync(__dirname + '/../src/app-server/excels/resultats_finaux.xlsx', xls, 'binary');
 
-            let source = path.join(__dirname, '/../src/app-server/excels/result.csv');
-            let destination = path.join(app.getPath('downloads'), 'resultats_finaux_chrono_run.csv');
-            console.log(source);
+            let source = path.join(__dirname, '/../src/app-server/excels/resultats_finaux.xlsx');
+            let destination = path.join(app.getPath('downloads'), 'resultats_finaux.xlsx');
+            let index = 1;
+            while(fs.existsSync(destination)) {
+                destination = path.join(app.getPath('downloads'), 'resultats_finaux('+index+').xlsx');
+                index++;
+            }
             file.copyFile(source, destination, {
                 done: (err) => {
-                    console.log("Téléchargement terminé : ", err);
+                    event.sender.send('reply-export-csv', {status: false, arg: arg});
                 }
             });
         });
@@ -112,10 +114,6 @@ ipcMain
     .on('end-edit-participant', (event, participant, timestamp) => {
         ExcelServices.editNumberParticipantAtTheEnd(timestamp, participant)
     })
-    // .on('edit-participant', (event, arg) => {
-    //     ExcelServices.editNumberParticipantAtTheEnd(args[0], args[1]);
-
-    // })
     .on('import-participants', (event, arg) => {
         ExcelServices.convertXlsxToCsv(arg, function(res) {
             if(res){
@@ -205,5 +203,10 @@ ipcMain
             ExcelServices.getParticipants(function (participants) {
                 event.sender.send('import-participants-reply', success, participants);
             });
+        });
+    })
+    .on('is-export-valid-request', (event) => {
+        ExcelServices.isExportValid((isValid) => {
+            event.sender.send('is-export-valid-reply', isValid);
         });
     });

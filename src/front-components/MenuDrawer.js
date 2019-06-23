@@ -18,7 +18,6 @@ import {withUser} from "./store/AppProvider";
 
 import DialogNewRace, {openNewRace} from './DialogNewRace';
 import DialogAddParticipant, {openDialogAddParticipant} from './DialogAddParticipant';
-import DialogCredits, {openDialogCredits} from './DialogCredits';
 
 const styles = theme => ({
     list: {
@@ -57,8 +56,6 @@ function TemporaryDrawer(props) {
             props.setDisplayPage(5);
         } else if(action === "Guide d'utilisation") {
             props.setDisplayPage(4);
-        } else if(action === 'Crédits') {
-            openDialogCredits();
         }
     };
 
@@ -119,7 +116,6 @@ function TemporaryDrawer(props) {
 
             <DialogNewRace/>
             <DialogAddParticipant/>
-            <DialogCredits/>
         </div>
     );
 }

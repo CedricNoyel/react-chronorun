@@ -47,6 +47,7 @@ class TableVisualiseParticipants extends Component {
             this.setState({ tableVisu: table });
         } else {
             if (isNaN(filterValue)) {
+                filterValue = filterValue.toLowerCase();
                 newTable = table.filter(row => (row.lastname || row.firstname) && (row.lastname.toLowerCase().startsWith(filterValue) || row.firstname.toLowerCase().startsWith(filterValue)));
             } else {
                 newTable = table.filter(row => row.dossard.startsWith(filterValue));

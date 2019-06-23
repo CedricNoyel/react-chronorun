@@ -1,9 +1,12 @@
 const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
-const convert = require('xlsx-converter');
-const timediff = require('timediff');
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const xlsx_converter = require('xlsx-converter');
+const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+
+const pathCsvResultsStart = 'src/app-server/excels/start_results.csv';
+const pathCsvResultsEnd = 'src/app-server/excels/end_results.csv';
+const pathCsvResultFinal = 'src/app-server/excels/resultats_finaux.xlsx';
 
 const pathCsvStart = 'src/app-server/excels/start.csv';
 const csvWriterStart = createCsvWriter({
@@ -42,7 +45,7 @@ const csvWriterResult = createCsvWriter({
         {id: 'team', title: 'Equipe'},
         {id: 'timeteam', title: 'Temps équipe'}
     ]
-})
+});
 
 const pathCsvParticipants = 'src/app-server/excels/participants.csv';
 const csvWriterParticipants = createCsvWriter({
@@ -59,13 +62,7 @@ const csvWriterParticipants = createCsvWriter({
 
 class ExcelServices {
 
-    static checkTime(i){
-        if(i<10){
-            i = "0"+i;
-        }
-        return i;
-    }
-
+    
     static refreshClock(callback){
         var that = this;
         that.getTimeAPI(function(res){
@@ -86,184 +83,153 @@ class ExcelServices {
         xmlHttp.send( null );
     }
 
-
-    static mergeCsv(callback){
-        var mapErrorParticipants = new Map();
+    static exportFinalResults(callback) {
         var self = this;
-        this.createCsv();
-        self.getEquipeFromStart(function(dataEquipe){
-            self.getParticipants(function(dataParticipants){
-                self.getParticipantsEnd(function(dataEnd){
-                    self.getParticipantsStart(function(dataStart){
-                        self.refreshClock(function(dateAPI){
-                        var dossards = new Set();
-                        var tempsAPI = new Date((dateAPI['unixtime'] + 3600 * dateAPI['utc_offset'])*1000);
-                        var tempsOrdi = new Date();
-                        tempsOrdi = tempsOrdi.getTime() + 3600000 * dateAPI['utc_offset'];
-                        tempsAPI = tempsAPI.getTime();
-                        var indexTeam = 0;
-                        
-                        var tempsDiff = parseInt((tempsOrdi - tempsAPI)*(-1));
-
-                        for(var i = 0; i<dataParticipants.length; i++){
-                            dossards.add(dataParticipants[i].dossard);
-                        }
-                        for(var i = 0; i<dataStart.length; i++){
-                            dossards.add(dataStart[i].dossard);
-                        }
-                        for(var i = 0; i<dataEnd.length; i++){
-                            dossards.add(dataEnd[i].dossard);
-                        }
-                        var mapTempsEquipe = new Map();
-                        var keys = Object.keys(dataEquipe);
-                        for(var i = 0; i<keys.length; i++){
-                            var time = 0;
-                            for(var j = 0 ; j<dataEquipe[keys[i].toString()].length; j++){
-                                var tempsArrivee = dataEnd.filter(function(data){
-                                    return data.dossard === dataEquipe[keys[i].toString()][j].dossard;
-                                });
-                                for(var k = 0; k < tempsArrivee.length; k++){
-                                    if(time<tempsArrivee[k].time){
-                                        time = tempsArrivee[k].time;
-                                    }
-                                    if(k === tempsArrivee.length-1){
-                                        mapTempsEquipe.set(keys[i].toString(), time);
-                                    }
-                                }
-                            }
-                        }
-                        dossards.forEach(function(dossard){
-                            var infoParticipant = dataParticipants.filter(function(data){
-                                return data.dossard == dossard;
-                            });
-
-                            var infoArrivee = dataEnd.filter(function(data){
-                                return data.dossard == dossard;
-                            });
-
-                            var infoDepart = dataStart.filter(function(data){
-                                return data.dossard == dossard;
-                            });
-
-                            var foundStart = false;
-                            var foundStop = false;
-                            var dossardParticipant = dossard; //On récupère les info qui nous intéresse
-                            var lastNameParticipant = null;
-                            var firstNameParticipant = null;
-                            var teamParticipant = '';
-                            var startTimeParticipant = null;
-                            var endTimeParticipant = null;
-
-                            if(infoParticipant.length != 0){
-                                lastNameParticipant = infoParticipant[0].lastname;
-                                firstNameParticipant = infoParticipant[0].firstname;
-                                teamParticipant = infoParticipant[0].team;
-                            }
-                            
-                            if(infoDepart.length != 0){
-                                var dateDepart = new Date(Math.trunc(parseInt(infoDepart[0].time) + tempsDiff));
-                                var h = self.checkTime(dateDepart.getHours());
-                                var m = self.checkTime(dateDepart.getMinutes());
-                                var s = self.checkTime(dateDepart.getSeconds());
-                                var startTimeParticipant = h+":"+m+":"+s;
-                                foundStart = true;
-                            }
-
-                            if(infoArrivee.length != 0){
-                                var dateArrivee = new Date(Math.trunc(parseInt(infoArrivee[0].time) + tempsDiff));
-                                var h = self.checkTime(dateArrivee.getHours());
-                                var m = self.checkTime(dateArrivee.getMinutes());
-                                var s = self.checkTime(dateArrivee.getSeconds());
-                                var endTimeParticipant = h+":"+m+":"+s;
-                                foundStop = true;
-                            }
-
-                            var tempsTeam = null;
-                            var endTimeTeam = null;
-                            if(foundStart && foundStop){
-                                var dateDepart = new Date(Math.trunc(infoDepart[0].time));
-                                var dateArrivee = new Date(Math.trunc(infoArrivee[0].time));
-                                var dateTotal = timediff(dateDepart, dateArrivee);
-                                var h = self.checkTime(dateTotal.hours);
-                                var m = self.checkTime(dateTotal.minutes);
-                                var s = self.checkTime(dateTotal.seconds);
-                                var timeTotalParticipant = h+":"+m+":"+s;
-                                if(mapTempsEquipe.get(infoDepart[0].time)){
-                                    if(teamParticipant.length == 0){
-                                        var infoTeamDepart = dataStart.filter(function(dataTeamStart){
-                                            return dataTeamStart.time == infoDepart[0].time && dataTeamStart.dossard != dossard;
-                                        });
-                                        if(infoTeamDepart.length != 0){
-                                            var participantTeam = dataParticipants.filter(function(data){
-                                                return data.dossard == infoTeamDepart[0].dossard;
-                                            });
-                                            if(participantTeam[0].team.length !=0){
-                                                teamParticipant = participantTeam[0].team;
-                                            } else {
-                                                infoParticipant[0].team = indexTeam;
-                                                teamParticipant = indexTeam;
-                                                indexTeam++;
-                                            }
-                                        }
-                                    }
-                                    for(var j = 0; j<keys.length; j++){
-                                        if(keys[j].toString() == infoDepart[0].time){
-                                            tempsTeam = timediff(Math.trunc(infoDepart[0].time), Math.trunc(mapTempsEquipe.get(infoDepart[0].time)));
-                                            // tempsTeam = new Date(Math.trunc(mapTempsEquipe.get(infoDepart[0].time) - Math.trunc(infoDepart[0].time)));
-                                            var h = self.checkTime(tempsTeam.hours);
-                                            var m = self.checkTime(tempsTeam.minutes);
-                                            var s = self.checkTime(tempsTeam.seconds);
-                                            endTimeTeam = h+":"+m+":"+s;
-                                        }
-                                    }
-                                }
-                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
-                                dossardParticipant = null;
-                                lastNameParticipant = null;
-                                firstNameParticipant = null;
-                                startTimeParticipant = null;
-                                endTimeParticipant = null;
-                                timeTotalParticipant = null;
-                                teamParticipant = null;
-                                endTimeTeam = null;
-                                dateArrivee = null;
-                            } else {
-                                self.addResult(dossardParticipant, lastNameParticipant, firstNameParticipant, startTimeParticipant, endTimeParticipant, timeTotalParticipant, teamParticipant, endTimeTeam);
-                                if(foundStart && !foundStop){
-                                    if(!mapErrorParticipants.get(dossard)){
-                                        mapErrorParticipants.set(dossard, lastNameParticipant);
-                                    }
-                                }
-                                dossardParticipant = null;
-                                lastNameParticipant = null;
-                                firstNameParticipant = null;
-                                startTimeParticipant = null;
-                                endTimeParticipant = null;
-                                timeTotalParticipant = null;
-                                teamParticipant = null;
-                                endTimeTeam = null;
-                                dateArrivee = null;
-                            }
-                        });
-                        callback(mapErrorParticipants);
-                        })
+        this.getParticipants(function (participants) {
+            self.getExportStartResult(function (startResults) {
+                self.getExportEndResult(function (endResults) {
+                    self.refreshClock(function(dateAPI){
+                    let dossardList = [];
+                    var tempsAPI = new Date((dateAPI['unixtime'] + 3600 * dateAPI['utc_offset'])*1000);
+                    var tempsOrdi = new Date();
+                    tempsOrdi = tempsOrdi.getTime() + 3600000 * dateAPI['utc_offset'];
+                    tempsAPI = tempsAPI.getTime();
+                    
+                    var tempsDiff = parseInt((tempsOrdi - tempsAPI)*(-1));
+                    
+                    participants.forEach((values) => {
+                        dossardList.push(values.dossard);
                     });
+                    startResults.forEach((values) => {
+                        if(!dossardList.includes(values.dossard)){
+                            dossardList.push(values.dossard);
+                        }
+                    });
+                    endResults.forEach((values) => {
+                        if(!dossardList.includes(values.dossard)){
+                            dossardList.push(values.dossard);
+                        }
+                    });
+
+                    let results = [];
+                    let errors = [];
+                    dossardList.forEach((dossard) => {
+                        let participant = participants.filter(p => p.dossard === dossard);
+                        let start = startResults.filter(s => s.dossard === dossard);
+                        let end = endResults.filter(e => e.dossard === dossard);
+
+                        if(participant.length === 1 && start.length <= 1 && end.length <= 1 ) {
+
+                            let startTime = "";
+                            if(start.length === 1) {
+                                startTime = self.getTimeFromTimestamp(parseInt(start[0].time)-tempsDiff);
+                            }
+
+                            let endTime = "";
+                            if(end.length === 1) {
+                                endTime = self.getTimeFromTimestamp(parseInt(end[0].time)-tempsDiff);
+                            }
+
+                            let totalTime = "";
+                            if(start.length === 1 && end.length === 1) {
+                                totalTime = self.getTimeDifference(start[0].time, end[0].time);
+                            }
+
+                            let resultRow = {
+                                Dossard: dossard,
+                                Nom: participant[0].lastname,
+                                Prenom: participant[0].firstname,
+                                Temps_depart: startTime,
+                                Temps_fin: endTime,
+                                Temps_total: totalTime,
+                                Temps_equipe: '',
+                                Equipe: '',
+                            };
+                            results.push(resultRow);
+                        } else {
+                            start.forEach((values) => {
+                                let resultRow = {
+                                    Dossard: dossard,
+                                    Nom: '',
+                                    Prenom: '',
+                                    Temps_depart: self.getTimeFromTimestamp(values.time),
+                                    Temps_fin: '',
+                                    Temps_total: '',
+                                    Temps_equipe: '',
+                                    Equipe: '',
+                                };
+                                errors.push(resultRow);
+                            });
+
+                            end.forEach((values) => {
+                                let resultRow = {
+                                    Dossard: dossard,
+                                    Nom: '',
+                                    Prenom: '',
+                                    Temps_depart: '',
+                                    Temps_fin: self.getTimeFromTimestamp(values.time),
+                                    Temps_total: '',
+                                    Temps_equipe: '',
+                                    Equipe: '',
+                                };
+                                errors.push(resultRow);
+                            });
+                        }
+                    });
+
+                    let teams = results.reduce(function (r, a){
+                        r[a.Temps_depart] = r[a.Temps_depart] || [];
+                        r[a.Temps_depart].push(a);
+                        return r;
+                    }, Object.create(null));
+
+                    Object.keys(teams).forEach((key, teamIndex) => {
+                        if(key.length > 0) {
+                            let worstTime = '00:00:00';
+                            if(teams[key].length > 1) {
+                                teams[key].forEach((values) => {
+                                    let date = values.Temps_total;
+                                    if(date > worstTime) {
+                                        worstTime = date;
+                                    }
+                                });
+
+                                let teamParticipants = results.filter(p => p.Temps_depart === teams[key][0].Temps_depart);
+                                teamParticipants.forEach((participant) => {
+                                    participant.Temps_equipe = worstTime;
+                                    participant.Equipe = teamIndex;
+                                });
+                            }
+                        }
+                    });
+
+                    let finalResults = results.concat(errors);
+                    callback(finalResults);
+                    })
                 });
             });
         });
     }
 
-    static getEquipeFromStart(callback){
-        var self = this;
+    static getTimeFromTimestamp(timestamp) {
+        let time = new Date(timestamp);
+        let hours = time.getHours().toString().length === 1 ? "0" + time.getHours() : time.getHours();
+        let minutes = time.getMinutes().toString().length === 1 ? "0" + time.getMinutes() : time.getMinutes();
+        let seconds = time.getSeconds().toString().length === 1 ? "0" + time.getSeconds() : time.getSeconds();
+        return hours + ":" + minutes + ":" + seconds;
+    }
 
-        self.getParticipantsStart(function(dataStart){
-            var result = dataStart.reduce(function (r, a){
-                r[a.time] = r[a.time] || [];
-                r[a.time].push(a);
-                return r;
-            }, Object.create(null));
-            callback(result);
-        })
+    static getTimeDifference(timeStart, timeEnd) {
+        let difference = timeEnd - timeStart;
+        let diffHours = Math.floor(difference/1000/60/60);
+        diffHours = diffHours.toString().length === 1 ? "0" + diffHours : diffHours;
+        difference -= diffHours*1000*60*60;
+        let diffMinutes = Math.floor(difference/1000/60);
+        diffMinutes = diffMinutes.toString().length === 1 ? "0" + diffMinutes : diffMinutes;
+        difference -= diffMinutes*1000*60;
+        let diffSeconds = Math.floor(difference/1000);
+        diffSeconds = diffSeconds.toString().length === 1 ? "0" + diffSeconds : diffSeconds;
+        return diffHours + ':' + diffMinutes + ':' + diffSeconds;
     }
     
 
@@ -273,7 +239,7 @@ class ExcelServices {
             if(err){ //Si erreur, on l'envoit dans la console
                 return console.log(err);
             }
-            ExcelServices.getEndParticipants(function(res){
+            ExcelServices.getEndResult(function(res){
                 var participant = res.filter(function(data){
                     return data.time === timestamp;
                 });
@@ -325,6 +291,18 @@ class ExcelServices {
         if(fs.existsSync(pathCsvParticipants)) {
             fs.unlinkSync(pathCsvParticipants);
         }
+        if(fs.existsSync(pathCsvResult)) {
+            fs.unlinkSync(pathCsvResult);
+        }
+        if(fs.existsSync(pathCsvResultsStart)) {
+            fs.unlinkSync(pathCsvResultsStart);
+        }
+        if(fs.existsSync(pathCsvResultsEnd)) {
+            fs.unlinkSync(pathCsvResultsEnd);
+        }
+        if(fs.existsSync(pathCsvResultFinal)) {
+            fs.unlinkSync(pathCsvResultFinal);
+        }
     }
 
     /**
@@ -355,31 +333,14 @@ class ExcelServices {
                 ExcelServices.addParticipant('dossard', 'lastname', 'firstname', 'team');
             }
         }
-        //Deletes result.csv exists, if not create it
-        try {
-            fs.unlinkSync(pathCsvResult);
-            ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
-        } catch (error) {
-            if(error.code === 'ENOENT') {
-                ExcelServices.addResult('dossard', 'lastname', 'firstname', 'timedepart', 'timearrivee', 'timetotal', 'team', 'timeteam');
-            }
-        }
     }
-    /**
-     * Return the list of the participants at the end
-     * @param callback - functio,
-     */
 
-    static getEndParticipants(callback){
-        var participants = [];
-        fs.createReadStream(pathCsvEnd)
-            .pipe(csvParser({separator: ';'}))
-            .on('data', (row) => {
-                participants.push(row);
-            })
-            .on('finish', function () {
-                callback(participants);
-            });
+    static isExportValid(callback) {
+        if(fs.existsSync(pathCsvResultsStart) && fs.existsSync(pathCsvResultsEnd)) {
+            callback(true);
+        } else {
+            callback(false);
+        }
     }
 
     /**
@@ -399,50 +360,6 @@ class ExcelServices {
                 callback(participants);
                 
             });
-    }
-    
-    /**
-     * Return the list of the participant at start
-     * @param callback  - function
-     */
-    static getParticipantsStart(callback){
-        var participants = [];
-        fs.createReadStream(pathCsvStart)
-        .pipe(csvParser({separator: ';'}))
-        .on('data', (row) => {
-            participants.push(row);
-        })
-        .on('finish', function() {
-            callback(participants);
-        }).unpipe();
-    }
-
-        /**
-     * Return the list of the participant at the end
-     * @param callback  - function
-     */
-    static getParticipantsEnd(callback){
-        var participants = [];
-        fs.createReadStream(pathCsvEnd)
-        .pipe(csvParser({separator: ';'}))
-        .on('data', (row) => {
-            participants.push(row);
-        })
-        .on('finish', function() {
-            callback(participants);
-        });
-    }
-
-    static getParticipantsResult(callback){
-        var particicpants = [];
-        fs.createReadStream(pathCsvResult)
-        .pipe(csvParser({separator : ';'}))
-        .on('data', (row) => {
-            particicpants.push(row);
-        })
-        .on('finish', function() {
-            callback(particicpants);
-        });
     }
 
     /**
@@ -466,9 +383,43 @@ class ExcelServices {
      *  Return the list of the participants
      * @param callback - function
      */
+    static getExportStartResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvResultsStart)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
     static getEndResult(callback) {
         const results = [];
         fs.createReadStream(pathCsvEnd)
+            .pipe(csvParser({separator: ';'}))
+            .on('data', (row) => {
+                row.time = Number(row.time);
+                results.push(row);
+            })
+            .on('finish', function () {
+                callback(results);
+            });
+    }
+
+    /**
+     *  Return the list of the participants
+     * @param callback - function
+     */
+    static getExportEndResult(callback) {
+        const results = [];
+        fs.createReadStream(pathCsvResultsEnd)
             .pipe(csvParser({separator: ';'}))
             .on('data', (row) => {
                 row.time = Number(row.time);
@@ -503,17 +454,6 @@ class ExcelServices {
     }
 
     /**
-     * Find the participant by his dossard number
-     * @param searchedDossard - dossard number
-     * @param callback - callback function
-     */
-    static findParticipant(searchedDossard, callback) {
-        this.getParticipants(function (participants) {
-            callback(participants.filter(participant => participant.dossard == searchedDossard));
-        });
-    }
-
-    /**
      * Find the participants in a specific team
      * @param teamName
      * @param callback
@@ -522,18 +462,6 @@ class ExcelServices {
         this.getParticipants(function (participants) {
             callback(participants.filter(participant => participant.team === teamName));
         })
-    }
-
-    static findParticipantStart(searchedDossard, callback){
-        this.getParticipantsStart(function (participants){
-            callback(participants.filter(participant => participant.dossard == searchedDossard));
-        });
-    }
-
-    static findParticipantStop(searchedDossard, callback){
-        this.getParticipantsStop(function (participants){
-            callback(participants.filter(participant => participant.dossard == searchedDossard));
-        });
     }
 
     static addStartTime(dossard, time) {

@@ -8,7 +8,6 @@ import './App.css';
 import 'typeface-roboto';
 import {withUser} from "./store/AppProvider";
 import {openSnackbar} from "./Notifier";
-import {exportResult} from "./Home";
 import Notifier from "./Notifier";
 
 const ipcRenderer = window.require('electron').ipcRenderer;
@@ -56,7 +55,7 @@ class PageDocumentation extends Component {
             fileImportDeparts: "",
             btnImportArrivees: false,
             fileImportArrivees: "",
-            btnExportResultsDisabled: this.isFinalExportDisabled(),
+            btnExportResultsDisabled: true,
         };
 
         this.exportStartResults = this.exportStartResults.bind(this);
@@ -83,11 +82,8 @@ class PageDocumentation extends Component {
 
     exportResult() {
         ipcRenderer.send('request-export-csv');
-        ipcRenderer.on('reply-export-csv', (event, arg) => {
-            if (arg.status === false) {
-                openSnackbar({message: 'Le fichier a bien été exporté '}, {type: 'success'});
-            }
-            openSnackbar({message: 'Fichier des arrivées téléchargé ! Cependant, celui-ci contient des participants avec des données incorrectes'}, {type: 'warning'});
+        ipcRenderer.on('reply-export-csv', () => {
+            openSnackbar({message: 'Fichier exporté ! Vous pouvez le retrouver dans vos téléchargements'}, {type: 'success'});
         });
     }
 
@@ -99,17 +95,22 @@ class PageDocumentation extends Component {
         return this.props.histoParticipantEnd.length === 0;
     }
 
-    isFinalExportDisabled(){
-        if (this.props.histoParticipantEnd.length !== 0 && this.props.histoParticipantStart.length !== 0) {
-            return false;
-        }
-        return true;
+    componentDidMount(){
+        this.isExportValid();
+    }
+
+    isExportValid() {
+        ipcRenderer.send('is-export-valid-request');
+        ipcRenderer.on('is-export-valid-reply', (event, isValid) => {
+            this.setState({btnExportResultsDisabled: !isValid})
+        });
     }
 
     onImportDeparts(e) {
         let filePath = e.target.files[0].path;
         ipcRenderer.on('import-start-results-reply', () => {
             openSnackbar({message: 'Fichier des départs importé avec succès !'}, {type: 'success'});
+            this.isExportValid();
         });
         ipcRenderer.send('import-start-results-request', filePath);
     }
@@ -118,6 +119,7 @@ class PageDocumentation extends Component {
         let filePath = e.target.files[0].path;
         ipcRenderer.on('import-end-results-reply', () => {
             openSnackbar({message: 'Fichier des arrivées importé avec succès !'}, {type: 'success'});
+            this.isExportValid();
         });
         ipcRenderer.send('import-end-results-request', filePath);
     }
@@ -183,7 +185,7 @@ class PageDocumentation extends Component {
                             <Grid item xs={12}>
                                 <Paper className={classes.paper}>
                                     <Typography variant="h5">Obtenir les résultats de la course</Typography>
-                                    <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)}>
+                                    <Button variant="outlined" className={classes.button} onClick={this.exportResult.bind(this)} disabled={this.state.btnExportResultsDisabled}>
                                         Télécharger les résultats
                                     </Button>
                                 </Paper>
