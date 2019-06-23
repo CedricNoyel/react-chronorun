@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import 'typeface-roboto';
 import AppProvider from './store/AppProvider';
 import MenuBar from "./MenuBar";
 import Titlebar from 'react-electron-titlebar';

@@ -3,11 +3,11 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const xlsx_converter = require('xlsx-converter');
 
-const pathCsvResultsStart = 'src/app-server/excels/start_results.csv';
-const pathCsvResultsEnd = 'src/app-server/excels/end_results.csv';
-const pathCsvResultFinal = 'src/app-server/excels/resultats_finaux.xlsx';
+const pathCsvResultsStart = 'build/excels/start_results.csv';
+const pathCsvResultsEnd = 'build/excels/end_results.csv';
+const pathCsvResultFinal = 'build/excels/resultats_finaux.xlsx';
 
-const pathCsvStart = 'src/app-server/excels/start.csv';
+const pathCsvStart = 'build/excels/start.csv';
 const csvWriterStart = createCsvWriter({
     path : pathCsvStart,
     fieldDelimiter: ';',
@@ -18,7 +18,7 @@ const csvWriterStart = createCsvWriter({
     ]
 });
 
-const pathCsvEnd = 'src/app-server/excels/end.csv';
+const pathCsvEnd = 'build/excels/end.csv';
 const csvWriterEnd = createCsvWriter({
     path : pathCsvEnd,
     fieldDelimiter: ';',
@@ -29,7 +29,7 @@ const csvWriterEnd = createCsvWriter({
     ]
 });
 
-const pathCsvResult = "src/app-server/excels/result.csv";
+const pathCsvResult = "build/excels/result.csv";
 const csvWriterResult = createCsvWriter({
     path : pathCsvResult,
     fieldDelimiter: ";",
@@ -46,7 +46,7 @@ const csvWriterResult = createCsvWriter({
     ]
 });
 
-const pathCsvParticipants = 'src/app-server/excels/participants.csv';
+const pathCsvParticipants = 'build/excels/participants.csv';
 const csvWriterParticipants = createCsvWriter({
     path : pathCsvParticipants,
     fieldDelimiter: ';',
@@ -238,7 +238,6 @@ class ExcelServices {
                 participants.push(row);
                 index++;
             }
-            console.log(index);
             if(participants.length === index - 2) {
                 converted = true;
             }

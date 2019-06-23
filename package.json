@@ -2,7 +2,8 @@
   "name": "electron-with-create-react-app",
   "productName": "Chrono Run",
   "version": "0.1.0",
-  "main": "public/electron-starter.js",
+  "main": "./public/electron-starter.js",
+  "homepage": "./",
   "private": true,
   "devDependencies": {
     "electron": "^1.7.9",
@@ -43,6 +44,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "package-win": "electron-packager . ChronoRun --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=release-builds --version-string.ProductName=\"Chrono Run\"\""
+    "package-win": "electron-packager . ChronoRun --overwrite --platform=win32 --arch=x64 --out=ChronRun --version-string.ProductName=\"Chrono Run\"\""
   }
 }

@@ -7,7 +7,6 @@ const path = require('path');
 const url = require('url');
 const file = require('file-system');
 const fs = require('fs');
-const isDev = require('electron-is-dev');
 const json2xls = require('json2xls');
 
 const ExcelServices = require('../src/app-server/js/ExcelServices');
@@ -33,11 +32,13 @@ function createWindow() {
             protocol: 'file:',
             slashes: true
     });
-    mainWindow.loadURL(isDev ? 'http://localhost:3000' : startUrl);
+
+    console.log(__dirname);
+    mainWindow.loadURL(startUrl);
     mainWindow.maximize();
 
     // Open the DevTools.
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -95,9 +96,9 @@ ipcMain
     .on('request-export-csv', (event, arg) => {
         ExcelServices.exportFinalResults(function(results){
             let xls = json2xls(results);
-            fs.writeFileSync(__dirname + '/../src/app-server/excels/resultats_finaux.xlsx', xls, 'binary');
+            fs.writeFileSync(__dirname + '/../build/excels/resultats_finaux.xlsx', xls, 'binary');
 
-            let source = path.join(__dirname, '/../src/app-server/excels/resultats_finaux.xlsx');
+            let source = path.join(__dirname, '/../build/excels/resultats_finaux.xlsx');
             let destination = path.join(app.getPath('downloads'), 'resultats_finaux.xlsx');
             let index = 1;
             while(fs.existsSync(destination)) {
@@ -130,7 +131,7 @@ ipcMain
         });
     })
     .on('dl-template-request', (event, arg) => {
-        let source = path.join(__dirname, 'template_chrono_run.xlsx');
+        let source = path.join(__dirname, '/../build/template_chrono_run.xlsx');
         let destination = path.join(app.getPath('downloads'), 'template_chrono_run.xlsx');
         let index = 1;
         while(fs.existsSync(destination)) {
@@ -144,7 +145,7 @@ ipcMain
         });
     })
     .on('dl-start-results-request', (event, arg) => {
-        let source = path.join(__dirname, '/../src/app-server/excels/start.csv');
+        let source = path.join(__dirname, '/../build/excels/start.csv');
         let destination = path.join(app.getPath('downloads'), 'resultats_depart_chrono_run.csv');
         let index = 1;
         while(fs.existsSync(destination)) {
@@ -158,7 +159,7 @@ ipcMain
         });
     })
     .on('dl-end-results-request', (event, arg) => {
-        let source = path.join(__dirname, '/../src/app-server/excels/end.csv');
+        let source = path.join(__dirname, '/../build/excels/end.csv');
         let destination = path.join(app.getPath('downloads'), 'resultats_arrivees_chrono_run.csv');
         let index = 1;
         while(fs.existsSync(destination)) {
@@ -173,17 +174,16 @@ ipcMain
     })
     .on('import-start-results-request', (event, filePath) => {
         let source = filePath;
-        let destination = path.join(__dirname, '/../src/app-server/excels/start_results.csv');
+        let destination = path.join(__dirname, '/../build/excels/start_results.csv');
         file.copyFile(source, destination, {
             done: (err) => {
-                console.log(err);
                 event.sender.send('import-start-results-reply');
             }
         });
     })
     .on('import-end-results-request', (event, filePath) => {
         let source = filePath;
-        let destination = path.join(__dirname, '/../src/app-server/excels/end_results.csv');
+        let destination = path.join(__dirname, '/../build/excels/end_results.csv');
         file.copyFile(source, destination, {
             done: (err) => {
                 event.sender.send('import-end-results-reply');

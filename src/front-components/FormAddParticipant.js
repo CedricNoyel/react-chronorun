@@ -71,7 +71,6 @@ class FormAddParticipant extends Component {
                         openSnackbar({message: "Erreur, le prénom doit être assigné !"}, {type: "error"})
                     }
                 } else {
-                    console.log("inputName empty");
                     openSnackbar({message: "Erreur, le nom doit être renseigné !"}, {type: "error"})
                 }
             } else {
