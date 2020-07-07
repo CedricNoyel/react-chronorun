@@ -5,7 +5,7 @@
   "main": "public/electron-starter.js",
   "private": true,
   "devDependencies": {
-    "electron": "^1.7.9",
+    "electron": "^7.2.4",
     "foreman": "^2.0.0",
     "react-scripts": "0.8.5"
   },
